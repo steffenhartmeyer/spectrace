@@ -18,19 +18,28 @@
 #' @export
 #'
 #' @examples
-spectrace_aopic = function(irr_data,
-                           cal=NULL){
+spectrace_aopic = function(irr_data, cal = NULL){
 
   # If no calibration data provided, use default data.
-  if(is.null(cal)) cal = cal_temp
+  if(is.null(cal)){
+    cal = cal_temp
+  }
 
   # Convert spectrace output to irradiance (W/m2)
   irr_data = irr_data/as.numeric(cal)
 
   # Interpolate to 5nm data using PCHIP
+  interp_fun = function(y){
+    if(!any(is.na(y))){
+      pracma::pchip(wl, y, wl_out)
+    }
+    else{
+      rep(NA, length(wl_out))
+    }
+  }
   wl_out = seq(380,780,5)
   wl = c(410,435,460,485,510,535,560,585,610,645,680,705,730,760)
-  irr_interp = t(apply(irr_data, 1, function(y) pracma::pchip(wl, y, wl_out)))
+  irr_interp = t(apply(irr_data, 1, interp_fun))
   irr_interp[irr_interp < 0] = 0
 
   # Calculate photopic illuminance
@@ -68,6 +77,7 @@ spectrace_aopic = function(irr_data,
                    "scELR", "mcELR", "lcELR", "melELR", "rodELR",
                    "scDER", "mcDER", "lcDER", "melDER", "rodDER",
                    "CCT")
+
   # Return
   return(cData)
 }

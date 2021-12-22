@@ -19,7 +19,8 @@ spectrace_import = function(lightFile,
                             offset = 0,
                             tz){
   # Read light data from CSV
-  lightData = readr::read_csv(lightFile, col_names = FALSE)
+  lightData = readr::read_csv(lightFile, col_names = FALSE,
+                              col_types = readr::cols(.default = "d"))
   names(lightData) = c("unix", "lux", "ch0", "ch1", "uv", "410", "435", "460", "485",
                        "510", "535", "560", "585", "610", "645", "680", "705", "730",
                        "760", "810", "860", "900", "940")
@@ -27,9 +28,10 @@ spectrace_import = function(lightFile,
   # If activity file available merge with light data. Convert unix timestamp to
   # POSIXct datetime format with given time zone.
   if(!is.null(actFile)){
-    actData = readr::read_csv(actFile, col_names = c("unix", "activity"))
+    actData = readr::read_csv(actFile, col_names = c("unix", "activity"),
+                              col_types = readr::cols(.default = "d"))
     lightData = lightData %>%
-      dplyr::left_join(dplyr::mutate(actData, unix = unix-offset)) %>%
+      dplyr::left_join(dplyr::mutate(actData, unix = unix-offset), by = "unix") %>%
       dplyr::mutate(datetime = lubridate::as_datetime(unix, tz=tz)) %>%
       dplyr::select(datetime, unix:'940', activity)
   }
