@@ -20,7 +20,8 @@ spectrace_import_aopic(
 
 \item{offset}{Time offset between activity and light data in secs (activity - light).}
 
-\item{tz}{Time zone to be used for datetime conversion.}
+\item{tz}{Time zone to be used for datetime conversion. See supported time zones
+by calling \code{\link[base]{OlsonNames}}.}
 
 \item{cal}{Calibration data for the spectrace irradiance sensors. If no data is
 provided (default), default calibration data is used (not recommended).}

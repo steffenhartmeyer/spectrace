@@ -8,7 +8,8 @@
 #' @param lightFile Path to the file containing the light data.
 #' @param actFile Path to the file containing the activity data. Defaults to NULL.
 #' @param offset Time offset between activity and light data in secs (activity - light).
-#' @param tz Time zone to be used for datetime conversion.
+#' @param tz Time zone to be used for datetime conversion. See supported time zones
+#'    by calling \code{\link[base]{OlsonNames}}.
 #'
 #' @return Data frame.
 #' @export

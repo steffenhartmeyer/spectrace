@@ -13,7 +13,8 @@ spectrace_import(lightFile, actFile = NULL, offset = 0, tz)
 
 \item{offset}{Time offset between activity and light data in secs (activity - light).}
 
-\item{tz}{Time zone to be used for datetime conversion.}
+\item{tz}{Time zone to be used for datetime conversion. See supported time zones
+by calling \code{\link[base]{OlsonNames}}.}
 }
 \value{
 Data frame.
