@@ -26,7 +26,9 @@ spectrace_aopic = function(irr_data, cal = NULL){
   }
 
   # Convert spectrace output to irradiance (W/m2)
-  irr_data = irr_data/as.numeric(cal)
+  irr_data = as.matrix(irr_data)
+  cal = as.numeric(cal)
+  irr_data = irr_data/cal[col(irr_data)]
 
   # Interpolate to 5nm data using PCHIP
   interp_fun = function(y){
@@ -55,9 +57,9 @@ spectrace_aopic = function(irr_data, cal = NULL){
   elr = aopic/ill
 
   # Calculate alpha-opic EDI and DER
-  KavD65 = c(0.8173, 1.4558, 1.6289, 1.4497, 1.3262)
-  aopic_edi = aopic/(KavD65/1000)
-  der = elr/(KavD65/1000)
+  KavD65 = c(0.8173, 1.4558, 1.6289, 1.4497, 1.3262)/1000
+  aopic_edi = aopic/(KavD65)[col(aopic)]
+  der = elr/(KavD65)[col(elr)]
 
   # Calculate CIE XYZ using CIE color matching functions
   x = apply(irr_interp, 1, function(x) sum(x*as.numeric(cmf$x)))
