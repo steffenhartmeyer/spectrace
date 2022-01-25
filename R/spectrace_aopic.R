@@ -30,7 +30,7 @@ spectrace_aopic = function(irr_data, cal = NULL){
   cal = as.numeric(cal)
   irr_data = irr_data/cal[col(irr_data)]
 
-  # Interpolate to 5nm data using PCHIP
+  # Interpolate to 1nm data using PCHIP
   interp_fun = function(y){
     if(!any(is.na(y))){
       pracma::pchip(wl, y, wl_out)
@@ -45,14 +45,14 @@ spectrace_aopic = function(irr_data, cal = NULL){
   irr_interp[irr_interp < 0] = 0
 
   # Calculate photopic illuminance
-  ill = apply(irr_interp, 1, function(x) 683*sum(x*as.numeric(cmf$y)))
+  ill = apply(irr_interp, 1, function(x) 683*sum(x*as.numeric(cmf$y)*5))
 
   # Calculate alpha-opic irradiance and ELR using CIE s26e opsin templates
-  scone = apply(irr_interp, 1, function(x) sum(x*as.numeric(cie_s26e$scone)))
-  mcone = apply(irr_interp, 1, function(x) sum(x*as.numeric(cie_s26e$mcone)))
-  lcone = apply(irr_interp, 1, function(x) sum(x*as.numeric(cie_s26e$lcone)))
-  mel = apply(irr_interp, 1, function(x) sum(x*as.numeric(cie_s26e$mel)))
-  rod = apply(irr_interp, 1, function(x) sum(x*as.numeric(cie_s26e$rod)))
+  scone = apply(irr_interp, 1, function(x) sum(x*as.numeric(cie_s26e$scone)*5))
+  mcone = apply(irr_interp, 1, function(x) sum(x*as.numeric(cie_s26e$mcone)*5))
+  lcone = apply(irr_interp, 1, function(x) sum(x*as.numeric(cie_s26e$lcone)*5))
+  mel = apply(irr_interp, 1, function(x) sum(x*as.numeric(cie_s26e$mel)*5))
+  rod = apply(irr_interp, 1, function(x) sum(x*as.numeric(cie_s26e$rod)*5))
   aopic = cbind(scone, mcone, lcone, mel, rod)
   elr = aopic/ill
 
@@ -62,9 +62,9 @@ spectrace_aopic = function(irr_data, cal = NULL){
   der = elr/(KavD65)[col(elr)]
 
   # Calculate CIE XYZ using CIE color matching functions
-  x = apply(irr_interp, 1, function(x) sum(x*as.numeric(cmf$x)))
-  y = apply(irr_interp, 1, function(x) sum(x*as.numeric(cmf$y)))
-  z = apply(irr_interp, 1, function(x) sum(x*as.numeric(cmf$z)))
+  x = apply(irr_interp, 1, function(x) sum(x*as.numeric(cmf$x)*5))
+  y = apply(irr_interp, 1, function(x) sum(x*as.numeric(cmf$y)*5))
+  z = apply(irr_interp, 1, function(x) sum(x*as.numeric(cmf$z)*5))
   cie_x = x/(x+y+z)
   cie_y = y/(x+y+z)
 
