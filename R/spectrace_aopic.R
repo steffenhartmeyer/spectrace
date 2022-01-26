@@ -32,6 +32,9 @@ spectrace_aopic = function(irr_data, cal = NULL){
 
   # Interpolate to 1nm data using PCHIP
   interp_fun = function(y){
+    wl_out = seq(380,780,5)
+    wl = c(380,410,435,460,485,510,535,560,585,610,645,680,705,730,760,780)
+    y = c(0,y,0)
     if(!any(is.na(y))){
       pracma::pchip(wl, y, wl_out)
     }
@@ -39,8 +42,6 @@ spectrace_aopic = function(irr_data, cal = NULL){
       rep(NA, length(wl_out))
     }
   }
-  wl_out = seq(380,780,5)
-  wl = c(410,435,460,485,510,535,560,585,610,645,680,705,730,760)
   irr_interp = t(apply(irr_data, 1, interp_fun))
   irr_interp[irr_interp < 0] = 0
 
