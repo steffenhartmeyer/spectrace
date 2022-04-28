@@ -3,6 +3,7 @@
 export("%>%")
 export(spectrace_aopic)
 export(spectrace_import)
+export(spectrace_import_activity)
 export(spectrace_import_aopic)
 export(spectrace_import_light)
 importFrom(magrittr,"%>%")
