@@ -12,7 +12,7 @@
 #' @export
 #'
 #' @examples
-spectrace_import <- function(actFile, tz) {
+spectrace_import_activity <- function(actFile, tz) {
   # Read activity data from CSV
   actData <-
     readr::read_csv(actFile,
