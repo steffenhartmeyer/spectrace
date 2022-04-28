@@ -16,7 +16,7 @@ spectrace_import_aopic(
 \arguments{
 \item{lightFile}{Path to the file containing the light data.}
 
-\item{actFile}{Path to the file containing the activity data. Defaults to NULL.}
+\item{actFile}{Path to the file containing the activity data.}
 
 \item{offset}{Time offset between activity and light data in secs (activity - light).}
 

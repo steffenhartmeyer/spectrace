@@ -12,11 +12,13 @@
 #' @export
 #'
 #' @examples
-spectrace_import = function(actFile, tz){
+spectrace_import <- function(actFile, tz) {
   # Read activity data from CSV
-  actData =
-    readr::read_csv(actFile, col_names = c("unix", "activity"),
-                            col_types = readr::cols(.default = "d")) %>%
+  actData <-
+    readr::read_csv(actFile,
+      col_names = c("unix", "activity"),
+      col_types = readr::cols(.default = "d")
+    ) %>%
     dplyr::mutate(datetime = lubridate::as_datetime(unix, tz = tz)) %>%
     dplyr::relocate(datetime)
 
