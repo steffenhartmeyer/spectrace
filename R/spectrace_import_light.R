@@ -13,17 +13,36 @@
 #'
 #' @examples
 spectrace_import_light <- function(lightFile, tz) {
-  # Read light data from CSV
-  col_names <- c(
-    "unix", "lux", "ch0", "ch1", "uv", "410", "435", "460", "485",
-    "510", "535", "560", "585", "610", "645", "680", "705", "730",
-    "760", "810", "860", "900", "940"
-  )
-  lightData <-
-    readr::read_csv(lightFile,
-      col_names = col_names,
-      col_types = readr::cols(.default = "d")
-    ) %>%
+
+  # Check type of file (including header or not)
+  header = readr::read_csv(lightFile,
+                           col_names = c("descriptor", "value"),
+                           col_types = readr::cols(.default = "c"),
+                           n_max = 3)
+  if(startsWith(header$descriptor[1], "SERIAL")){
+    #Header information
+    lightData <-
+      readr::read_csv(lightFile,
+                      skip = 4,
+                      col_types = readr::cols(.default = "d")
+                      )
+  }
+  else{
+    # No header information
+    col_names <- c(
+      "unix", "lux", "ch0", "ch1", "uv", "410nm", "435nm", "460nm", "485nm",
+      "510nm", "535nm", "560nm", "585nm", "610nm", "645nm", "680nm", "705nm", "730nm",
+      "760nm", "810nm", "860nm", "900nm", "940nm"
+    )
+    lightData <-
+      readr::read_csv(lightFile,
+                      col_names = col_names,
+                      col_types = readr::cols(.default = "d")
+      )
+  }
+
+
+   %>%
     dplyr::mutate(datetime = lubridate::as_datetime(unix, tz = tz)) %>%
     dplyr::relocate(datetime)
 
