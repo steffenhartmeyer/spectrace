@@ -2,7 +2,7 @@
 
 export("%>%")
 export(spectrace_aopic)
-export(spectrace_import)
+export(spectrace_calibrate_light)
 export(spectrace_import_activity)
 export(spectrace_import_aopic)
 export(spectrace_import_battery)

@@ -7,10 +7,10 @@
 spectrace_import_battery(batteryFile, tz)
 }
 \arguments{
+\item{batteryFile}{Path to the file containing the battery data.}
+
 \item{tz}{Time zone to be used for datetime conversion. See supported time zones
 by calling \code{\link[base]{OlsonNames}}.}
-
-\item{actFile}{Path to the file containing the battery data.}
 }
 \value{
 Data frame.

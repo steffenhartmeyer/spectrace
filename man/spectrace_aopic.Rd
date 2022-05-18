@@ -4,14 +4,11 @@
 \alias{spectrace_aopic}
 \title{Calculate alpha-opic quantities from raw spectrace data}
 \usage{
-spectrace_aopic(irr_data, cal = NULL)
+spectrace_aopic(lightData)
 }
 \arguments{
-\item{irr_data}{Data frame or matrix containing spectrace irradiance sensor data
-for the channels from 410nm to 760nm.}
-
-\item{cal}{Calibration data for the spectrace irradiance sensors. If no data is
-provided (default), default calibration data is used (not recommended).}
+\item{lightData}{Data frame containing the calibrated light data
+for the channels from 410nm to 730nm.}
 }
 \value{
 Data frame with illuminance, alpha-opic irradiances, alpha-opic EDI,

@@ -2,38 +2,30 @@
 % Please edit documentation in R/spectrace_import_aopic.R
 \name{spectrace_import_aopic}
 \alias{spectrace_import_aopic}
-\title{Import raw spectrace data and calculate alpha-opic quantities.}
+\title{Import raw spectrace data, calibrate data, and calculate alpha-opic quantities.}
 \usage{
-spectrace_import_aopic(
-  lightFile,
-  actFile = NULL,
-  offset = 0,
-  tz,
-  cal = NULL,
-  include_raw = FALSE
-)
+spectrace_import_aopic(lightFile, tz, serial_number = NULL, cal_data = NULL)
 }
 \arguments{
 \item{lightFile}{Path to the file containing the light data.}
 
-\item{actFile}{Path to the file containing the activity data. Defaults to NULL.}
-
-\item{offset}{Time offset between activity and light data in secs (activity - light).}
-
 \item{tz}{Time zone to be used for datetime conversion. See supported time zones
 by calling \code{\link[base]{OlsonNames}}.}
 
-\item{cal}{Calibration data for the spectrace irradiance sensors. If no data is
-provided (default), default calibration data is used (not recommended).}
+\item{serial_number}{Serial number of spectrace device. Defaults to NULL.}
 
-\item{include_raw}{Logical. Should the raw irradiance output be included?
-Defaults to FALSE.}
+\item{cal_data}{Data frame with calibration factors. Must consist of the
+following columns: "serial", "lux", "410nm", "435nm", "460nm", "485nm",
+"510nm", "535nm","560nm", "585nm", "610nm", "645nm", "680nm", "705nm",
+"730nm", "760nm". If not provided, the stored calibration data
+will be used (default).}
 }
 \value{
 Data frame.
 }
 \description{
 This function imports raw spectrace output and calculates alpha-opic quantities.
-See \code{\link{spectrace_import}} and \code{\link{spectrace_aopic}}
+See \code{\link{spectrace_import_light}},
+\code{\link{spectrace_calibrate_light}} and \code{\link{spectrace_aopic}}
 for more information.
 }

@@ -8,33 +8,30 @@
 #' using piecewise cubic hermitean interpolation polynomials. CCT is calculated
 #' with McCamy's approximation.
 #'
-#' @param irr_data Data frame or matrix containing spectrace irradiance sensor data
-#' for the channels from 410nm to 760nm.
-#' @param cal Calibration data for the spectrace irradiance sensors. If no data is
-#' provided (default), default calibration data is used (not recommended).
+#' @param lightData Data frame containing the calibrated light data
+#' for the channels from 410nm to 730nm.
 #'
 #' @return Data frame with illuminance, alpha-opic irradiances, alpha-opic EDI,
 #' alpha-opic ELR, alpha-opic DER, and CCT.
 #' @export
 #'
 #' @examples
-spectrace_aopic <- function(irr_data, cal = NULL) {
+spectrace_aopic <- function(lightData) {
 
-  # If no calibration data provided, use default data.
-  if (is.null(cal)) {
-    cal <- cal_temp
-  }
-
-  # Convert spectrace output to irradiance (W/m2)
-  irr_data <- as.matrix(irr_data)
-  cal <- as.numeric(cal)
-  irr_data <- irr_data / cal[col(irr_data)]
+  # Irradiance data
+  irr_data <- lightData %>%
+    dplyr::select("410nm":"730nm") %>%
+    as.matrix()
 
   # Interpolate to 1nm data using PCHIP
   interp_fun <- function(y) {
     wl_out <- seq(380, 780, 5)
-    wl <- c(380, 410, 435, 460, 485, 510, 535, 560, 585, 610, 645, 680, 705, 730, 760, 780)
+    wl_spectrace <- c(
+      410, 435, 460, 485, 510, 535, 560,
+      585, 610, 645, 680, 705, 730
+    )
     y <- c(0, y, 0)
+    wl <- c(wl_out[1], wl_spectrace, wl_out[length(wl_out)])
     if (!any(is.na(y))) {
       pracma::pchip(wl, y, wl_out)
     } else {
@@ -82,6 +79,11 @@ spectrace_aopic <- function(irr_data, cal = NULL) {
     "CCT"
   )
 
+  # Return data frame
+  lightData.out <- lightData %>%
+    dplyr::select(serial:uv) %>%
+    tibble::add_column(cData)
+
   # Return
-  return(cData)
+  return(lightData.out)
 }
