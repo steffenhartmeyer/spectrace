@@ -4,13 +4,15 @@
 \alias{spectrace_import_battery}
 \title{Import raw spectrace battery data}
 \usage{
-spectrace_import_battery(batteryFile, tz)
+spectrace_import_battery(batteryFile, tz, serial_number = NULL)
 }
 \arguments{
 \item{batteryFile}{Path to the file containing the battery data.}
 
 \item{tz}{Time zone to be used for datetime conversion. See supported time zones
 by calling \code{\link[base]{OlsonNames}}.}
+
+\item{serial_number}{Serial number of spectrace device. Defaults to NULL.}
 }
 \value{
 Data frame.

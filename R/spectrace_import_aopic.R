@@ -23,7 +23,7 @@ spectrace_import_aopic <- function(lightFile,
                                    tz,
                                    serial_number = NULL,
                                    cal_data = NULL) {
-  df_raw <- spectrace_import_light(lightFile, tz)
+  df_raw <- spectrace_import_light(lightFile, tz, serial_number)
   df_cal <- spectrace_calibrate_light(df_raw, cal_data)
   df_aopic <- spectrace_aopic(df_cal)
 

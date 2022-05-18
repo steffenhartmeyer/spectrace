@@ -4,13 +4,15 @@
 \alias{spectrace_import_activity}
 \title{Import raw spectrace activity data}
 \usage{
-spectrace_import_activity(actFile, tz)
+spectrace_import_activity(actFile, tz, serial_number = NULL)
 }
 \arguments{
 \item{actFile}{Path to the file containing the activity data.}
 
 \item{tz}{Time zone to be used for datetime conversion. See supported time zones
 by calling \code{\link[base]{OlsonNames}}.}
+
+\item{serial_number}{Serial number of spectrace device. Defaults to NULL.}
 }
 \value{
 Data frame.

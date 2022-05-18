@@ -6,12 +6,13 @@
 #' @param batteryFile Path to the file containing the battery data.
 #' @param tz Time zone to be used for datetime conversion. See supported time zones
 #'    by calling \code{\link[base]{OlsonNames}}.
+#' @param serial_number Serial number of spectrace device. Defaults to NULL.
 #'
 #' @return Data frame.
 #' @export
 #'
 #' @examples
-spectrace_import_battery <- function(batteryFile, tz) {
+spectrace_import_battery <- function(batteryFile, tz, serial_number = NULL) {
 
   # Get header
   header <- readr::read_csv(
