@@ -4,7 +4,13 @@
 \alias{spectrace_import_aopic}
 \title{Import raw spectrace data, calibrate data, and calculate alpha-opic quantities.}
 \usage{
-spectrace_import_aopic(lightFile, tz, serial_number = NULL, cal_data = NULL)
+spectrace_import_aopic(
+  lightFile,
+  tz,
+  serial_number = NULL,
+  cal_data = NULL,
+  interp_method = "pchip"
+)
 }
 \arguments{
 \item{lightFile}{Path to the file containing the light data.}
@@ -19,6 +25,9 @@ following columns: "serial", "lux", "410nm", "435nm", "460nm", "485nm",
 "510nm", "535nm","560nm", "585nm", "610nm", "645nm", "680nm", "705nm",
 "730nm", "760nm". If not provided, the stored calibration data
 will be used (default).}
+
+\item{interp_method}{Method for interpolation. Can be "pchip" (default) or
+"linear". Linear interpolation is considerably faster than pchip.}
 }
 \value{
 Data frame.
