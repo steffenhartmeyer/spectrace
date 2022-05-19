@@ -59,6 +59,9 @@ spectrace_aopic <- function(lightData, interp_method = "pchip") {
     irr_interp = t(matrix(irr_interp, ncol = nrow(irr_data)))
     irr_interp = cbind(irr_interp, zeros)
   }
+  else{
+    stop("Wrong interpolation method!")
+  }
   irr_interp[irr_interp < 0] <- 0
 
   # Calculate photopic illuminance
