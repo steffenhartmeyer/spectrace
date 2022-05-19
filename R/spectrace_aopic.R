@@ -60,7 +60,7 @@ spectrace_aopic <- function(lightData, interp_method = "pchip") {
   irr_interp[irr_interp < 0] <- 0
 
   # Calculate photopic illuminance
-  ill <- as.numeric((irr_interp %*% as.numeric(cmf$y[1:nrow(cmf)-1])) * 683 * 5)
+  ill <- as.numeric((irr_interp %*% as.numeric(cmf$y)) * 683 * 5)
 
   # Calculate alpha-opic irradiance and ELR using CIE s26e opsin templates
   scone <- as.numeric((irr_interp %*% as.numeric(cie_s26e$scone)) * 5)
