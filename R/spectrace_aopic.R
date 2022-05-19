@@ -9,7 +9,9 @@
 #' with McCamy's approximation.
 #'
 #' @param lightData Data frame containing the calibrated light data
-#' for the channels from 410nm to 730nm.
+#'    for the channels from 410nm to 730nm.
+#' @param interp_method Method for interpolation. Can be "pchip" (default) or
+#'    "linear". Linear interpolation is considerably faster than pchip.
 #'
 #' @return Data frame with illuminance, alpha-opic irradiances, alpha-opic EDI,
 #' alpha-opic ELR, alpha-opic DER, and CCT.
