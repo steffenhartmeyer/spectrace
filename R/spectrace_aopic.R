@@ -16,40 +16,58 @@
 #' @export
 #'
 #' @examples
-spectrace_aopic <- function(lightData) {
+spectrace_aopic <- function(lightData, interp_method = "pchip") {
 
   # Irradiance data
   irr_data <- lightData %>%
     dplyr::select("410nm":"730nm") %>%
     as.matrix()
 
-  # Interpolate to 1nm data using PCHIP
-  interp_fun <- function(y) {
-    wl_out <- seq(380, 780, 5)
-    wl_spectrace <- c(
-      410, 435, 460, 485, 510, 535, 560,
-      585, 610, 645, 680, 705, 730
-    )
-    y <- c(0, y, 0)
-    wl <- c(wl_out[1], wl_spectrace, wl_out[length(wl_out)])
-    if (!any(is.na(y))) {
-      pracma::pchip(wl, y, wl_out)
-    } else {
-      rep(NA, length(wl_out))
+  if(interp_method == "pchip"){
+    # Interpolate to 1nm data using PCHIP
+    interp_fun <- function(y) {
+      wl_out <- seq(380, 780, 5)
+      wl_spectrace <- c(
+        410, 435, 460, 485, 510, 535, 560,
+        585, 610, 645, 680, 705, 730
+      )
+      y <- c(0, y, 0)
+      wl <- c(wl_out[1], wl_spectrace, wl_out[length(wl_out)])
+      if (!any(is.na(y))) {
+        pracma::pchip(wl, y, wl_out)
+      } else {
+        rep(NA, length(wl_out))
+      }
     }
+    irr_interp <- t(apply(irr_data, 1, interp_fun))
   }
-  irr_interp <- t(apply(irr_data, 1, interp_fun))
+  else if(interp_method == "linear"){
+    zeros = rep(0, nrow(irr_data))
+    wl_spectrace <- c(
+      380, 410, 435, 460, 485, 510, 535, 560,
+      585, 610, 645, 680, 705, 730, 775
+    )
+    y = as.numeric(t(cbind(zeros, irr_data, zeros)))
+    x = rep(wl_spectrace, nrow(irr_data)) +
+      as.numeric(t(matrix(
+        rep(seq(0, 400*(nrow(irr_data)-1), 400), length(wl_spectrace)),
+        ncol = length(wl_spectrace))))
+    x_out = seq(380,775+400*(nrow(irr_data)-1),5)
+    irr_interp = approx(x, y, x_out, method = "linear", rule = 2)[[2]]
+    irr_interp = t(matrix(irr_interp, ncol = nrow(irr_data)))
+    irr_interp = cbind(irr_interp, zeros)
+  }
   irr_interp[irr_interp < 0] <- 0
 
   # Calculate photopic illuminance
-  ill <- apply(irr_interp, 1, function(x) 683 * sum(x * as.numeric(cmf$y) * 5))
+  ill <- as.numeric((irr_interp %*% as.numeric(cmf$y[1:nrow(cmf)-1])) * 683 * 5)
 
   # Calculate alpha-opic irradiance and ELR using CIE s26e opsin templates
-  scone <- apply(irr_interp, 1, function(x) sum(x * as.numeric(cie_s26e$scone) * 5))
-  mcone <- apply(irr_interp, 1, function(x) sum(x * as.numeric(cie_s26e$mcone) * 5))
-  lcone <- apply(irr_interp, 1, function(x) sum(x * as.numeric(cie_s26e$lcone) * 5))
-  mel <- apply(irr_interp, 1, function(x) sum(x * as.numeric(cie_s26e$mel) * 5))
-  rod <- apply(irr_interp, 1, function(x) sum(x * as.numeric(cie_s26e$rod) * 5))
+  scone <- as.numeric((irr_interp %*% as.numeric(cie_s26e$scone)) * 5)
+  mcone <- as.numeric((irr_interp %*% as.numeric(cie_s26e$mcone)) * 5)
+  lcone <- as.numeric((irr_interp %*% as.numeric(cie_s26e$lcone)) * 5)
+  rod <- as.numeric((irr_interp %*% as.numeric(cie_s26e$rod)) * 5)
+  mel <- as.numeric((irr_interp %*% as.numeric(cie_s26e$mel)) * 5)
   aopic <- cbind(scone, mcone, lcone, mel, rod)
   elr <- aopic / ill
 
@@ -59,9 +77,9 @@ spectrace_aopic <- function(lightData) {
   der <- elr / (KavD65)[col(elr)]
 
   # Calculate CIE XYZ using CIE color matching functions
-  x <- apply(irr_interp, 1, function(x) sum(x * as.numeric(cmf$x) * 5))
-  y <- apply(irr_interp, 1, function(x) sum(x * as.numeric(cmf$y) * 5))
-  z <- apply(irr_interp, 1, function(x) sum(x * as.numeric(cmf$z) * 5))
+  x <- (irr_interp %*% as.numeric(cmf$x)) * 5
+  y <- (irr_interp %*% as.numeric(cmf$y)) * 5
+  z <- (irr_interp %*% as.numeric(cmf$z)) * 5
   cie_x <- x / (x + y + z)
   cie_y <- y / (x + y + z)
 
