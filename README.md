@@ -23,23 +23,31 @@ library(spectrace)
 
 # Paths to example data
 light_data = system.file("extdata", "example_light.csv", package = "spectrace")
-activity_data = system.file("extdata", "example_activity.csv", package = "spectrace")
 
 # Import raw spectrace light data
-data.raw = spectrace_import(light_data, tz = "Europe/Berlin")
+data.raw = spectrace_import_light(light_data, 
+                                  tz = "Europe/Berlin", 
+                                  serial_number = "208731924656")
 
-# Import raw spectrace light and activity data 
-data.raw2 = spectrace_import(light_data, activity_data, offset = 2, tz = "Europe/Berlin")
+# Calibrate raw light data with default calibration data
+data.cal = spectrace_calibrate_light(data.raw)
 
-# Calculate alpha-opic quantities with default calibration file
-irradiance_data = data.raw[,7:20]
-data.aopic = spectrace_aopic(irradiance_data)
+## Not run:
+# Calibrate raw light data with custom calibration data
+data.cal2 = spectrace_calibrate_light(data.raw, cal_data = custom_calibration)
+## End(**Not run**)
 
-# Calculate alpha-opic quantities with custom calibration data
-#custom_cal = read.csv("custom_calibration.csv")
-#data.aopic = spectrace_aopic(irradiance_data, custom_cal)
+# Calculate alpha-opic quantities 
+data.aopic = spectrace_aopic(data.cal)
 
-# Import raw data and calculate and add alpha-opic quantities to data 
-data.all = spectrace_import_aopic(light_data, tz = "Europe/Berlin", include_raw = TRUE)
+# Calculate alpha-opic quantities with faster linear interpolation
+data.aopic2 = spectrace_aopic(data.cal, 
+                              interp_method = "linear")
+
+# Import raw data, calibrate, and calculate alpha-opic quantities with linear interpolation
+data.aopic3 = spectrace_import_aopic(light_data, 
+                                     tz = "Europe/Berlin", 
+                                     serial_number = "208731924656", 
+                                     interp_method = "linear")
 ```
 
