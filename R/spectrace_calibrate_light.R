@@ -30,7 +30,7 @@ spectrace_calibrate_light <- function(lightData, cal_data = NULL) {
   }
 
   cal_factors = cal_data %>%
-    select(!"760nm") %>%
+    dplyr::select(!"760nm") %>%
     dplyr::rename_at(dplyr::vars(lux, "410nm":"730nm"),
                      ~paste0("c",.x, "_factor"))
 

@@ -56,7 +56,7 @@ spectrace_calibrate_light2 <- function(lightData, cal_data = NULL) {
 
   # Return data frame
   lightData.cal <- lightData %>%
-    dplyr::select(serial:uv) %>%
+    dplyr::select(!c("410nm":"730nm")) %>%
     tibble::add_column(irrData) %>%
     dplyr::mutate(lux = lux / lux_factor)
   return(lightData.cal)
