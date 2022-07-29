@@ -2,10 +2,8 @@
 #' Calculate alpha-opic quantities from raw spectrace data
 #'
 #' This function calculates photopic and alpha-opic quantities as defined in the
-#' CIE s26e standard, from the raw spectrace data. Before calculations, the raw
-#' spectrace data is converted to spectral irradiance using provided or default
-#' calibration data. Spectral irradiance is then interpolated to 5nm resolution
-#' using piecewise cubic hermitean interpolation polynomials. CCT is calculated
+#' CIE s26e standard, from the calibrated spectrace data. Spectral irradiance is
+#' interpolated to 5nm resolution. CCT is calculated
 #' with McCamy's approximation.
 #'
 #' @param lightData Data frame containing the calibrated light data
@@ -13,7 +11,7 @@
 #' @param interp_method Method for interpolation. Can be "pchip" (default) or
 #'    "linear". Linear interpolation is considerably faster than pchip.
 #' @param keep_spectral Logical. Should the spectral irradiance columns be kept?
-#'    Defualts to TRUE.
+#'    Defaults to TRUE.
 #'
 #' @return Data frame with illuminance, alpha-opic irradiances, alpha-opic EDI,
 #' alpha-opic ELR, alpha-opic DER, and CCT.
