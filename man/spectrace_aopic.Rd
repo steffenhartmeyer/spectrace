@@ -4,7 +4,7 @@
 \alias{spectrace_aopic}
 \title{Calculate alpha-opic quantities from raw spectrace data}
 \usage{
-spectrace_aopic(lightData, interp_method = "pchip")
+spectrace_aopic(lightData, interp_method = "pchip", keep_spectral = TRUE)
 }
 \arguments{
 \item{lightData}{Data frame containing the calibrated light data
@@ -12,6 +12,9 @@ for the channels from 410nm to 730nm.}
 
 \item{interp_method}{Method for interpolation. Can be "pchip" (default) or
 "linear". Linear interpolation is considerably faster than pchip.}
+
+\item{keep_spectral}{Logical. Should the spectral irradiance columns be kept?
+Defualts to TRUE.}
 }
 \value{
 Data frame with illuminance, alpha-opic irradiances, alpha-opic EDI,

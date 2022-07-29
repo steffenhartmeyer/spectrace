@@ -12,13 +12,15 @@
 #'    for the channels from 410nm to 730nm.
 #' @param interp_method Method for interpolation. Can be "pchip" (default) or
 #'    "linear". Linear interpolation is considerably faster than pchip.
+#' @param keep_spectral Logical. Should the spectral irradiance columns be kept?
+#'    Defualts to TRUE.
 #'
 #' @return Data frame with illuminance, alpha-opic irradiances, alpha-opic EDI,
 #' alpha-opic ELR, alpha-opic DER, and CCT.
 #' @export
 #'
 #' @examples
-spectrace_aopic <- function(lightData, interp_method = "pchip") {
+spectrace_aopic <- function(lightData, interp_method = "pchip", keep_spectral = TRUE) {
 
   # Irradiance data
   irr_data <- lightData %>%
@@ -90,8 +92,15 @@ spectrace_aopic <- function(lightData, interp_method = "pchip") {
     "CCT"
   )
 
-  # Return data frame
-  lightData %>%
-    dplyr::select(!c("410nm":"730nm")) %>%
+  # Add to data
+  lightData = lightData %>%
     tibble::add_column(cData)
+
+  # Return data frame
+  if(keep_spectral){
+    return(lightData)
+  }
+  else{
+    return(dplyr::select(lightData, !c("410nm":"730nm")))
+  }
 }
