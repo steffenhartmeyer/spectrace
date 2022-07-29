@@ -25,43 +25,31 @@ spectrace_aopic <- function(lightData, interp_method = "pchip") {
     dplyr::select("410nm":"730nm") %>%
     as.matrix()
 
+  # Reshape matrix to single vector
+  wl <- c(380, 410, 435, 460, 485, 510, 535, 560,
+          585, 610, 645, 680, 705, 730, 775)
+  zeros = rep(0, nrow(irr_data))
+  y = as.numeric(t(cbind(zeros, irr_data, zeros)))
+  x = rep(wl, nrow(irr_data)) +
+    as.numeric(t(matrix(
+      rep(seq(0, 400*(nrow(irr_data)-1), 400), length(wl)),
+      ncol = length(wl))))
+  x_out = seq(380,775+400*(nrow(irr_data)-1),5)
+
+  # Interpolate to 5nm resolution
   if(interp_method == "pchip"){
-    # Interpolate to 1nm data using PCHIP
-    interp_fun <- function(y) {
-      wl_out <- seq(380, 780, 5)
-      wl_spectrace <- c(
-        410, 435, 460, 485, 510, 535, 560,
-        585, 610, 645, 680, 705, 730
-      )
-      y <- c(0, y, 0)
-      wl <- c(wl_out[1], wl_spectrace, wl_out[length(wl_out)])
-      if (!any(is.na(y))) {
-        pracma::pchip(wl, y, wl_out)
-      } else {
-        rep(NA, length(wl_out))
-      }
-    }
-    irr_interp <- t(apply(irr_data, 1, interp_fun))
+    irr_interp = signal::pchip(x, y, x_out)
   }
   else if(interp_method == "linear"){
-    zeros = rep(0, nrow(irr_data))
-    wl_spectrace <- c(
-      380, 410, 435, 460, 485, 510, 535, 560,
-      585, 610, 645, 680, 705, 730, 775
-    )
-    y = as.numeric(t(cbind(zeros, irr_data, zeros)))
-    x = rep(wl_spectrace, nrow(irr_data)) +
-      as.numeric(t(matrix(
-        rep(seq(0, 400*(nrow(irr_data)-1), 400), length(wl_spectrace)),
-        ncol = length(wl_spectrace))))
-    x_out = seq(380,775+400*(nrow(irr_data)-1),5)
     irr_interp = approx(x, y, x_out, method = "linear", rule = 2)[[2]]
-    irr_interp = t(matrix(irr_interp, ncol = nrow(irr_data)))
-    irr_interp = cbind(irr_interp, zeros)
   }
   else{
     stop("Wrong interpolation method!")
   }
+
+  # Reshape vector to matrix
+  irr_interp = t(matrix(irr_interp, ncol = nrow(irr_data)))
+  irr_interp = cbind(irr_interp, zeros)
   irr_interp[irr_interp < 0] <- 0
 
   # Calculate photopic illuminance
