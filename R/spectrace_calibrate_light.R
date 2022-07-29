@@ -14,11 +14,12 @@
 #'
 #' @examples
 spectrace_calibrate_light <- function(lightData, cal_data = NULL) {
+  #Check whether custom calibration data provided
   if (is.null(cal_data)) {
     cal_data <- calibration
   }
 
-  # Stop if column names do not match
+  # Stop if column names of calibration data do not match
   col_names <- c(
     "serial", "lux", "410nm", "435nm",
     "460nm", "485nm", "510nm", "535nm",
@@ -29,14 +30,14 @@ spectrace_calibrate_light <- function(lightData, cal_data = NULL) {
     stop("Calibration file columns are not correct!")
   }
 
+  # Get calibration factors
   cal_factors = cal_data %>%
     dplyr::select(!"760nm") %>%
     dplyr::rename_at(dplyr::vars(lux, "410nm":"730nm"),
                      ~paste0("c",.x, "_factor"))
 
-  lightData.cal = lightData %>%
-    dplyr::rename_at(dplyr::vars("410nm":"730nm"),
-                     ~paste0("c",.x)) %>%
+  lightData = lightData %>%
+    dplyr::rename_at(dplyr::vars("410nm":"730nm"), ~paste0("c",.x)) %>%
     dplyr::left_join(cal_factors, by = c("serial")) %>%
     dplyr::mutate(lux = lux / clux_factor,
                   "410nm" = c410nm / c410nm_factor,
@@ -55,5 +56,5 @@ spectrace_calibrate_light <- function(lightData, cal_data = NULL) {
                   ) %>%
     dplyr::select(!c410nm:c730nm_factor)
 
-  return(lightData.cal)
+  return(lightData)
 }

@@ -103,10 +103,7 @@ spectrace_aopic <- function(lightData, interp_method = "pchip") {
   )
 
   # Return data frame
-  lightData.out <- lightData %>%
-    dplyr::select(serial:uv) %>%
+  lightData %>%
+    dplyr::select(!c("410nm":"730nm")) %>%
     tibble::add_column(cData)
-
-  # Return
-  return(lightData.out)
 }
