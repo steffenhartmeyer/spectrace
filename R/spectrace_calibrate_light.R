@@ -8,6 +8,8 @@
 #'    following columns: "serial", "lux", "410nm", "435nm", "460nm", "485nm",
 #'    "510nm", "535nm","560nm", "585nm", "610nm", "645nm", "680nm", "705nm",
 #'    "730nm", "760nm".
+#' @param uv_correction Logical. Should calibration factors be corrected for
+#'    high gain when UV > 9? Correction factor is 3.5.
 #'
 #' @return Data frame with calibrated data. Columns >730nm are removed.
 #' @export
@@ -36,9 +38,6 @@ spectrace_calibrate_light <- function(lightData, cal_data = NULL, uv_correction 
     dplyr::rename_at(dplyr::vars(lux, "410nm":"730nm"),
                      ~paste0("c",.x, "_factor"))
 
-  # UV gain correction factor
-  uv_factor = 3.5
-
   # Calibrate light data
   lightData = lightData %>%
     dplyr::select(!c("760nm":"940nm")) %>%
@@ -59,9 +58,15 @@ spectrace_calibrate_light <- function(lightData, cal_data = NULL, uv_correction 
                   "705nm" = c705nm / c705nm_factor,
                   "730nm" = c730nm / c730nm_factor
                   ) %>%
-    dplyr::mutate_at(dplyr::vars("410nm":"730nm"),
-                     ~ifelse(uv > 9, .x * uv_factor, .x)) %>%
     dplyr::select(!c410nm:c730nm_factor)
+
+  # UV gain correction
+  uv_factor = 3.5
+  if(uv_correction){
+    lightData = lightData %>%
+      dplyr::mutate_at(dplyr::vars("410nm":"730nm"),
+                       ~ifelse(uv > 9, .x * uv_factor, .x))
+  }
 
   return(lightData)
 }

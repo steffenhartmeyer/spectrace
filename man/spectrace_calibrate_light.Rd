@@ -4,7 +4,7 @@
 \alias{spectrace_calibrate_light}
 \title{Calibrate raw spectrace data}
 \usage{
-spectrace_calibrate_light(lightData, cal_data = NULL)
+spectrace_calibrate_light(lightData, cal_data = NULL, uv_correction = TRUE)
 }
 \arguments{
 \item{lightData}{Data frame with light data.}
@@ -13,6 +13,9 @@ spectrace_calibrate_light(lightData, cal_data = NULL)
 following columns: "serial", "lux", "410nm", "435nm", "460nm", "485nm",
 "510nm", "535nm","560nm", "585nm", "610nm", "645nm", "680nm", "705nm",
 "730nm", "760nm".}
+
+\item{uv_correction}{Logical. Should calibration factors be corrected for
+high gain when UV > 9? Correction factor is 3.5.}
 }
 \value{
 Data frame with calibrated data. Columns >730nm are removed.
