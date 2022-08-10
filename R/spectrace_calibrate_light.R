@@ -13,7 +13,7 @@
 #' @export
 #'
 #' @examples
-spectrace_calibrate_light <- function(lightData, cal_data = NULL) {
+spectrace_calibrate_light <- function(lightData, cal_data = NULL, uv_correction = TRUE) {
   #Check whether custom calibration data provided
   if (is.null(cal_data)) {
     cal_data <- calibration
@@ -36,6 +36,10 @@ spectrace_calibrate_light <- function(lightData, cal_data = NULL) {
     dplyr::rename_at(dplyr::vars(lux, "410nm":"730nm"),
                      ~paste0("c",.x, "_factor"))
 
+  # UV gain correction factor
+  uv_factor = 3.5
+
+  # Calibrate light data
   lightData = lightData %>%
     dplyr::select(!c("760nm":"940nm")) %>%
     dplyr::rename_at(dplyr::vars("410nm":"730nm"), ~paste0("c",.x)) %>%
@@ -55,6 +59,8 @@ spectrace_calibrate_light <- function(lightData, cal_data = NULL) {
                   "705nm" = c705nm / c705nm_factor,
                   "730nm" = c730nm / c730nm_factor
                   ) %>%
+    dplyr::mutate_at(dplyr::vars("410nm":"730nm"),
+                     ~ifelse(uv > 9, .x * uv_factor, .x)) %>%
     dplyr::select(!c410nm:c730nm_factor)
 
   return(lightData)
