@@ -11,7 +11,8 @@
 #' @param gain_correction Logical. Should calibration factors be corrected for
 #'    high gain when UV > 9? Defaults to TRUE.
 #'
-#' @return Data frame with calibrated data. Columns >730nm are removed.
+#' @return Data frame with calibrated spectral irradiance data in W/m2 (Watts
+#'    per square-meter). Columns >730nm are removed.
 #' @export
 #'
 #' @examples
