@@ -78,7 +78,7 @@ spectrace_aopic <- function(lightData,
     tibble::add_column(cData)
 
   # Return data frame
-  if (keep_spectral) {
+  if (keep_spectral_data) {
     return(lightData)
   } else {
     return(dplyr::select(lightData, !c("410nm":"730nm")))
