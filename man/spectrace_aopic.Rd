@@ -4,21 +4,26 @@
 \alias{spectrace_aopic}
 \title{Calculate alpha-opic quantities from raw spectrace data}
 \usage{
-spectrace_aopic(lightData, interp_method = "pchip", keep_spectral = TRUE)
+spectrace_aopic(
+  lightData,
+  interp_method = c("pchip", "linear"),
+  keep_spectral_data = TRUE
+)
 }
 \arguments{
-\item{lightData}{Data frame containing the calibrated light data
-for the channels from 410nm to 730nm.}
+\item{lightData}{Data frame containing the calibrated light data.}
 
-\item{interp_method}{Method for interpolation. Can be "pchip" (default) or
-"linear". Linear interpolation is considerably faster than pchip.}
+\item{interp_method}{Method for interpolation. Can be "pchip" (smooth
+piecewise hermetic interpolation) or "linear". Defaults to "pchip".}
 
-\item{keep_spectral}{Logical. Should the spectral irradiance columns be kept?
+\item{keep_spectral_data}{Logical. Should the spectral irradiance columns be kept?
 Defaults to TRUE.}
 }
 \value{
-Data frame with illuminance, alpha-opic irradiances, alpha-opic EDI,
-alpha-opic ELR, alpha-opic DER, and CCT.
+Data frame extended with values for illuminance, alpha-opic irradiances,
+   alpha-opic EDI, alpha-opic ELR, alpha-opic DER, and CCT.
+   If \code{keep_spectral_data} is FALSE then the spectral data columns will be
+   removed from the original data frame.
 }
 \description{
 This function calculates photopic and alpha-opic quantities as defined in the

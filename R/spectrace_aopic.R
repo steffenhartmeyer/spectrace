@@ -6,51 +6,34 @@
 #' interpolated to 5nm resolution. CCT is calculated
 #' with McCamy's approximation.
 #'
-#' @param lightData Data frame containing the calibrated light data
-#'    for the channels from 410nm to 730nm.
-#' @param interp_method Method for interpolation. Can be "pchip" (default) or
-#'    "linear". Linear interpolation is considerably faster than pchip.
-#' @param keep_spectral Logical. Should the spectral irradiance columns be kept?
+#' @param lightData Data frame containing the calibrated light data.
+#' @param interp_method Method for interpolation. Can be "pchip" (smooth
+#'    piecewise hermetic interpolation) or "linear". Defaults to "pchip".
+#' @param keep_spectral_data Logical. Should the spectral irradiance columns be kept?
 #'    Defaults to TRUE.
 #'
-#' @return Data frame with illuminance, alpha-opic irradiances, alpha-opic EDI,
-#' alpha-opic ELR, alpha-opic DER, and CCT.
+#' @return Data frame extended with values for illuminance, alpha-opic irradiances,
+#'    alpha-opic EDI, alpha-opic ELR, alpha-opic DER, and CCT.
+#'    If \code{keep_spectral_data} is FALSE then the spectral data columns will be
+#'    removed from the original data frame.
 #' @export
 #'
 #' @examples
-spectrace_aopic <- function(lightData, interp_method = "pchip", keep_spectral = TRUE) {
+spectrace_aopic <- function(lightData,
+                            interp_method = c("pchip", "linear"),
+                            keep_spectral_data = TRUE) {
 
-  # Irradiance data
-  irr_data <- lightData %>%
-    dplyr::select("410nm":"730nm") %>%
+  # Match arguments
+  interp_method <- match.arg(interp_method)
+
+  # Interpolate data
+  irr_interp <- lightData %>%
+    spectrace_interpolate_spectra(
+      resolution = "5nm",
+      interp_method = interp_method
+    ) %>%
+    dplyr::select("380nm":"780nm") %>%
     as.matrix()
-
-  # Reshape matrix to single vector
-  wl <- c(380, 410, 435, 460, 485, 510, 535, 560,
-          585, 610, 645, 680, 705, 730, 775)
-  zeros = rep(0, nrow(irr_data))
-  y = as.numeric(t(cbind(zeros, irr_data, zeros)))
-  x = rep(wl, nrow(irr_data)) +
-    as.numeric(t(matrix(
-      rep(seq(0, 400*(nrow(irr_data)-1), 400), length(wl)),
-      ncol = length(wl))))
-  x_out = seq(380,775+400*(nrow(irr_data)-1),5)
-
-  # Interpolate to 5nm resolution
-  if(interp_method == "pchip"){
-    irr_interp = signal::pchip(x, y, x_out)
-  }
-  else if(interp_method == "linear"){
-    irr_interp = approx(x, y, x_out, method = "linear", rule = 2)[[2]]
-  }
-  else{
-    stop("Wrong interpolation method!")
-  }
-
-  # Reshape vector to matrix
-  irr_interp = t(matrix(irr_interp, ncol = nrow(irr_data)))
-  irr_interp = cbind(irr_interp, zeros)
-  irr_interp[irr_interp < 0] <- 0
 
   # Calculate photopic illuminance
   ill <- as.numeric((irr_interp %*% as.numeric(cmf$y)) * 683 * 5)
@@ -91,14 +74,13 @@ spectrace_aopic <- function(lightData, interp_method = "pchip", keep_spectral = 
   )
 
   # Add to data
-  lightData = lightData %>%
+  lightData <- lightData %>%
     tibble::add_column(cData)
 
   # Return data frame
-  if(keep_spectral){
+  if (keep_spectral) {
     return(lightData)
-  }
-  else{
+  } else {
     return(dplyr::select(lightData, !c("410nm":"730nm")))
   }
 }

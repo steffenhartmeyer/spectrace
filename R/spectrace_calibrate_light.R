@@ -8,15 +8,17 @@
 #'    following columns: "serial", "lux", "410nm", "435nm", "460nm", "485nm",
 #'    "510nm", "535nm","560nm", "585nm", "610nm", "645nm", "680nm", "705nm",
 #'    "730nm", "760nm".
-#' @param uv_correction Logical. Should calibration factors be corrected for
-#'    high gain when UV > 9? Correction factor is 3.5.
+#' @param gain_correction Logical. Should calibration factors be corrected for
+#'    high gain when UV > 9? Defaults to TRUE.
 #'
 #' @return Data frame with calibrated data. Columns >730nm are removed.
 #' @export
 #'
 #' @examples
-spectrace_calibrate_light <- function(lightData, cal_data = NULL, uv_correction = TRUE) {
-  #Check whether custom calibration data provided
+spectrace_calibrate_light <- function(lightData,
+                                      cal_data = NULL,
+                                      gain_correction = TRUE) {
+  # Check whether custom calibration data provided
   if (is.null(cal_data)) {
     cal_data <- calibration
   }
@@ -33,39 +35,44 @@ spectrace_calibrate_light <- function(lightData, cal_data = NULL, uv_correction 
   }
 
   # Get calibration factors
-  cal_factors = cal_data %>%
+  cal_factors <- cal_data %>%
     dplyr::select(!"760nm") %>%
-    dplyr::rename_at(dplyr::vars(lux, "410nm":"730nm"),
-                     ~paste0("c",.x, "_factor"))
+    dplyr::rename_at(
+      dplyr::vars(lux, "410nm":"730nm"),
+      ~ paste0("c", .x, "_factor")
+    )
 
   # Calibrate light data
-  lightData = lightData %>%
+  lightData <- lightData %>%
     dplyr::select(!c("760nm":"940nm")) %>%
-    dplyr::rename_at(dplyr::vars("410nm":"730nm"), ~paste0("c",.x)) %>%
+    dplyr::rename_at(dplyr::vars("410nm":"730nm"), ~ paste0("c", .x)) %>%
     dplyr::left_join(cal_factors, by = c("serial")) %>%
-    dplyr::mutate(lux = lux / clux_factor,
-                  "410nm" = c410nm / c410nm_factor,
-                  "435nm" = c435nm / c435nm_factor,
-                  "460nm" = c460nm / c460nm_factor,
-                  "485nm" = c485nm / c585nm_factor,
-                  "510nm" = c510nm / c510nm_factor,
-                  "535nm" = c535nm / c535nm_factor,
-                  "560nm" = c560nm / c560nm_factor,
-                  "585nm" = c585nm / c585nm_factor,
-                  "610nm" = c610nm / c610nm_factor,
-                  "645nm" = c645nm / c645nm_factor,
-                  "680nm" = c680nm / c680nm_factor,
-                  "705nm" = c705nm / c705nm_factor,
-                  "730nm" = c730nm / c730nm_factor
-                  ) %>%
+    dplyr::mutate(
+      lux = lux / clux_factor,
+      "410nm" = c410nm / c410nm_factor,
+      "435nm" = c435nm / c435nm_factor,
+      "460nm" = c460nm / c460nm_factor,
+      "485nm" = c485nm / c585nm_factor,
+      "510nm" = c510nm / c510nm_factor,
+      "535nm" = c535nm / c535nm_factor,
+      "560nm" = c560nm / c560nm_factor,
+      "585nm" = c585nm / c585nm_factor,
+      "610nm" = c610nm / c610nm_factor,
+      "645nm" = c645nm / c645nm_factor,
+      "680nm" = c680nm / c680nm_factor,
+      "705nm" = c705nm / c705nm_factor,
+      "730nm" = c730nm / c730nm_factor
+    ) %>%
     dplyr::select(!c410nm:c730nm_factor)
 
   # UV gain correction
-  uv_factor = 3.5
-  if(uv_correction){
-    lightData = lightData %>%
-      dplyr::mutate_at(dplyr::vars("410nm":"730nm"),
-                       ~ifelse(uv > 9, .x * uv_factor, .x))
+  uv_factor <- 3.5
+  if (gain_correction) {
+    lightData <- lightData %>%
+      dplyr::mutate_at(
+        dplyr::vars("410nm":"730nm"),
+        ~ ifelse(uv > 9, .x * uv_factor, .x)
+      )
   }
 
   return(lightData)

@@ -15,7 +15,7 @@
 #'    "730nm", "760nm". If not provided, the stored calibration data
 #'    will be used (default).
 #' @param interp_method Method for interpolation. Can be "pchip" (default) or
-#'    "linear". Linear interpolation is considerably faster than pchip.
+#'    "linear".
 #'
 #' @return Data frame.
 #' @export
@@ -25,7 +25,11 @@ spectrace_import_aopic <- function(lightFile,
                                    tz,
                                    serial_number = NULL,
                                    cal_data = NULL,
-                                   interp_method = "pchip") {
+                                   interp_method = c("pchip", "linear")) {
+  # Match arguments
+  interp_method <- match.arg(interp_method)
+
+  # Import and calibrate data, and calculate alpha-opic values
   df_raw <- spectrace_import_light(lightFile, tz, serial_number)
   df_cal <- spectrace_calibrate_light(df_raw, cal_data)
   df_aopic <- spectrace_aopic(df_cal, interp_method)

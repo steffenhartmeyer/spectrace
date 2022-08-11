@@ -1,7 +1,7 @@
 Type: Package
 Package: spectrace
 Title: Functions for importing and processing raw Spectrace output
-Version: 0.1.0
+Version: 0.3.0
 Author: Steffen Hartmeyer, Forrest Webler
 Maintainer: Steffen Hartmeyer <steffen.hartmeyer@epfl.ch>
 Description: This package provides functions for importing the raw CSV

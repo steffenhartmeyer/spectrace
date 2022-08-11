@@ -4,14 +4,20 @@
 \alias{spectrace_interpolate_spectra}
 \title{Interpolate spectral data}
 \usage{
-spectrace_interpolate_spectra(lightData, interp_method = "pchip")
+spectrace_interpolate_spectra(
+  lightData,
+  resolution = c("5nm", "1nm"),
+  interp_method = c("pchip", "linear")
+)
 }
 \arguments{
 \item{lightData}{Data frame containing the calibrated light data
 for the channels from 410nm to 730nm.}
 
+\item{resolution}{Integer. Resolution of the}
+
 \item{interp_method}{Method for interpolation. Can be "pchip" (default) or
-"linear". Linear interpolation is considerably faster than pchip.}
+"linear".}
 }
 \value{
 Data frame with illuminance, alpha-opic irradiances, alpha-opic EDI,

@@ -9,7 +9,7 @@ spectrace_import_aopic(
   tz,
   serial_number = NULL,
   cal_data = NULL,
-  interp_method = "pchip"
+  interp_method = c("pchip", "linear")
 )
 }
 \arguments{
@@ -27,7 +27,7 @@ following columns: "serial", "lux", "410nm", "435nm", "460nm", "485nm",
 will be used (default).}
 
 \item{interp_method}{Method for interpolation. Can be "pchip" (default) or
-"linear". Linear interpolation is considerably faster than pchip.}
+"linear".}
 }
 \value{
 Data frame.
