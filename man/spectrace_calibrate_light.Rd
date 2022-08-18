@@ -18,7 +18,8 @@ following columns: "serial", "lux", "410nm", "435nm", "460nm", "485nm",
 high gain when UV > 9? Defaults to TRUE.}
 }
 \value{
-Data frame with calibrated data. Columns >730nm are removed.
+Data frame with calibrated spectral irradiance data in W/m2 (Watts
+   per square-meter). Columns >730nm are removed.
 }
 \description{
 This function calibrates the raw light data of the spectrace sensors based
