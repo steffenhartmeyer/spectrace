@@ -27,23 +27,22 @@ spectrace_import_light <- function(lightFile,
   # Check type of file (including header or not)
   if (header$X1[1] == "SERIAL") {
     serial_number <- header$X2[1]
-    lightData <- readr::read_csv(
+    lightData <- read.csv(
       lightFile,
       skip = 5,
-      col_types = readr::cols(.default = "d"),
-      col_names = FALSE
+      header = FALSE,
+      col.names = paste0("X", 1:24)
     )
   } else {
     # Check whether serial number available
     if (is.null(serial_number)) {
       stop("No serial number specified!")
     }
-    lightData <-
-      readr::read_csv(
-        lightFile,
-        col_names = FALSE,
-        col_types = readr::cols(.default = "d")
-      )
+    lightData <- read.csv(
+      lightFile,
+      header = FALSE,
+      col.names = paste0("X", 1:24)
+    )
   }
 
   # Data column names
@@ -54,27 +53,23 @@ spectrace_import_light <- function(lightFile,
   )
 
   # Fix issue when decimal separator is a comma
-  if (ncol(lightData) == 23) {
-    names(lightData) <- col_names
-  } else {
-    # Incorrect data are when lux is not an integer
-    # (ch0 holds now the fraction of lux, ch1 holds ch2 etc. -> 24 columns)
-    lightData.incorrect <- lightData %>%
-      dplyr::filter(!is.na(X24)) %>%
-      dplyr::mutate(X2 = as.numeric(paste(X2, X3, sep = "."))) %>%
-      dplyr::select(!X3)
-    names(lightData.incorrect) <- col_names
+  # Incorrect data are when lux is not an integer
+  # (ch0 holds now the fraction of lux, ch1 holds ch2 etc. -> 24 columns)
+  lightData.incorrect <- lightData %>%
+    dplyr::filter(!is.na(X24)) %>%
+    dplyr::mutate(X2 = as.numeric(paste(X2, X3, sep = "."))) %>%
+    dplyr::select(!X3)
+  names(lightData.incorrect) <- col_names
 
-    # Correct data are when lux is an integer
-    lightData.correct <- lightData %>%
-      dplyr::filter(is.na(X24)) %>%
-      dplyr::select(!X24)
-    names(lightData.correct) <- col_names
+  # Correct data are when lux is an integer
+  lightData.correct <- lightData %>%
+    dplyr::filter(is.na(X24)) %>%
+    dplyr::select(!X24)
+  names(lightData.correct) <- col_names
 
-    # Combine data
-    lightData <- dplyr::bind_rows(lightData.incorrect, lightData.correct) %>%
-      dplyr::arrange(unix)
-  }
+  # Combine data
+  lightData <- dplyr::bind_rows(lightData.incorrect, lightData.correct) %>%
+    dplyr::arrange(unix)
 
   # Add datetime and serial number
   lightData <-
