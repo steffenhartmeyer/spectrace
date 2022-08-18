@@ -63,16 +63,16 @@ spectrace_import_light <- function(lightFile,
       dplyr::filter(!is.na(X24)) %>%
       dplyr::mutate(X2 = as.numeric(paste(X2, X3, sep = "."))) %>%
       dplyr::select(!X3)
-    names(lightData.pos) <- col_names
+    names(lightData.incorrect) <- col_names
 
     # Correct data are when lux is an integer
     lightData.correct <- lightData %>%
       dplyr::filter(is.na(X24)) %>%
       dplyr::select(!X24)
-    names(lightData.neg) <- col_names
+    names(lightData.correct) <- col_names
 
     # Combine data
-    lightData <- dplyr::bind_rows(lightData.pos, lightData.neg) %>%
+    lightData <- dplyr::bind_rows(lightData.incorrect, lightData.correct) %>%
       dplyr::arrange(unix)
   }
 
