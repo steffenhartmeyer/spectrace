@@ -29,7 +29,7 @@ spectrace_import_battery <- function(batteryFile, tz, serial_number = NULL) {
       batteryFile,
       skip = 5,
       header = FALSE,
-    ) %>% select(c(1,4))
+    ) %>% select(c(1:4))
   } else {
     # Check whether serial number available
     if (is.null(serial_number)) {
@@ -38,7 +38,7 @@ spectrace_import_battery <- function(batteryFile, tz, serial_number = NULL) {
     batData <- read.csv(
       batteryFile,
       header = FALSE
-    ) %>% select(c(1,4))
+    ) %>% select(c(1:4))
   }
 
   col_names <- c("unix", "voltage", "percent", "is_charging")
