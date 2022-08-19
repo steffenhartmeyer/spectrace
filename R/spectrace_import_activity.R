@@ -25,24 +25,24 @@ spectrace_import_activity <- function(actFile, tz, serial_number = NULL) {
   # Check type of file (including header or not)
   if (header$X1[1] == "SERIAL") {
     serial_number <- header$X2[1]
-    actData <- readr::read_csv(
+    actData <- read.csv(
       actFile,
-      skip = 4,
-      col_types = readr::cols(.default = "d")
-    )
+      skip = 5,
+      header = FALSE,
+    ) %>% select(c(1,2))
   } else {
     # Check whether serial number available
     if (is.null(serial_number)) {
       stop("No serial number specified!")
     }
-    col_names <- c("unix", "activity")
-    actData <-
-      readr::read_csv(
-        actFile,
-        col_names = col_names,
-        col_types = readr::cols(.default = "d")
-      )
+    actData <- read.csv(
+      actFile,
+      header = FALSE
+    ) %>% select(c(1,2))
   }
+
+  col_names <- c("unix", "activity")
+  names(actData) = col_names
 
   actData <-
     actData %>%

@@ -25,24 +25,24 @@ spectrace_import_battery <- function(batteryFile, tz, serial_number = NULL) {
   # Check type of file (including header or not)
   if (header$X1[1] == "SERIAL") {
     serial_number <- header$X2[1]
-    batData <- readr::read_csv(
+    batData <- read.csv(
       batteryFile,
-      skip = 4,
-      col_types = readr::cols(.default = "d")
-    )
+      skip = 5,
+      header = FALSE,
+    ) %>% select(c(1,4))
   } else {
     # Check whether serial number available
     if (is.null(serial_number)) {
       stop("No serial number specified!")
     }
-    col_names <- c("unix", "voltage", "charge", "flags")
-    batData <-
-      readr::read_csv(
-        batteryFile,
-        col_names = col_names,
-        col_types = readr::cols(.default = "d")
-      )
+    batData <- read.csv(
+      batteryFile,
+      header = FALSE
+    ) %>% select(c(1,4))
   }
+
+  col_names <- c("unix", "voltage", "percent", "is_charging")
+  names(batData) = col_names
 
   batData <-
     batData %>%
