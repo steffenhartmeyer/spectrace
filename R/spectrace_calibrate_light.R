@@ -46,7 +46,7 @@ spectrace_calibrate_light <- function(lightData,
   cal_factors <- cal_data %>%
     dplyr::add_row(calibration_avg) %>%
     dplyr::mutate(cal_serial = serial) %>%
-    dplyr::select(!c("760nm", cal_serial)) %>%
+    dplyr::select(!c("760nm", serial)) %>%
     dplyr::rename_at(
       dplyr::vars(lux, "410nm":"730nm"),
       ~ paste0("c", .x, "_factor")
