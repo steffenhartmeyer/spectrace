@@ -12,7 +12,7 @@
 #' @export
 #'
 #' @examples
-spectrace_import_battery <- function(batteryFile, tz, serial_number = NULL) {
+spectrace_import_battery <- function(batteryFile, tz, serial_number = NA) {
 
   # Get header
   header <- readr::read_csv(
@@ -32,8 +32,8 @@ spectrace_import_battery <- function(batteryFile, tz, serial_number = NULL) {
     ) %>% select(c(1:4))
   } else {
     # Check whether serial number available
-    if (is.null(serial_number)) {
-      stop("No serial number specified!")
+    if (is.na(serial_number)) {
+      warning("No serial number specified!")
     }
     batData <- read.csv(
       batteryFile,

@@ -12,9 +12,7 @@
 #' @export
 #'
 #' @examples
-spectrace_import_light <- function(lightFile,
-                                   tz,
-                                   serial_number = NULL) {
+spectrace_import_light <- function(lightFile, tz, serial_number = NA) {
 
   # Get header
   header <- readr::read_csv(
@@ -35,8 +33,8 @@ spectrace_import_light <- function(lightFile,
     )
   } else {
     # Check whether serial number available
-    if (is.null(serial_number)) {
-      stop("No serial number specified!")
+    if (is.na(serial_number)) {
+      warning("No serial number specified!")
     }
     lightData <- read.csv(
       lightFile,
