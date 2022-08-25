@@ -38,8 +38,9 @@ spectrace_calibrate_light <- function(lightData,
   # Serials without calibration data
   no_serial = setdiff(unique(lightData$serial), unique(cal_data$serial))
   if(length(no_serial) > 0){
-    warning(sprintf("For %d serial numbers no calibration data exists. Average calibration data is used for the following serials:\n%s",
-                    length(no_serial), paste0(no_serial, collapse = "\n")))
+    warning(sprintf(
+      "For %d serial numbers no calibration data exists.\nAverage calibration data is used for the following serials:\n%s",
+      length(no_serial), paste0(no_serial, collapse = "\n")))
   }
 
   # Get calibration factors
