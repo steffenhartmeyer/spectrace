@@ -43,7 +43,7 @@ spectra_to_spectrace = function(spectralData,
   wl = as.numeric(gsub("nm", "", colnames(spectra)))
 
   # Concolve with Spectrace responses
-  responses.spectra = as.matrix(spectrace.responses) %>%
+  responses.spectra = as.matrix(spectrace_responses) %>%
     apply(2, function(x) spectra %*% as.numeric(x)) %>%
     apply(1, function(x) x / max(x)) %>%
     t() %>%
