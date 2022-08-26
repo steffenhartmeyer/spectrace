@@ -75,6 +75,7 @@ spectrace_calibrate_light <- function(lightData,
       "705nm" = c705nm / c705nm_factor,
       "730nm" = c730nm / c730nm_factor
     ) %>%
+    dplyr::mutate(device_cal = ifelse(cal_serial == "Unknown", 0, 1)) %>%
     dplyr::select(!c410nm:c730nm_factor)
 
   # UV gain correction
