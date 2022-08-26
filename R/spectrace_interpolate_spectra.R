@@ -1,16 +1,18 @@
 #' Interpolate spectral data
 #'
-#' This function interpolates Spectrace's spectral irradiance output to 5nm
-#' resolution.
+#' This function interpolates Spectrace's spectral irradiance output to visible
+#' range (380-780nm) with 1nm or 5nm resolution.
 #'
 #' @param lightData Data frame containing the calibrated light data
-#'    for the channels from 410nm to 730nm.
-#' @param resolution Integer. Resolution of the
-#' @param interp_method Method for interpolation. Can be "pchip" (default) or
-#'    "linear".
+#'    for the channels from 410nm to 730nm. Additional variables are allowed.
+#' @param resolution String specifying the resolution of the output
+#'    spectrum. Can be "5nm" (default) or "1nm".
+#' @param interp_method The interpolation method. Can be either "pchip" (default)
+#'    or "linear". Pchip (piecewise cubic hermetic interpolation) results in a
+#'    smooth spectrum while preserving the source values as local minima/maxima.
 #'
-#' @return Data frame with illuminance, alpha-opic irradiances, alpha-opic EDI,
-#' alpha-opic ELR, alpha-opic DER, and CCT.
+#' @return The original data frame with the spectral data replaced by the
+#'    interpolated spectral data.
 #' @export
 #'
 #' @examples
