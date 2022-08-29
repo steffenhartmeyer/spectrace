@@ -42,8 +42,19 @@ spectra_to_spectrace = function(spectralData,
   # Get wavelengths
   wl = as.numeric(gsub("nm", "", colnames(spectra)))
 
+  # Get resolution
+  resolution = paste0(wl[2] - wl[1], "nm")
+  if(!(resolution %in% c("1nm", "5nm"))){
+    stop("Spectral data has wrong resolution. Must be either 1nm or 5nm!")
+  }
+
+  # Choose spectrace responses in matching resolution
+  spectrace_responses = switch(resolution,
+                               "1nm" = spectrace_responses_1nm,
+                               "5nm" = spectrace_responses_5nm)
+
   # Concolve with Spectrace responses
-  responses.spectra = as.matrix(spectrace_responses) %>%
+  responses.spectra = spectrace_responses %>%
     apply(2, function(x) spectra %*% as.numeric(x)) %>%
     apply(1, function(x) x / max(x)) %>%
     t() %>%
@@ -52,7 +63,7 @@ spectra_to_spectrace = function(spectralData,
   # Interpolate to desired resolution
   if(output_resolution != "spectrace"){
     if(output_resolution == "original"){
-      output_resolution = paste0(wl[2] - wl[1], "nm")
+      output_resolution = resolution
     }
     responses.spectra = responses.spectra %>%
       spectrace_interpolate_spectra(resolution = output_resolution,
