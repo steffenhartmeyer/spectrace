@@ -4,7 +4,7 @@
 \alias{spectrace_import_light}
 \title{Import raw spectrace light data}
 \usage{
-spectrace_import_light(lightFile, tz, serial_number = NULL)
+spectrace_import_light(lightFile, tz, serial_number = NA)
 }
 \arguments{
 \item{lightFile}{Path to the file containing the light data.}

@@ -4,7 +4,7 @@
 \alias{spectrace_import_battery}
 \title{Import raw spectrace battery data}
 \usage{
-spectrace_import_battery(batteryFile, tz, serial_number = NULL)
+spectrace_import_battery(batteryFile, tz, serial_number = NA)
 }
 \arguments{
 \item{batteryFile}{Path to the file containing the battery data.}
