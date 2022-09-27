@@ -11,7 +11,9 @@
 #'    or "linear". Pchip (piecewise cubic hermetic interpolation) results in a
 #'    smooth spectrum while preserving the source values as local minima/maxima.
 #' @param normalize Logical. Should the interpolated spectrum be normalized to
-#'    peak = 1?
+#'    peak = 1? Defaults to FALSE.
+#' @param as_vector Logical. Should the interpolated spectrum be returned as a
+#'    vector? Defaults to FALSE.
 #'
 #' @return The original data frame with the spectral data replaced by the
 #'    interpolated spectral data.
@@ -21,7 +23,8 @@
 spectrace_interpolate_spectra <- function(lightData,
                                           resolution = c("5nm", "1nm"),
                                           interp_method = c("pchip", "linear"),
-                                          normalize = FALSE) {
+                                          normalize = FALSE,
+                                          as_vector = FALSE) {
 
   # Match arguments
   resolution <- match.arg(resolution)
@@ -71,10 +74,18 @@ spectrace_interpolate_spectra <- function(lightData,
     irr_interp <- irr_interp / apply(irr_interp, 1, max)
   }
 
-  irr_interp <- data.frame(irr_interp)
-  names(irr_interp) <- paste0(seq(380, 780, reso.num), "nm")
+  if(as_vector){
+    irr_interp = lapply(seq_len(nrow(irr_interp)), function(i) irr_interp[i,])
+    spectra = data.frame(idx = 1:length(irr_interp))
+    spectra$spectrum = irr_interp
+    spectra = dplyr::select(spectra, spectrum)
+  }
+  else{
+    spectra <- data.frame(irr_interp)
+    names(spectra) <- paste0(seq(380, 780, reso.num), "nm")
+  }
 
   lightData %>%
     dplyr::select(!c("410nm":"730nm")) %>%
-    tibble::add_column(irr_interp)
+    tibble::add_column(spectra)
 }
