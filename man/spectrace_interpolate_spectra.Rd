@@ -7,7 +7,8 @@
 spectrace_interpolate_spectra(
   lightData,
   resolution = c("5nm", "1nm"),
-  interp_method = c("pchip", "linear")
+  interp_method = c("pchip", "linear"),
+  normalize = FALSE
 )
 }
 \arguments{
@@ -20,6 +21,9 @@ spectrum. Can be "5nm" (default) or "1nm".}
 \item{interp_method}{The interpolation method. Can be either "pchip" (default)
 or "linear". Pchip (piecewise cubic hermetic interpolation) results in a
 smooth spectrum while preserving the source values as local minima/maxima.}
+
+\item{normalize}{Logical. Should the interpolated spectrum be normalized to
+peak = 1?}
 }
 \value{
 The original data frame with the spectral data replaced by the

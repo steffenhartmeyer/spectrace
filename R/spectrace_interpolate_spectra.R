@@ -10,6 +10,8 @@
 #' @param interp_method The interpolation method. Can be either "pchip" (default)
 #'    or "linear". Pchip (piecewise cubic hermetic interpolation) results in a
 #'    smooth spectrum while preserving the source values as local minima/maxima.
+#' @param normalize Logical. Should the interpolated spectrum be normalized to
+#'    peak = 1?
 #'
 #' @return The original data frame with the spectral data replaced by the
 #'    interpolated spectral data.
@@ -18,7 +20,8 @@
 #' @examples
 spectrace_interpolate_spectra <- function(lightData,
                                           resolution = c("5nm", "1nm"),
-                                          interp_method = c("pchip", "linear")) {
+                                          interp_method = c("pchip", "linear"),
+                                          normalize = FALSE) {
 
   # Match arguments
   resolution <- match.arg(resolution)
@@ -63,6 +66,10 @@ spectrace_interpolate_spectra <- function(lightData,
   irr_interp <- t(matrix(irr_interp, ncol = nrow(irr_data)))
   irr_interp <- cbind(irr_interp, zeros)
   irr_interp[irr_interp < 0] <- 0
+
+  if(normalize){
+    irr_interp <- irr_interp / apply(irr_interp, 1, max)
+  }
 
   irr_interp <- data.frame(irr_interp)
   names(irr_interp) <- paste0(seq(380, 780, reso.num), "nm")
