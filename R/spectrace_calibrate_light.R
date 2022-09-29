@@ -36,11 +36,12 @@ spectrace_calibrate_light <- function(lightData,
   }
 
   # Serials without calibration data
-  no_serial = setdiff(unique(lightData$serial), unique(cal_data$serial))
-  if(length(no_serial) > 0){
+  no_serial <- setdiff(unique(lightData$serial), unique(cal_data$serial))
+  if (length(no_serial) > 0) {
     warning(sprintf(
       "For %d serial numbers no calibration data exists!\n  Average calibration data is used for the following serials:\n%s",
-      length(no_serial), paste0("    ", no_serial, collapse = "\n")))
+      length(no_serial), paste0("    ", no_serial, collapse = "\n")
+    ))
   }
 
   # Get calibration factors
@@ -55,7 +56,7 @@ spectrace_calibrate_light <- function(lightData,
 
   # Calibrate light data
   lightData <- lightData %>%
-    dplyr::mutate(cal_serial = ifelse(serial %in% no_serial,"Unknown", serial)) %>%
+    dplyr::mutate(cal_serial = ifelse(serial %in% no_serial, "Unknown", serial)) %>%
     dplyr::select(!c("760nm":"940nm")) %>%
     dplyr::rename_at(dplyr::vars("410nm":"730nm"), ~ paste0("c", .x)) %>%
     dplyr::left_join(cal_factors, by = c("cal_serial")) %>%

@@ -24,54 +24,58 @@
 #' @export
 #'
 #' @examples
-spectra_to_spectrace = function(spectralData,
-                                output_resolution = c("original", "spectrace",
-                                                      "1nm", "5nm"),
-                                interp_method = c("pchip", "linear")
-                                ){
+spectra_to_spectrace <- function(spectralData,
+                                 output_resolution = c(
+                                   "original", "spectrace",
+                                   "1nm", "5nm"
+                                 ),
+                                 interp_method = c("pchip", "linear")) {
 
   # Match arguments
   output_resolution <- match.arg(output_resolution)
   interp_method <- match.arg(interp_method)
 
   # Subset spectral data
-  spectra = spectralData %>%
+  spectra <- spectralData %>%
     dplyr::select("380nm":"780nm") %>%
     as.matrix()
 
   # Get wavelengths
-  wl = as.numeric(gsub("nm", "", colnames(spectra)))
+  wl <- as.numeric(gsub("nm", "", colnames(spectra)))
 
   # Get resolution
-  resolution = paste0(wl[2] - wl[1], "nm")
-  if(!(resolution %in% c("1nm", "5nm"))){
+  resolution <- paste0(wl[2] - wl[1], "nm")
+  if (!(resolution %in% c("1nm", "5nm"))) {
     stop("Spectral data has wrong resolution. Must be either 1nm or 5nm!")
   }
 
   # Choose spectrace responses in matching resolution
-  spectrace_responses = switch(resolution,
-                               "1nm" = spectrace_responses_1nm,
-                               "5nm" = spectrace_responses_5nm)
+  spectrace_responses <- switch(resolution,
+    "1nm" = spectrace_responses_1nm,
+    "5nm" = spectrace_responses_5nm
+  )
 
   # Concolve with Spectrace responses
-  responses.spectra = spectrace_responses %>%
+  responses.spectra <- spectrace_responses %>%
     apply(2, function(x) spectra %*% as.numeric(x)) %>%
     apply(1, function(x) x / max(x)) %>%
     t() %>%
     tibble::as_tibble()
 
   # Interpolate to desired resolution
-  if(output_resolution != "spectrace"){
-    if(output_resolution == "original"){
-      output_resolution = resolution
+  if (output_resolution != "spectrace") {
+    if (output_resolution == "original") {
+      output_resolution <- resolution
     }
-    responses.spectra = responses.spectra %>%
-      spectrace_interpolate_spectra(resolution = output_resolution,
-                                    interp_method = interp_method)
+    responses.spectra <- responses.spectra %>%
+      spectrace_interpolate_spectra(
+        resolution = output_resolution,
+        interp_method = interp_method
+      )
   }
 
   # Add new spectra back into data
-  spectralData = spectralData %>%
+  spectralData <- spectralData %>%
     dplyr::select(!c("380nm":"780nm")) %>%
     tibble::add_column(responses.spectra)
 }

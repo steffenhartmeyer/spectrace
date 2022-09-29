@@ -70,17 +70,16 @@ spectrace_interpolate_spectra <- function(lightData,
   irr_interp <- cbind(irr_interp, zeros)
   irr_interp[irr_interp < 0] <- 0
 
-  if(normalize){
+  if (normalize) {
     irr_interp <- irr_interp / apply(irr_interp, 1, max)
   }
 
-  if(as_vector){
-    irr_interp = lapply(seq_len(nrow(irr_interp)), function(i) irr_interp[i,])
-    spectra = data.frame(idx = 1:length(irr_interp))
-    spectra$spectrum = irr_interp
-    spectra = dplyr::select(spectra, spectrum)
-  }
-  else{
+  if (as_vector) {
+    spectra <- data.frame(idx = 1:nrow(irr_interp))
+    spectra$spectrum <- lapply(seq_len(nrow(irr_interp)), function(i) irr_interp[i, ])
+    spectra$wavelength <- rep(list(seq(380, 780, reso.num)))
+    spectra <- dplyr::select(spectra, spectrum, wavelength)
+  } else {
     spectra <- data.frame(irr_interp)
     names(spectra) <- paste0(seq(380, 780, reso.num), "nm")
   }

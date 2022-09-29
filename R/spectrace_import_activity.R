@@ -29,7 +29,7 @@ spectrace_import_activity <- function(actFile, tz, serial_number = NA) {
       actFile,
       skip = 5,
       header = FALSE,
-    ) %>% select(c(1,2))
+    ) %>% select(c(1, 2))
   } else {
     # Check whether serial number available
     if (is.na(serial_number)) {
@@ -38,11 +38,11 @@ spectrace_import_activity <- function(actFile, tz, serial_number = NA) {
     actData <- read.csv(
       actFile,
       header = FALSE
-    ) %>% select(c(1,2))
+    ) %>% select(c(1, 2))
   }
 
   col_names <- c("unix", "activity")
-  names(actData) = col_names
+  names(actData) <- col_names
 
   actData <-
     actData %>%
