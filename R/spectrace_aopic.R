@@ -20,20 +20,32 @@
 #'
 #' @examples
 spectrace_aopic <- function(lightData,
-                            interp_method = c("pchip", "linear"),
+                            interp_method = c("pchip", "linear", "none"),
                             keep_spectral_data = TRUE) {
 
   # Match arguments
   interp_method <- match.arg(interp_method)
 
-  # Interpolate data
-  irr_interp <- lightData %>%
-    spectrace_interpolate_spectra(
-      resolution = "5nm",
-      interp_method = interp_method
-    ) %>%
-    dplyr::select("380nm":"780nm") %>%
-    as.matrix()
+  if(interp_method != "none"){
+    # Interpolate data
+    irr_interp <- lightData %>%
+      spectrace_interpolate_spectra(
+        resolution = "5nm",
+        interp_method = interp_method
+      ) %>%
+      dplyr::select("380nm":"780nm") %>%
+      as.matrix()
+  }
+  else{
+    cols = paste0(seq(380,780,5), "nm")
+
+    if(!all(cols %in% names(lightData))){
+      stop("Interpolation method is 'none', but data seems not to be interpolated.")
+    }
+    irr_interp <- lightData %>%
+      dplyr::select(cols) %>%
+      as.matrix()
+  }
 
   # Calculate photopic illuminance
   ill <- as.numeric((irr_interp %*% as.numeric(cmf$y)) * 683 * 5)
@@ -81,6 +93,6 @@ spectrace_aopic <- function(lightData,
   if (keep_spectral_data) {
     return(lightData)
   } else {
-    return(dplyr::select(lightData, !c("410nm":"730nm")))
+    return(dplyr::select(lightData, !dplyr::matches("\\d{3}nm")))
   }
 }
