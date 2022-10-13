@@ -11,6 +11,6 @@
 #' @examples
 spectrace_to_long = function(lightData){
   lightData %>%
-    dplyr::gather(wl, val, dplyr::matches("\\d{3}nm")) %>%
+    tidyr::gather(wl, val, dplyr::matches("\\d{3}nm")) %>%
     dplyr::mutate(wl = as.numeric(sub("nm", "", wl)))
 }
