@@ -6,7 +6,7 @@
 #' interpolated to 5nm resolution. CCT is calculated
 #' with McCamy's approximation.
 #'
-#' @param lightData Data frame containing the calibrated light data.
+#' @param lightData Data frame containing the calibrated light data.x = data.
 #' @param interp_method Method for interpolation. Can be "pchip" (smooth
 #'    piecewise hermetic interpolation) or "linear". Defaults to "pchip".
 #' @param keep_spectral_data Logical. Should the spectral irradiance columns be kept?

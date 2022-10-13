@@ -11,7 +11,7 @@ spectrace_aopic(
 )
 }
 \arguments{
-\item{lightData}{Data frame containing the calibrated light data.}
+\item{lightData}{Data frame containing the calibrated light data.x = data.}
 
 \item{interp_method}{Method for interpolation. Can be "pchip" (smooth
 piecewise hermetic interpolation) or "linear". Defaults to "pchip".}
