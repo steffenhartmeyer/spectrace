@@ -1,10 +1,10 @@
 #' Convert spectrum to Spectrace-like spectrum
 #'
-#' This function converts a spectrum to the spectrum as Spectrace would "see" it.
+#' This function converts a spectrum to the normalized spectrum as Spectrace would "see" it.
 #' For this, the original spectrum is convolved with the Spectrace response curves
-#' of each channel. By default the resulting Spectrace spectrum is be interpolated
-#' back to the original spectrum's resolution, but a custom resolution or no
-#' interpolation can be selected as well.
+#' of each channel and then normalized. By default the resulting spectrum is
+#' interpolated back to the original spectrum's resolution, but a custom resolution
+#' or no interpolation can be selected as well.
 #'
 #' @param spectralData Data frame containing the spectral data in reach row with
 #'    wavelength as column names (e.g. "380nm", "385nm", ..., "780nm"). The
@@ -20,7 +20,7 @@
 #'    Will be ignored if \code{output_resolution} is "spectrace".
 #'
 #' @return The original data frame with the spectral data replaced by the new
-#'    spectral data.
+#'    spectral data (normalized).
 #' @export
 #'
 #' @examples
