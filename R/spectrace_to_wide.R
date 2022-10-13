@@ -2,7 +2,9 @@
 #'
 #' Reshapes spectral data from long to wide format, with one column per wavelength.
 #'
-#' @param lightData
+#' @param lightData Data frame with light data. Must contain one column with the
+#'    wavelengths named "wl" and one column with the values per wavelength named
+#'    "val".
 #'
 #' @return Reshaped data.
 #' @export

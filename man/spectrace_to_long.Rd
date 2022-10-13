@@ -7,7 +7,8 @@
 spectrace_to_long(lightData)
 }
 \arguments{
-\item{lightData}{}
+\item{lightData}{Data frame with light data. Must contain one column per
+wavelength, named '[wavelength]nm' (e.g., '380nm').}
 }
 \value{
 Reshaped data.
