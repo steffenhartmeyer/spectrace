@@ -22,28 +22,27 @@
 spectrace_aopic <- function(lightData,
                             interp_method = c("pchip", "linear", "none"),
                             keep_spectral_data = TRUE) {
-
   # Match arguments
   interp_method <- match.arg(interp_method)
 
-  if(interp_method != "none"){
-    # Interpolate data
+  wls <- paste0(seq(380, 780, 5), "nm")
+  if (all(wls %in% names(lightData))) {
+    if (interp_method != "none") {
+      warning("Interpolation method is not 'none', but data seems to already be interpolated.")
+    }
+    irr_interp <- lightData %>%
+      dplyr::select(wls) %>%
+      as.matrix()
+  } else {
+    if (interp_method == "none") {
+      stop("Interpolation method is 'none', but data seems not to be interpolated.")
+    }
     irr_interp <- lightData %>%
       spectrace_interpolate_spectra(
         resolution = "5nm",
         interp_method = interp_method
       ) %>%
       dplyr::select("380nm":"780nm") %>%
-      as.matrix()
-  }
-  else{
-    cols = paste0(seq(380,780,5), "nm")
-
-    if(!all(cols %in% names(lightData))){
-      stop("Interpolation method is 'none', but data seems not to be interpolated.")
-    }
-    irr_interp <- lightData %>%
-      dplyr::select(cols) %>%
       as.matrix()
   }
 

@@ -6,7 +6,7 @@
 \usage{
 spectrace_aopic(
   lightData,
-  interp_method = c("pchip", "linear"),
+  interp_method = c("pchip", "linear", "none"),
   keep_spectral_data = TRUE
 )
 }
