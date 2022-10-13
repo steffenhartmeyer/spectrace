@@ -7,6 +7,8 @@
 #'    (default), data is normalized such that the peak (max value) is equal to 1.
 #'    If method is "AUC", data is normalized such that the area under the curve
 #'    is equal to 1.
+#' @param keepNormCoefficient Logical. Should the normalization coefficient be
+#'    kept in the data? Defaults to TRUE.
 #'
 #' @return The original data frame with the spectral data replaced by the
 #'    normalized spectral data.
@@ -14,7 +16,8 @@
 #'
 #' @examples
 spectrace_normalize_spectra <- function(lightData,
-                                        method = c("peak", "AUC")) {
+                                        method = c("peak", "AUC"),
+                                        keepNormCoefficient = TRUE) {
   # Match arguments
   method <- match.arg(method)
 
@@ -24,13 +27,21 @@ spectrace_normalize_spectra <- function(lightData,
     as.matrix()
 
   # Normalize
-  spectra.norm <- switch(method,
-    "peak" = apply(spectra, 1, function(x) x / max(x)),
-    "AUC" = apply(spectra, 1, function(x) x / sum(x))
+  norm.coefficient <- switch(method,
+    "peak" = apply(spectra, 1, max),
+    "AUC" = apply(spectra, 1, sum)
   )
+  spectra.norm = spectra / norm.coefficient
 
-  # Return data
+  # Add to light data
   lightData <- lightData %>%
     dyplr::select(!dplyr::matches("\\d{3}nm")) %>%
     tibble::add_column(spectra.norm)
+
+  if(keepNormCoefficient){
+    lightData <- lightData %>%
+      tibble::add_column(norm.coefficient = norm.coefficient)
+  }
+
+  return(lightData)
 }

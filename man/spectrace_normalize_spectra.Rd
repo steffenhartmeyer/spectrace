@@ -4,7 +4,11 @@
 \alias{spectrace_normalize_spectra}
 \title{Normalize spectrace data}
 \usage{
-spectrace_normalize_spectra(lightData, method = c("peak", "AUC"))
+spectrace_normalize_spectra(
+  lightData,
+  method = c("peak", "AUC"),
+  keepNormCoefficient = TRUE
+)
 }
 \arguments{
 \item{lightData}{Data frame containing the (calibrated) light data.}
@@ -13,6 +17,9 @@ spectrace_normalize_spectra(lightData, method = c("peak", "AUC"))
 (default), data is normalized such that the peak (max value) is equal to 1.
 If method is "AUC", data is normalized such that the area under the curve
 is equal to 1.}
+
+\item{keepNormCoefficient}{Logical. Should the normalization coefficient be
+kept in the data? Defaults to TRUE.}
 }
 \value{
 The original data frame with the spectral data replaced by the
