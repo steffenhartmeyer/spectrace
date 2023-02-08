@@ -1,5 +1,5 @@
 
-#' Calculate alpha-opic quantities from raw spectrace data
+#' Calculate alpha-opic quantities from calibrated spectrace data
 #'
 #' This function calculates photopic and alpha-opic quantities as defined in the
 #' CIE s26e standard, from the calibrated spectrace data. Spectral irradiance is

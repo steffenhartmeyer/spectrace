@@ -1,7 +1,7 @@
 #' Import raw spectrace light data
 #'
 #' This function imports the raw light data of the spectrace sensors. It assumes
-#' that the data is stored in CSV format.
+#' that the data is stored in CSV or TSV format.
 #'
 #' @param lightFile Path to the file containing the light data.
 #' @param tz Time zone to be used for datetime conversion. See supported time zones
@@ -22,7 +22,7 @@ spectrace_import_light <- function(lightFile, tz, serial_number = NA) {
     n_max = 3
   )
 
-  # Check type of file (including header or not)
+  # Version 2 file
   if (header$X1[1] == "SERIAL") {
     serial_number <- header$X2[1]
     lightData <- read.csv(
@@ -31,7 +31,18 @@ spectrace_import_light <- function(lightFile, tz, serial_number = NA) {
       header = FALSE,
       col.names = paste0("X", 1:24)
     )
-  } else {
+  }
+  # Version 3 file
+  else if (header$X1[1] == "Raw Spectrace Data") {
+    serial_number <- header$X2[3]
+    lightData <- read.csv(
+      lightFile,
+      skip = 6,
+      header = FALSE,
+      col.names = paste0("X", 1:24)
+    )
+  }
+  else {
     # Check whether serial number available
     if (is.na(serial_number)) {
       warning("No serial number specified!")
