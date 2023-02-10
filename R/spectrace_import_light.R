@@ -14,32 +14,47 @@
 #' @examples
 spectrace_import_light <- function(lightFile, tz, serial_number = NA) {
 
+  # Get file type (CSV or TSV)
+  if(endsWith(lightFile, ".csv")) {
+    sep = ","
+  }
+  else if (endsWith(lightFile, ".tsv")) {
+    sep = "\t"
+  }
+  else {
+    stop("Unsupported file format! Must be CSV or TSV.")
+  }
+
   # Get header
-  header <- readr::read_csv(
+  header <- readr::read_delim(
     lightFile,
     col_names = FALSE,
     col_types = readr::cols(.default = "c"),
-    n_max = 3
+    n_max = 3,
+    delim = sep,
+    skip_empty_rows = FALSE
   )
 
   # Version 2 file
   if (header$X1[1] == "SERIAL") {
     serial_number <- header$X2[1]
-    lightData <- read.csv(
+    lightData <- read.delim(
       lightFile,
       skip = 5,
       header = FALSE,
-      col.names = paste0("X", 1:24)
+      col.names = paste0("X", 1:24),
+      sep = sep
     )
   }
   # Version 3 file
   else if (header$X1[1] == "Raw Spectrace Data") {
     serial_number <- header$X2[3]
-    lightData <- read.csv(
+    lightData <- read.delim(
       lightFile,
       skip = 6,
       header = FALSE,
-      col.names = paste0("X", 1:24)
+      col.names = paste0("X", 1:24),
+      sep = sep
     )
   }
   else {
@@ -47,10 +62,11 @@ spectrace_import_light <- function(lightFile, tz, serial_number = NA) {
     if (is.na(serial_number)) {
       warning("No serial number specified!")
     }
-    lightData <- read.csv(
+    lightData <- read.delim(
       lightFile,
       header = FALSE,
-      col.names = paste0("X", 1:24)
+      col.names = paste0("X", 1:24),
+      sep = sep
     )
   }
 

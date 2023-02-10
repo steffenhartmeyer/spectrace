@@ -14,30 +14,56 @@
 #' @examples
 spectrace_import_battery <- function(batteryFile, tz, serial_number = NA) {
 
+  # Get file type (CSV or TSV)
+  if(endsWith(batteryFile, ".csv")) {
+    sep = ","
+  }
+  else if (endsWith(batteryFile, ".tsv")) {
+    sep = "\t"
+  }
+  else {
+    stop("Unsupported file format! Must be CSV or TSV.")
+  }
+
   # Get header
-  header <- readr::read_csv(
+  header <- readr::read_delim(
     batteryFile,
     col_names = FALSE,
     col_types = readr::cols(.default = "c"),
-    n_max = 3
+    n_max = 3,
+    delim = sep,
+    skip_empty_rows = FALSE
   )
 
   # Check type of file (including header or not)
   if (header$X1[1] == "SERIAL") {
     serial_number <- header$X2[1]
-    batData <- read.csv(
+    batData <- read.delim(
       batteryFile,
       skip = 5,
       header = FALSE,
+      sep = sep
     ) %>% select(c(1:4))
-  } else {
+  }
+  # Version 3 file
+  else if (header$X1[1] == "Raw Spectrace Data") {
+    serial_number <- header$X2[3]
+    batData <- read.delim(
+      batteryFile,
+      skip = 6,
+      header = FALSE,
+      sep = sep
+    ) %>% select(c(1:4))
+  }
+  else {
     # Check whether serial number available
     if (is.na(serial_number)) {
       warning("No serial number specified!")
     }
-    batData <- read.csv(
+    batData <- read.delim(
       batteryFile,
-      header = FALSE
+      header = FALSE,
+      sep = sep
     ) %>% select(c(1:4))
   }
 
