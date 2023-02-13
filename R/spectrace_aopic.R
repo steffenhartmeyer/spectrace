@@ -87,8 +87,8 @@ spectrace_aopic <- function(lightData,
   cie_y <- y / (x + y + z)
 
   # Calculate CCT using McCamy's approximation
-  n <- (cie_x - 0.3320) / (0.1858 - cie_y)
-  CCT <- 437 * n^3 + 3601 * n^2 + 6861 * n + 5517
+  n <- (cie_x - 0.3320) / (cie_y - 0.1858)
+  CCT <- -449 * n^3 + 3601 * n^2 - 6823.3 * n + 5520.33
 
   # Combine into data frame
   cData <- data.frame(cbind(ill, aopic, aopic_edi, elr, der, CCT))
