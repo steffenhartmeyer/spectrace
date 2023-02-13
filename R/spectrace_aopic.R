@@ -54,6 +54,14 @@ spectrace_aopic <- function(lightData,
       as.matrix()
   }
 
+  # Check for negative values
+  negatives = irr_interp < 0
+  if(any(negatives)){
+    warning("Data containes negative values. Replaced negative values by zero.")
+    irr_interp[negatives] = 0
+  }
+
+
   # Calculate photopic illuminance
   ill <- as.numeric((irr_interp %*% as.numeric(cmf$y)) * 683 * 5)
 
