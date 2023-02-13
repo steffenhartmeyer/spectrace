@@ -20,15 +20,23 @@
 #'
 #' @examples
 spectrace_aopic <- function(lightData,
+                            quantities =
+                              c("ALL",
+                                "sc", "mc", "lc", "mel", "rod",
+                                "scEDI", "mcEDI", "lcEDI", "melEDI", "rodEDI",
+                                "scELR", "mcELR", "lcELR", "melELR", "rodELR",
+                                "scDER", "mcDER", "lcDER", "melDER", "rodDER",
+                                "ill", "CCT"),
                             interp_method = c("pchip", "linear", "none"),
                             keep_spectral_data = TRUE) {
   # Match arguments
   interp_method <- match.arg(interp_method)
+  quants <- match.arg(quantities, several.ok = TRUE)
 
   wls <- paste0(seq(380, 780, 5), "nm")
   if (all(wls %in% names(lightData))) {
     if (interp_method != "none") {
-      warning("Interpolation method is not 'none', but data seems to already be interpolated.")
+      warning("Data seems to be already interpolated. Proceeding without interpolation.")
     }
     irr_interp <- lightData %>%
       dplyr::select(wls) %>%
@@ -83,6 +91,12 @@ spectrace_aopic <- function(lightData,
     "scDER", "mcDER", "lcDER", "melDER", "rodDER",
     "CCT"
   )
+
+  # Select quantities
+  if(!("ALL" %in% quants)){
+    cData <- cData %>%
+      dplyr::select(quants)
+  }
 
   # Add to data
   lightData <- lightData %>%
