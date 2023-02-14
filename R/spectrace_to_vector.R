@@ -15,7 +15,7 @@ spectrace_to_vector <- function(lightData) {
     as.matrix()
 
   # Input wavelengths
-  wl.in <- sub("nm", "", colnames(irr_data)) %>%
+  wl.in <- sub("nm", "", colnames(irrData)) %>%
     as.numeric()
 
   # Make vectors
