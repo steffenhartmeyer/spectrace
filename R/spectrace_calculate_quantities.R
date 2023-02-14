@@ -1,4 +1,3 @@
-
 #' Calculate (alpha-opic) quantities from calibrated spectrace data
 #'
 #' This function calculates photopic and alpha-opic quantities as defined in the
@@ -24,15 +23,17 @@
 #'
 #' @examples
 spectrace_calculate_quantities <- function(lightData,
-                            quantities =
-                              c("ALL",
-                                "sc", "mc", "lc", "mel", "rod",
-                                "scEDI", "mcEDI", "lcEDI", "melEDI", "rodEDI",
-                                "scELR", "mcELR", "lcELR", "melELR", "rodELR",
-                                "scDER", "mcDER", "lcDER", "melDER", "rodDER",
-                                "ill", "CCT"),
-                            interp_method = c("pchip", "linear", "none"),
-                            keep_spectral_data = TRUE) {
+                                           quantities =
+                                             c(
+                                               "ALL",
+                                               "sc", "mc", "lc", "mel", "rod",
+                                               "scEDI", "mcEDI", "lcEDI", "melEDI", "rodEDI",
+                                               "scELR", "mcELR", "lcELR", "melELR", "rodELR",
+                                               "scDER", "mcDER", "lcDER", "melDER", "rodDER",
+                                               "ill", "CCT"
+                                             ),
+                                           interp_method = c("pchip", "linear", "none"),
+                                           keep_spectral_data = TRUE) {
   # Match arguments
   interp_method <- match.arg(interp_method)
   quants <- match.arg(quantities, several.ok = TRUE)
@@ -59,10 +60,10 @@ spectrace_calculate_quantities <- function(lightData,
   }
 
   # Check for negative values
-  negatives = irr_interp < 0
-  if(any(negatives)){
+  negatives <- irr_interp < 0
+  if (any(negatives)) {
     warning("Data containes negative values. Replaced negative values by zero.")
-    irr_interp[negatives] = 0
+    irr_interp[negatives] <- 0
   }
 
   # Calculate photopic illuminance
@@ -104,7 +105,7 @@ spectrace_calculate_quantities <- function(lightData,
   )
 
   # Select quantities
-  if(!("ALL" %in% quants)){
+  if (!("ALL" %in% quants)) {
     cData <- cData %>%
       dplyr::select(quants)
   }

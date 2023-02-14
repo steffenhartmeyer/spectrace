@@ -30,7 +30,6 @@ spectra_to_spectrace <- function(spectralData,
                                    "1nm", "5nm"
                                  ),
                                  interp_method = c("pchip", "linear")) {
-
   # Match arguments
   output_resolution <- match.arg(output_resolution)
   interp_method <- match.arg(interp_method)

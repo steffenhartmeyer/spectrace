@@ -10,7 +10,7 @@
 #' @export
 #'
 #' @examples
-spectrace_to_wide = function(lightData){
+spectrace_to_wide <- function(lightData) {
   lightData %>%
     dplyr::mutate(wl = paste0(wl, "nm")) %>%
     tidyr::pivot_wider(names_from = wl, values_from = val)

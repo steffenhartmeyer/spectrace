@@ -13,15 +13,12 @@
 #'
 #' @examples
 spectrace_import_light <- function(lightFile, tz, serial_number = NA) {
-
   # Get file type (CSV or TSV)
-  if(endsWith(lightFile, ".csv")) {
-    sep = ","
-  }
-  else if (endsWith(lightFile, ".tsv")) {
-    sep = "\t"
-  }
-  else {
+  if (endsWith(lightFile, ".csv")) {
+    sep <- ","
+  } else if (endsWith(lightFile, ".tsv")) {
+    sep <- "\t"
+  } else {
     stop("Unsupported file format! Must be CSV or TSV.")
   }
 
@@ -56,8 +53,7 @@ spectrace_import_light <- function(lightFile, tz, serial_number = NA) {
       col.names = paste0("X", 1:24),
       sep = sep
     )
-  }
-  else {
+  } else {
     # Check whether serial number available
     if (is.na(serial_number)) {
       warning("No serial number specified!")

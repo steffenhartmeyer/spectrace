@@ -2,7 +2,7 @@
 % Please edit documentation in R/spectrace_aopic.R
 \name{spectrace_aopic}
 \alias{spectrace_aopic}
-\title{Calculate alpha-opic quantities from raw spectrace data}
+\title{Calculate alpha-opic quantities from calibrated spectrace data}
 \usage{
 spectrace_aopic(
   lightData,

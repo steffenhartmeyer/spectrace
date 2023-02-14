@@ -1,4 +1,3 @@
-
 #' Calculate alpha-opic quantities from calibrated spectrace data
 #'
 #' This function calculates photopic and alpha-opic quantities as defined in the
@@ -47,10 +46,10 @@ spectrace_aopic <- function(lightData,
   }
 
   # Check for negative values
-  negatives = irr_interp < 0
-  if(any(negatives)){
+  negatives <- irr_interp < 0
+  if (any(negatives)) {
     warning("Data containes negative values. Replaced negative values by zero.")
-    irr_interp[negatives] = 0
+    irr_interp[negatives] <- 0
   }
 
   # Calculate photopic illuminance

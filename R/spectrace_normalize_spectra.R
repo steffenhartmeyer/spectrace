@@ -24,23 +24,23 @@ spectrace_normalize_spectra <- function(lightData,
   # Get spectra
   spectra <- lightData %>%
     dplyr::select(dplyr::matches("\\d{3}nm"))
-  col_names = names(spectra)
-  spectra = as.matrix(spectra)
+  col_names <- names(spectra)
+  spectra <- as.matrix(spectra)
 
   # Normalize
   norm.coefficient <- switch(method,
     "peak" = apply(spectra, 1, max),
     "AUC" = apply(spectra, 1, sum)
   )
-  spectra.norm = (spectra / norm.coefficient) %>% data.frame()
-  names(spectra.norm) = col_names
+  spectra.norm <- (spectra / norm.coefficient) %>% data.frame()
+  names(spectra.norm) <- col_names
 
   # Add to light data
   lightData <- lightData %>%
     dplyr::select(!dplyr::matches("\\d{3}nm")) %>%
     tibble::add_column(spectra.norm)
 
-  if(keepNormCoefficient){
+  if (keepNormCoefficient) {
     lightData <- lightData %>%
       tibble::add_column(norm.coefficient = norm.coefficient)
   }

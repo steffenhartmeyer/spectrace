@@ -13,15 +13,12 @@
 #'
 #' @examples
 spectrace_import_battery <- function(batteryFile, tz, serial_number = NA) {
-
   # Get file type (CSV or TSV)
-  if(endsWith(batteryFile, ".csv")) {
-    sep = ","
-  }
-  else if (endsWith(batteryFile, ".tsv")) {
-    sep = "\t"
-  }
-  else {
+  if (endsWith(batteryFile, ".csv")) {
+    sep <- ","
+  } else if (endsWith(batteryFile, ".tsv")) {
+    sep <- "\t"
+  } else {
     stop("Unsupported file format! Must be CSV or TSV.")
   }
 
@@ -54,8 +51,7 @@ spectrace_import_battery <- function(batteryFile, tz, serial_number = NA) {
       header = FALSE,
       sep = sep
     ) %>% select(c(1:4))
-  }
-  else {
+  } else {
     # Check whether serial number available
     if (is.na(serial_number)) {
       warning("No serial number specified!")

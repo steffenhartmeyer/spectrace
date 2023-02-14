@@ -19,5 +19,5 @@ Data frame.
 }
 \description{
 This function imports the raw light data of the spectrace sensors. It assumes
-that the data is stored in CSV format.
+that the data is stored in CSV or TSV format.
 }
