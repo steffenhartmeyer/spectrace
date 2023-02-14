@@ -32,31 +32,50 @@ spectrace_calculate_quantities <- function(lightData,
                                                "scDER", "mcDER", "lcDER", "melDER", "rodDER",
                                                "ill", "CCT"
                                              ),
+                                           resolution = c("5nm", "1nm"),
                                            interp_method = c("pchip", "linear", "none"),
                                            keep_spectral_data = TRUE) {
   # Match arguments
+  resolution <- match.arg(resolution)
   interp_method <- match.arg(interp_method)
   quants <- match.arg(quantities, several.ok = TRUE)
 
-  wls <- paste0(seq(380, 780, 5), "nm")
-  if (all(wls %in% names(lightData))) {
+  # Irradiance data
+  irr_data <- lightData %>%
+    dplyr::select(dplyr::matches("\\d{3}nm"))
+
+  # Input wavelengths
+  wl.in <- sub("nm", "", names(lightData)) %>%
+    as.numeric()
+
+  # Get desired resolution
+  reso.num <- as.numeric(substr(resolution, 1, 1))
+  wl.1nm <- seq(380, 780)
+  wl.out <- seq(380, 780, reso.num)
+
+  if (wl.out == wl.in) {
     if (interp_method != "none") {
-      warning("Data seems to be already interpolated. Proceeding without interpolation.")
+      warning("Data seems already interpolated. Proceeding without interpolation.")
     }
-    irr_interp <- lightData %>%
-      dplyr::select(wls) %>%
+    irr_interp <- irr_data %>%
       as.matrix()
   } else {
-    if (interp_method == "none") {
-      stop("Interpolation method is 'none', but data seems not to be interpolated.")
+    if (wl.in == wl.1nm) {
+      warning("Resolution lower than that of data. Proceeding with original resolution")
+      irr_interp <- irr_data %>%
+        as.matrix()
+      reso.num <- 1
+    } else {
+      if (interp_method == "none" && !all(wl.out %in% wl.in)) {
+        stop("Interpolation method is 'none', but data seems not to be interpolated.")
+      }
+      irr_interp <- irr_data %>%
+        spectrace_interpolate_spectra(
+          resolution = resolution,
+          interp_method = interp_method
+        ) %>%
+        as.matrix()
     }
-    irr_interp <- lightData %>%
-      spectrace_interpolate_spectra(
-        resolution = "5nm",
-        interp_method = interp_method
-      ) %>%
-      dplyr::select("380nm":"780nm") %>%
-      as.matrix()
   }
 
   # Check for negative values
@@ -66,15 +85,25 @@ spectrace_calculate_quantities <- function(lightData,
     irr_interp[negatives] <- 0
   }
 
+  # Choose matching response functions
+  if (reso.num == 5) {
+    cmf <- cmf.5nm
+    cie_s26e <- cie_s26e.5nm
+  } else {
+    cmf <- cmf.1mm
+    cie_s26e <- cie_s26e.1nm
+  }
+
   # Calculate photopic illuminance
-  ill <- as.numeric((irr_interp %*% as.numeric(cmf$y)) * 683 * 5)
+  K_m <- 683
+  ill <- as.numeric((irr_interp %*% as.numeric(cmf$y)) * K_m * reso.num)
 
   # Calculate alpha-opic irradiance and ELR using CIE s26e opsin templates
-  scone <- as.numeric((irr_interp %*% as.numeric(cie_s26e$scone)) * 5)
-  mcone <- as.numeric((irr_interp %*% as.numeric(cie_s26e$mcone)) * 5)
-  lcone <- as.numeric((irr_interp %*% as.numeric(cie_s26e$lcone)) * 5)
-  rod <- as.numeric((irr_interp %*% as.numeric(cie_s26e$rod)) * 5)
-  mel <- as.numeric((irr_interp %*% as.numeric(cie_s26e$mel)) * 5)
+  scone <- as.numeric((irr_interp %*% as.numeric(cie_s26e$scone)) * reso.num)
+  mcone <- as.numeric((irr_interp %*% as.numeric(cie_s26e$mcone)) * reso.num)
+  lcone <- as.numeric((irr_interp %*% as.numeric(cie_s26e$lcone)) * reso.num)
+  rod <- as.numeric((irr_interp %*% as.numeric(cie_s26e$rod)) * reso.num)
+  mel <- as.numeric((irr_interp %*% as.numeric(cie_s26e$mel)) * reso.num)
   aopic <- cbind(scone, mcone, lcone, mel, rod)
   elr <- aopic / ill
 
@@ -84,9 +113,9 @@ spectrace_calculate_quantities <- function(lightData,
   der <- elr / (KavD65)[col(elr)]
 
   # Calculate CIE XYZ using CIE color matching functions
-  x <- (irr_interp %*% as.numeric(cmf$x)) * 5
-  y <- (irr_interp %*% as.numeric(cmf$y)) * 5
-  z <- (irr_interp %*% as.numeric(cmf$z)) * 5
+  x <- (irr_interp %*% as.numeric(cmf$x)) * reso.num
+  y <- (irr_interp %*% as.numeric(cmf$y)) * reso.num
+  z <- (irr_interp %*% as.numeric(cmf$z)) * reso.num
   cie_x <- x / (x + y + z)
   cie_y <- y / (x + y + z)
 

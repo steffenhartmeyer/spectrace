@@ -9,7 +9,6 @@
 #'
 #' @examples
 spectrace_to_vector <- function(lightData) {
-
   # Get spectra
   irrData <- lightData %>%
     dplyr::select(dplyr::matches("\\d{3}nm"))
