@@ -26,6 +26,6 @@ spectrace_to_vector <- function(lightData) {
 
   # Add to data frame and return
   lightData %>%
-    dplyr::select(!dplyr::matches("\\d{3}nm"))
-  tibble::add_column(spectra)
+    dplyr::select(!dplyr::matches("\\d{3}nm")) %>%
+    tibble::add_column(spectra)
 }
