@@ -1,5 +1,5 @@
 
-#' Calculate alpha-opic quantities from calibrated spectrace data
+#' Calculate (alpha-opic) quantities from calibrated spectrace data
 #'
 #' This function calculates photopic and alpha-opic quantities as defined in the
 #' CIE s26e standard, from the calibrated spectrace data. Spectral irradiance is
@@ -7,23 +7,35 @@
 #' with McCamy's approximation.
 #'
 #' @param lightData Data frame containing the calibrated light data.x = data.
+#' @param quantities Quantities to be calculated. Can be any or multiple of:
+#'    ("ALL", "sc", "mc", "lc", "mel", "rod", "scEDI", "mcEDI", "lcEDI",
+#'    "melEDI", "rodEDI", "scELR", "mcELR", "lcELR", "melELR", "rodELR",
+#'    "scDER", "mcDER", "lcDER", "melDER", "rodDER", "ill", "CCT"). If "ALL"
+#'    (the default), all quantities will be calculated and added to the data frame.
 #' @param interp_method Method for interpolation. Can be "pchip" (smooth
 #'    piecewise hermetic interpolation) or "linear". Defaults to "pchip".
 #' @param keep_spectral_data Logical. Should the spectral irradiance columns be kept?
 #'    Defaults to TRUE.
 #'
-#' @return Data frame extended with values for illuminance, alpha-opic irradiances,
-#'    alpha-opic EDI, alpha-opic ELR, alpha-opic DER, and CCT.
+#' @return Data frame extended with specified quantities.
 #'    If \code{keep_spectral_data} is FALSE then the spectral data columns will be
 #'    removed from the original data frame.
 #' @export
 #'
 #' @examples
-spectrace_aopic <- function(lightData,
+spectrace_calculate_quantities <- function(lightData,
+                            quantities =
+                              c("ALL",
+                                "sc", "mc", "lc", "mel", "rod",
+                                "scEDI", "mcEDI", "lcEDI", "melEDI", "rodEDI",
+                                "scELR", "mcELR", "lcELR", "melELR", "rodELR",
+                                "scDER", "mcDER", "lcDER", "melDER", "rodDER",
+                                "ill", "CCT"),
                             interp_method = c("pchip", "linear", "none"),
                             keep_spectral_data = TRUE) {
   # Match arguments
   interp_method <- match.arg(interp_method)
+  quants <- match.arg(quantities, several.ok = TRUE)
 
   wls <- paste0(seq(380, 780, 5), "nm")
   if (all(wls %in% names(lightData))) {
@@ -90,6 +102,12 @@ spectrace_aopic <- function(lightData,
     "scDER", "mcDER", "lcDER", "melDER", "rodDER",
     "CCT"
   )
+
+  # Select quantities
+  if(!("ALL" %in% quants)){
+    cData <- cData %>%
+      dplyr::select(quants)
+  }
 
   # Add to data
   lightData <- lightData %>%
