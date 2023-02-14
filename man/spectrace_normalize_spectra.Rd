@@ -6,7 +6,8 @@
 \usage{
 spectrace_normalize_spectra(
   lightData,
-  method = c("peak", "AUC"),
+  method = c("peak", "AUC", "wavelength"),
+  wavelength = NULL,
   keepNormCoefficient = TRUE
 )
 }
@@ -16,7 +17,11 @@ spectrace_normalize_spectra(
 \item{method}{String specifying the normalization method. If method is "peak"
 (default), data is normalized such that the peak (max value) is equal to 1.
 If method is "AUC", data is normalized such that the area under the curve
-is equal to 1.}
+is equal to 1. If method is "wavelength", data is normalized to 1 at specified
+wavelength.}
+
+\item{wavelength}{Numeric. Wavelength to normalize at. Must be specified if
+method is "wavelength".}
 
 \item{keepNormCoefficient}{Logical. Should the normalization coefficient be
 kept in the data? Defaults to TRUE.}

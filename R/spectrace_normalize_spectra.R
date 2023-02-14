@@ -6,7 +6,10 @@
 #' @param method String specifying the normalization method. If method is "peak"
 #'    (default), data is normalized such that the peak (max value) is equal to 1.
 #'    If method is "AUC", data is normalized such that the area under the curve
-#'    is equal to 1.
+#'    is equal to 1. If method is "wavelength", data is normalized to 1 at specified
+#'    wavelength.
+#' @param wavelength Numeric. Wavelength to normalize at. Must be specified if
+#'   method is "wavelength".
 #' @param keepNormCoefficient Logical. Should the normalization coefficient be
 #'    kept in the data? Defaults to TRUE.
 #'
@@ -16,7 +19,8 @@
 #'
 #' @examples
 spectrace_normalize_spectra <- function(lightData,
-                                        method = c("peak", "AUC"),
+                                        method = c("peak", "AUC", "wavelength"),
+                                        wavelength = NULL,
                                         keepNormCoefficient = TRUE) {
   # Match arguments
   method <- match.arg(method)
@@ -25,12 +29,23 @@ spectrace_normalize_spectra <- function(lightData,
   spectra <- lightData %>%
     dplyr::select(dplyr::matches("\\d{3}nm"))
   col_names <- names(spectra)
+  wl.in = sub("nm", "", col_names) %>% as.numeric()
   spectra <- as.matrix(spectra)
+
+  if(method == "wavelength"){
+    if(is.null(wavelength)){
+      stop("No wavelength for normalization specified!")
+    }
+    if(!(wavelength %in% wl.in)){
+      stop("Specified wavelength not in data!")
+    }
+  }
 
   # Normalize
   norm.coefficient <- switch(method,
     "peak" = apply(spectra, 1, max),
-    "AUC" = apply(spectra, 1, sum)
+    "AUC" = apply(spectra, 1, sum),
+    "wavelength" = spectra[, wl.in == wavelength]
   )
   spectra.norm <- (spectra / norm.coefficient) %>% data.frame()
   names(spectra.norm) <- col_names
