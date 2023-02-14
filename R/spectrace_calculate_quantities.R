@@ -45,7 +45,7 @@ spectrace_calculate_quantities <- function(lightData,
     dplyr::select(dplyr::matches("\\d{3}nm"))
 
   # Input wavelengths
-  wl.in <- sub("nm", "", names(lightData)) %>%
+  wl.in <- sub("nm", "", names(irr_data)) %>%
     as.numeric()
 
   # Get desired resolution
