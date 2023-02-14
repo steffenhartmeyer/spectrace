@@ -24,6 +24,6 @@ spectrace_from_vector <- function(lightData) {
 
   # Add to data frame and return
   lightData %>%
-    dplyr::select(!spectrum, !wavelength) %>%
+    dplyr::select(!c(spectrum, wavelength)) %>%
     tibble::add_column(irr_data)
 }
