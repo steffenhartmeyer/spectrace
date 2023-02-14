@@ -53,6 +53,9 @@ spectrace_calculate_quantities <- function(lightData,
   wl.1nm <- seq(380, 780)
   wl.out <- seq(380, 780, reso.num)
 
+  print(wl.in)
+  print(wl.out)
+
   if (wl.out == wl.in) {
     if (interp_method != "none") {
       warning("Data seems already interpolated. Proceeding without interpolation.")
