@@ -40,43 +40,36 @@ spectrace_interpolate_spectra <- function(lightData,
   if (setequal(wl.out, wl.in)) {
     warning("Data seems already interpolated. Returning data without interpolation.")
     return(lightData)
-  } else {
-    wl <- c(380, wl.in[wl.in > 380 & wl.in < 780], 780 - reso.num)
-    x <- rep(wl, nrow(irr_data)) +
-      as.numeric(t(matrix(
-        rep(seq(0, 400 * (nrow(irr_data) - 1), 400), length(wl)),
-        ncol = length(wl)
-      )))
-
-    # Output wavelengths
-    x_out <- switch(resolution,
-      "5nm" = seq(380, 775 + 400 * (nrow(irr_data) - 1), 5),
-      "1nm" = seq(380, 779 + 400 * (nrow(irr_data) - 1), 1),
-      stop("Wrong resolution!")
-    )
-
-    # Reshape irradiance data to single vector
-    zeros <- rep(0, nrow(irr_data))
-    y <- as.numeric(t(cbind(zeros, irr_data, zeros)))
-
-    # Interpolate
-    irr_interp <- switch(interp_method,
-      "pchip" = signal::pchip(x, y, x_out),
-      "linear" = approx(x, y, x_out, method = "linear", rule = 2)[[2]],
-      stop("Wrong interpolation method!")
-    )
-
-    # Reshape vector to matrix
-    irr_interp <- t(matrix(irr_interp, ncol = nrow(irr_data)))
-    irr_interp <- cbind(irr_interp, zeros)
-    irr_interp[irr_interp < 0] <- 0
-
-    irr_interp <- data.frame(irr_interp)
-    names(irr_interp) <- paste0(wl.out, "nm")
-
-    lightData %>%
-      dplyr::select(!dplyr::matches("\\d{3}nm")) %>%
-      tibble::add_column(irr_interp) %>%
-      return()
   }
+
+  N <- nrow(irr_data)
+
+  irr_data <- irr_data[, wl.in > 380 & wl.in < 780]
+
+  wl <- c(380, wl.in[wl.in > 380 & wl.in < 780], 780)
+  r <- seq(0, (400 + reso.num) * (N - 1), (400 + reso.num))
+
+  # Reshape irradiance data to single vector
+  zeros <- rep(0, N)
+  y <- as.numeric(t(cbind(zeros, irr_data, zeros)))
+  x.in <- (matrix(rep(wl, N), nrow = N, byrow = TRUE) + r) %>% t() %>% as.numeric()
+  x.out <- (matrix(rep(wl.out, N), nrow = N, byrow = TRUE) + r) %>% t() %>% as.numeric()
+
+  # Interpolate
+  irr_interp <- switch(interp_method,
+                       "pchip" = signal::pchip(x.in, y, x.out),
+                       "linear" = approx(x.in, y, x.out, method = "linear", rule = 2)[[2]],
+                       stop("Wrong interpolation method!")
+  )
+
+  # Reshape vector to matrix
+  irr_interp <- t(matrix(irr_interp, ncol = N))
+  irr_interp[irr_interp < 0] <- 0
+
+  irr_interp <- data.frame(irr_interp)
+  names(irr_interp) <- paste0(wl.out, "nm")
+
+  lightData %>%
+    dplyr::select(!dplyr::matches("\\d{3}nm")) %>%
+    tibble::add_column(irr_interp)
 }
