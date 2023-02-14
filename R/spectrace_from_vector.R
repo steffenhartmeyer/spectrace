@@ -20,7 +20,7 @@ spectrace_from_vector <- function(lightData) {
     unlist() %>%
     matrix(nrow = nrow(lightData), byrow = TRUE) %>%
     data.frame()
-  names(spectrum) <- col_names
+  names(irr_data) <- col_names
 
   # Add to data frame and return
   lightData %>%
