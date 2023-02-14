@@ -9,14 +9,19 @@
 #'
 #' @examples
 spectrace_to_vector <- function(lightData) {
+
   # Get spectra
   irrData <- lightData %>%
-    dplyr::select(dplyr::matches("\\d{3}nm")) %>%
-    as.matrix()
+    dplyr::select(dplyr::matches("\\d{3}nm"))
 
   # Input wavelengths
-  wl.in <- sub("nm", "", colnames(irrData)) %>%
+  wl.in <- sub("nm", "", names(irrData)) %>%
     as.numeric()
+
+  # To matrix
+  irrData <- lightData %>%
+    as.matrix() %>%
+    unname()
 
   # Make vectors
   spectra <- data.frame(idx = 1:nrow(irrData))
