@@ -9,6 +9,7 @@ spectrace_calculate_quantities(
   quantities = c("ALL", "sc", "mc", "lc", "mel", "rod", "scEDI", "mcEDI", "lcEDI",
     "melEDI", "rodEDI", "scELR", "mcELR", "lcELR", "melELR", "rodELR", "scDER", "mcDER",
     "lcDER", "melDER", "rodDER", "ill", "CCT"),
+  resolution = c("5nm", "1nm"),
   interp_method = c("pchip", "linear", "none"),
   keep_spectral_data = TRUE
 )
