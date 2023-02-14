@@ -50,20 +50,17 @@ spectrace_calculate_quantities <- function(lightData,
 
   # Get desired resolution
   reso.num <- as.numeric(substr(resolution, 1, 1))
-  wl.1nm <- seq(380, 780)
+  wl.1nm <- seq(380, 780, 1)
   wl.out <- seq(380, 780, reso.num)
 
-  print(wl.in)
-  print(wl.out)
-
-  if (wl.out == wl.in) {
+  if (setequal(wl.out, wl.in)) {
     if (interp_method != "none") {
       warning("Data seems already interpolated. Proceeding without interpolation.")
     }
     irr_interp <- irr_data %>%
       as.matrix()
   } else {
-    if (wl.in == wl.1nm) {
+    if (setequal(wl.in, wl.1nm)) {
       warning("Resolution lower than that of data. Proceeding with original resolution")
       irr_interp <- irr_data %>%
         as.matrix()
@@ -93,7 +90,7 @@ spectrace_calculate_quantities <- function(lightData,
     cmf <- cmf.5nm
     cie_s26e <- cie_s26e.5nm
   } else {
-    cmf <- cmf.1mm
+    cmf <- cmf.1nm
     cie_s26e <- cie_s26e.1nm
   }
 
