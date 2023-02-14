@@ -19,7 +19,7 @@ spectrace_to_vector <- function(lightData) {
     as.numeric()
 
   # To matrix
-  irrData <- lightData %>%
+  irrData <- irrData %>%
     as.matrix() %>%
     unname()
 
