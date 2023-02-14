@@ -37,7 +37,7 @@ spectrace_interpolate_spectra <- function(lightData,
   wl.out <- seq(380, 780, reso.num)
 
   # Check whether already interpolated
-  if (all(wl.out %in% wl.in)) {
+  if (setequal(wl.out, wl.in)) {
     warning("Data seems already interpolated. Returning data without interpolation.")
     return(lightData)
   } else {
