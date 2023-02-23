@@ -63,7 +63,7 @@ spectrace_import_battery <- function(batteryFile, tz, serial_number = NA) {
     ) %>% select(c(1:4))
   }
 
-  col_names <- c("unix", "voltage", "percent", "is_charging")
+  col_names <- c("unix", "battery_voltage", "battery_percent", "battery_isCharging")
   names(batData) <- col_names
 
   batData <-
