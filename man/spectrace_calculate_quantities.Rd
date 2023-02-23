@@ -8,7 +8,8 @@ spectrace_calculate_quantities(
   lightData,
   quantities = c("ALL", "sc", "mc", "lc", "mel", "rod", "scEDI", "mcEDI", "lcEDI",
     "melEDI", "rodEDI", "scELR", "mcELR", "lcELR", "melELR", "rodELR", "scDER", "mcDER",
-    "lcDER", "melDER", "rodDER", "ill", "CCT"),
+    "lcDER", "melDER", "rodDER", "cie1924_v2_lux", "cie2008_v2_lux", "cie2008_v10_lux",
+    "CCT", "cie1931_x", "cie1931_y", "cie1964_x", "cie1964_y"),
   resolution = c("5nm", "1nm"),
   interp_method = c("pchip", "linear", "none"),
   keep_spectral_data = TRUE
@@ -20,14 +21,19 @@ spectrace_calculate_quantities(
 \item{quantities}{Quantities to be calculated. Can be any or multiple of:
 ("ALL", "sc", "mc", "lc", "mel", "rod", "scEDI", "mcEDI", "lcEDI",
 "melEDI", "rodEDI", "scELR", "mcELR", "lcELR", "melELR", "rodELR",
-"scDER", "mcDER", "lcDER", "melDER", "rodDER", "ill", "CCT"). If "ALL"
-(the default), all quantities will be calculated and added to the data frame.}
+"scDER", "mcDER", "lcDER", "melDER", "rodDER", "cie1924_v2_lux",
+"cie2008_v2_lux", "cie2008_v10_lux", "CCT", "cie1931_x", "cie1931_y",
+"cie1964_x", "cie1964_y"). If "ALL" (the default), all quantities will be
+calculated and added to the data frame.}
+
+\item{resolution}{String specifying the resolution of the output
+spectrum. Can be "5nm" (default) or "1nm".}
 
 \item{interp_method}{Method for interpolation. Can be "pchip" (smooth
 piecewise hermetic interpolation) or "linear". Defaults to "pchip".}
 
-\item{keep_spectral_data}{Logical. Should the spectral irradiance columns be kept?
-Defaults to TRUE.}
+\item{keep_spectral_data}{Logical. Should the spectral irradiance columns be
+kept? Defaults to TRUE.}
 }
 \value{
 Data frame extended with specified quantities.
