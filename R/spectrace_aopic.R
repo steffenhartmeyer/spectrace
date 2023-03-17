@@ -7,7 +7,7 @@
 #'
 #' @param lightData Data frame containing the calibrated light data.x = data.
 #' @param interp_method Method for interpolation. Can be "pchip" (smooth
-#'    piecewise hermetic interpolation) or "linear". Defaults to "pchip".
+#'    piecewise hermetic interpolation), "linear", or "none". Defaults to "pchip".
 #' @param keep_spectral_data Logical. Should the spectral irradiance columns be kept?
 #'    Defaults to TRUE.
 #'
@@ -19,30 +19,51 @@
 #'
 #' @examples
 spectrace_aopic <- function(lightData,
+                            resolution = c("5nm", "1nm"),
                             interp_method = c("pchip", "linear", "none"),
                             keep_spectral_data = TRUE) {
+
   # Match arguments
+  resolution <- match.arg(resolution)
   interp_method <- match.arg(interp_method)
 
-  wls <- paste0(seq(380, 780, 5), "nm")
-  if (all(wls %in% names(lightData))) {
+  # Irradiance data
+  irr_data <- lightData %>%
+    dplyr::select(dplyr::matches("\\d{3}nm"))
+
+  # Input wavelengths
+  wl.in <- sub("nm", "", names(irr_data)) %>%
+    as.numeric()
+
+  # Get desired resolution
+  reso.num <- as.numeric(substr(resolution, 1, 1))
+  wl.1nm <- seq(380, 780, 1)
+  wl.out <- seq(380, 780, reso.num)
+
+  if (setequal(wl.out, wl.in)) {
     if (interp_method != "none") {
-      warning("Data seems to be already interpolated. Proceeding without interpolation.")
+      warning("Data seems already interpolated. Proceeding without interpolation.")
     }
-    irr_interp <- lightData %>%
-      dplyr::select(wls) %>%
+    irr_interp <- irr_data %>%
       as.matrix()
   } else {
-    if (interp_method == "none") {
-      stop("Interpolation method is 'none', but data seems not to be interpolated.")
+    if (setequal(wl.in, wl.1nm)) {
+      warning("Resolution lower than that of data. Proceeding with original resolution")
+      irr_interp <- irr_data %>%
+        as.matrix()
+      reso.num <- 1
+      wl.out <- wl.1nm
+    } else {
+      if (interp_method == "none" && !all(wl.out %in% wl.in)) {
+        stop("Interpolation method is 'none', but data seems not to be interpolated.")
+      }
+      irr_interp <- irr_data %>%
+        spectrace_interpolate_spectra(
+          resolution = resolution,
+          interp_method = interp_method
+        ) %>%
+        as.matrix()
     }
-    irr_interp <- lightData %>%
-      spectrace_interpolate_spectra(
-        resolution = "5nm",
-        interp_method = interp_method
-      ) %>%
-      dplyr::select("380nm":"780nm") %>%
-      as.matrix()
   }
 
   # Check for negative values
@@ -52,36 +73,57 @@ spectrace_aopic <- function(lightData,
     irr_interp[negatives] <- 0
   }
 
-  # Calculate photopic illuminance
-  ill <- as.numeric((irr_interp %*% as.numeric(cmf$y)) * 683 * 5)
+  # Match response functions to resolution
+  v_lambda <- v_lambda_1nm %>% dplyr::filter(wl %in% wl.out)
+  cie_s26e <- cie_s26e_1nm %>% dplyr::filter(wl %in% wl.out)
+  cie_xyz <- cie_xyz_1nm %>% dplyr::filter(wl %in% wl.out)
+
+  # Calculate photopic illuminances
+  K_m <- 683.0015478
+  cie1924_v2_lux <-
+    as.numeric((irr_interp %*% as.numeric(v_lambda$CIE1924_v2)) * K_m * reso.num)
+  cie2008_v2_lux <-
+    as.numeric((irr_interp %*% as.numeric(v_lambda$CIE2008_v2)) * K_m * reso.num)
+  cie2008_v10_lux <-
+    as.numeric((irr_interp %*% as.numeric(v_lambda$CIE2008_v10)) * K_m * reso.num)
 
   # Calculate alpha-opic irradiance and ELR using CIE s26e opsin templates
-  scone <- as.numeric((irr_interp %*% as.numeric(cie_s26e$scone)) * 5)
-  mcone <- as.numeric((irr_interp %*% as.numeric(cie_s26e$mcone)) * 5)
-  lcone <- as.numeric((irr_interp %*% as.numeric(cie_s26e$lcone)) * 5)
-  rod <- as.numeric((irr_interp %*% as.numeric(cie_s26e$rod)) * 5)
-  mel <- as.numeric((irr_interp %*% as.numeric(cie_s26e$mel)) * 5)
+  scone <- as.numeric((irr_interp %*% as.numeric(cie_s26e$scone)) * reso.num)
+  mcone <- as.numeric((irr_interp %*% as.numeric(cie_s26e$mcone)) * reso.num)
+  lcone <- as.numeric((irr_interp %*% as.numeric(cie_s26e$lcone)) * reso.num)
+  rod <- as.numeric((irr_interp %*% as.numeric(cie_s26e$rod)) * reso.num)
+  mel <- as.numeric((irr_interp %*% as.numeric(cie_s26e$mel)) * reso.num)
   aopic <- cbind(scone, mcone, lcone, mel, rod)
-  elr <- aopic / ill
+  elr <- aopic / cie1924_v2_lux
 
   # Calculate alpha-opic EDI and DER
-  KavD65 <- c(0.8173, 1.4558, 1.6289, 1.4497, 1.3262) / 1000
-  aopic_edi <- aopic / (KavD65)[col(aopic)]
-  der <- elr / (KavD65)[col(elr)]
+  Kav_D65 <- c(0.8173, 1.4558, 1.6289, 1.4497, 1.3262) / 1000
+  aopic_edi <- aopic / (Kav_D65)[col(aopic)]
+  der <- elr / (Kav_D65)[col(elr)]
 
-  # Calculate CIE XYZ using CIE color matching functions
-  x <- (irr_interp %*% as.numeric(cmf$x)) * 5
-  y <- (irr_interp %*% as.numeric(cmf$y)) * 5
-  z <- (irr_interp %*% as.numeric(cmf$z)) * 5
-  cie_x <- x / (x + y + z)
-  cie_y <- y / (x + y + z)
+  # Calculate CIE XYZ using CIE1931 color matching functions
+  CIE1931_x <- (irr_interp %*% as.numeric(cie_xyz$CIE1931_x)) * reso.num
+  CIE1931_y <- (irr_interp %*% as.numeric(cie_xyz$CIE1931_y)) * reso.num
+  CIE1931_z <- (irr_interp %*% as.numeric(cie_xyz$CIE1931_z)) * reso.num
+  CIE1931_xyz <- CIE1931_x + CIE1931_y + CIE1931_z
+  cie1931_x <- CIE1931_x / CIE1931_xyz
+  cie1931_y <- CIE1931_y / CIE1931_xyz
+
+  # Calculate CIE XYZ using CIE1964 color matching functions
+  CIE1964_x <- (irr_interp %*% as.numeric(cie_xyz$CIE1964_x)) * reso.num
+  CIE1964_y <- (irr_interp %*% as.numeric(cie_xyz$CIE1964_y)) * reso.num
+  CIE1964_z <- (irr_interp %*% as.numeric(cie_xyz$CIE1964_z)) * reso.num
+  CIE1964_xyz <- CIE1964_x + CIE1964_y + CIE1964_z
+  cie1964_x <- CIE1964_x / CIE1964_xyz
+  cie1964_y <- CIE1964_y / CIE1964_xyz
 
   # Calculate CCT using McCamy's approximation
-  n <- (cie_x - 0.3320) / (cie_y - 0.1858)
+  n <- (cie1931_x - 0.3320) / (cie1931_y - 0.1858)
   CCT <- -449 * n^3 + 3525 * n^2 - 6823.3 * n + 5520.33
 
+
   # Combine into data frame
-  cData <- data.frame(cbind(ill, aopic, aopic_edi, elr, der, CCT))
+  cData <- data.frame(cbind(cie1924_v2_lux, aopic, aopic_edi, elr, der, CCT))
   names(cData) <- c(
     "ill", "sc", "mc", "lc", "mel", "rod",
     "scEDI", "mcEDI", "lcEDI", "melEDI", "rodEDI",

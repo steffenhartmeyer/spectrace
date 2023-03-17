@@ -1,11 +1,10 @@
 #' Calculate (alpha-opic) quantities from calibrated spectrace data
 #'
-#' This function calculates photopic and alpha-opic quantities as defined in the
-#' CIE s26e standard, from the calibrated spectrace data. Spectral irradiance is
-#' interpolated to 5nm resolution. CCT is calculated
-#' with McCamy's approximation.
+#' This function calculates selected optical quantities from the calibrated
+#' spectrace data. Spectral irradiance is interpolated to desired resolution.
+#' CCT is calculated with McCamy's approximation.
 #'
-#' @param lightData Data frame containing the calibrated light data.x = data.
+#' @param lightData Data frame containing the calibrated light data.
 #' @param quantities Quantities to be calculated. Can be any or multiple of:
 #'    ("ALL", "sc", "mc", "lc", "mel", "rod", "scEDI", "mcEDI", "lcEDI",
 #'    "melEDI", "rodEDI", "scELR", "mcELR", "lcELR", "melELR", "rodELR",
@@ -16,7 +15,7 @@
 #' @param resolution String specifying the resolution of the output
 #'    spectrum. Can be "5nm" (default) or "1nm".
 #' @param interp_method Method for interpolation. Can be "pchip" (smooth
-#'    piecewise hermetic interpolation) or "linear". Defaults to "pchip".
+#'    piecewise hermetic interpolation), "linear", or "none". Defaults to "pchip".
 #' @param keep_spectral_data Logical. Should the spectral irradiance columns be
 #'    kept? Defaults to TRUE.
 #'
