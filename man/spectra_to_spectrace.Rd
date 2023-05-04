@@ -7,7 +7,8 @@
 spectra_to_spectrace(
   spectralData,
   output_resolution = c("original", "spectrace", "1nm", "5nm"),
-  interp_method = c("pchip", "linear")
+  interp_method = c("pchip", "linear"),
+  normalize = TRUE
 )
 }
 \arguments{
@@ -25,6 +26,9 @@ specified, no interpolation will be performed.}
 or "linear". Pchip (piecewise cubic hermetic interpolation) results in a
 smooth spectrum while preserving the source values as local minima/maxima.
 Will be ignored if \code{output_resolution} is "spectrace".}
+
+\item{normalize}{Logical. Normalize the resulting spectrum to peak = 1?
+Default is TRUE.}
 }
 \value{
 The original data frame with the spectral data replaced by the new

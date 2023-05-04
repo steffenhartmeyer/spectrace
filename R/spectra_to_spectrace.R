@@ -18,6 +18,8 @@
 #'    or "linear". Pchip (piecewise cubic hermetic interpolation) results in a
 #'    smooth spectrum while preserving the source values as local minima/maxima.
 #'    Will be ignored if \code{output_resolution} is "spectrace".
+#' @param normalize Logical. Normalize the resulting spectrum to peak = 1?
+#'    Default is TRUE.
 #'
 #' @return The original data frame with the spectral data replaced by the new
 #'    spectral data (normalized).
@@ -29,10 +31,14 @@ spectra_to_spectrace <- function(spectralData,
                                    "original", "spectrace",
                                    "1nm", "5nm"
                                  ),
-                                 interp_method = c("pchip", "linear")) {
+                                 interp_method = c("pchip", "linear"),
+                                 normalize = TRUE) {
   # Match arguments
   output_resolution <- match.arg(output_resolution)
   interp_method <- match.arg(interp_method)
+
+  # Get number of rows
+  N <- nrow(spectralData)
 
   # Subset spectral data
   spectra <- spectralData %>%
@@ -56,10 +62,20 @@ spectra_to_spectrace <- function(spectralData,
 
   # Concolve with Spectrace responses
   responses.spectra <- spectrace_responses %>%
-    apply(2, function(x) spectra %*% as.numeric(x)) %>%
-    apply(1, function(x) x / max(x)) %>%
-    t() %>%
+    apply(2, function(x) spectra %*% as.numeric(x))
+
+  # As data frame
+  if (N == 1) {
+    responses.spectra <- responses.spectra %>% as.list()
+  }
+  responses.spectra <- responses.spectra %>%
     tibble::as_tibble()
+
+  # Normalize spectrum
+  if (normalize) {
+    responses.spectra <- responses.spectra %>%
+      spectrace_normalize_spectra(keepNormCoefficient = FALSE)
+  }
 
   # Interpolate to desired resolution
   if (output_resolution != "spectrace") {

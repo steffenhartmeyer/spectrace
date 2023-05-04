@@ -12,7 +12,8 @@ spectrace_interpolate_spectra(
 }
 \arguments{
 \item{lightData}{Data frame containing the calibrated light data
-for the channels from 410nm to 730nm. Additional variables are allowed.}
+for the channels from 410nm to 730nm. Additional variables are allowed.
+Data needs to be in wide format (see \code{\link{spectrace_to_wide}}).}
 
 \item{resolution}{String specifying the resolution of the output
 spectrum. Can be "5nm" (default) or "1nm".}

@@ -19,6 +19,12 @@
 spectrace_calibrate_light <- function(lightData,
                                       cal_data = NULL,
                                       gain_correction = TRUE) {
+  # Ungroup data
+  if (dplyr::is_grouped_df(lightData)) {
+    warning("Data frame is grouped and will be ungrouped.")
+    lightData <- lightData %>% dplyr::ungroup()
+  }
+
   # Check whether custom calibration data provided
   if (is.null(cal_data)) {
     cal_data <- calibration
@@ -56,6 +62,9 @@ spectrace_calibrate_light <- function(lightData,
 
   # Calibrate light data
   lightData <- lightData %>%
+    # Set negatives to zero
+    dplyr::mutate(across(c(lux, dplyr::matches("\\d{3}nm")), ~ ifelse(.x < 0, 0, .x))) %>%
+    # Divide by calibration factors
     dplyr::mutate(cal_serial = ifelse(serial %in% no_serial, "Unknown", serial)) %>%
     dplyr::select(!c("760nm":"940nm")) %>%
     dplyr::rename_at(dplyr::vars("410nm":"730nm"), ~ paste0("c", .x)) %>%
@@ -77,7 +86,10 @@ spectrace_calibrate_light <- function(lightData,
       "730nm" = c730nm / c730nm_factor
     ) %>%
     dplyr::mutate(device_cal = ifelse(cal_serial == "Unknown", 0, 1)) %>%
-    dplyr::select(!c(c410nm:c730nm, c410nm_factor:c730nm_factor))
+    dplyr::select(!c(
+      c410nm:c730nm, c410nm_factor:c730nm_factor, clux_factor,
+      cal_serial
+    ))
 
   # UV gain correction
   uv_factor <- 3.5

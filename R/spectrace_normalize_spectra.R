@@ -2,7 +2,8 @@
 #'
 #' This function normalizes the spectral data.
 #'
-#' @param lightData Data frame containing the (calibrated) light data.
+#' @param lightData Data frame containing the (calibrated) light data. Data needs
+#'    to be in wide format (see \code{\link{spectrace_to_wide}}).
 #' @param method String specifying the normalization method. If method is "peak"
 #'    (default), data is normalized such that the peak (max value) is equal to 1.
 #'    If method is "AUC", data is normalized such that the area under the curve
@@ -25,18 +26,24 @@ spectrace_normalize_spectra <- function(lightData,
   # Match arguments
   method <- match.arg(method)
 
+  # Ungroup data
+  if (dplyr::is_grouped_df(lightData)) {
+    warning("Data frame is grouped and will be ungrouped.")
+    lightData <- lightData %>% dplyr::ungroup()
+  }
+
   # Get spectra
   spectra <- lightData %>%
     dplyr::select(dplyr::matches("\\d{3}nm"))
   col_names <- names(spectra)
-  wl.in = sub("nm", "", col_names) %>% as.numeric()
+  wl.in <- sub("nm", "", col_names) %>% as.numeric()
   spectra <- as.matrix(spectra)
 
-  if(method == "wavelength"){
-    if(is.null(wavelength)){
+  if (method == "wavelength") {
+    if (is.null(wavelength)) {
       stop("No wavelength for normalization specified!")
     }
-    if(!(wavelength %in% wl.in)){
+    if (!(wavelength %in% wl.in)) {
       stop("Specified wavelength not in data!")
     }
   }

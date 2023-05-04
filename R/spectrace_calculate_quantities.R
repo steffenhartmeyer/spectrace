@@ -35,11 +35,16 @@ spectrace_calculate_quantities <- function(
         "scELR", "mcELR", "lcELR", "melELR", "rodELR",
         "scDER", "mcDER", "lcDER", "melDER", "rodDER",
         "cie1924_v2_lux", "cie2008_v2_lux", "cie2008_v10_lux",
-        "CCT", "cie1931_x", "cie1931_y","cie1964_x", "cie1964_y"
+        "CCT", "cie1931_x", "cie1931_y", "cie1964_x", "cie1964_y"
       ),
     resolution = c("5nm", "1nm"),
     interp_method = c("pchip", "linear", "none"),
     keep_spectral_data = TRUE) {
+  # Ungroup data
+  if (dplyr::is_grouped_df(lightData)) {
+    warning("Data frame is grouped and will be ungrouped.")
+    lightData <- lightData %>% dplyr::ungroup()
+  }
 
   # Match arguments
   resolution <- match.arg(resolution)
@@ -141,16 +146,18 @@ spectrace_calculate_quantities <- function(
   CCT <- -449 * n^3 + 3525 * n^2 - 6823.3 * n + 5520.33
 
   # Combine into data frame
-  cData <- data.frame(aopic, aopic_edi, elr, der,
-                      cie1924_v2_lux, cie2008_v2_lux, cie2008_v10_lux,
-                      cie1931_x, cie1931_y, cie1964_x, cie1964_y, CCT)
+  cData <- data.frame(
+    aopic, aopic_edi, elr, der,
+    cie1924_v2_lux, cie2008_v2_lux, cie2008_v10_lux,
+    cie1931_x, cie1931_y, cie1964_x, cie1964_y, CCT
+  )
   names(cData) <- c(
     "sc", "mc", "lc", "mel", "rod",
     "scEDI", "mcEDI", "lcEDI", "melEDI", "rodEDI",
     "scELR", "mcELR", "lcELR", "melELR", "rodELR",
     "scDER", "mcDER", "lcDER", "melDER", "rodDER",
     "cie1924_v2_lux", "cie2008_v2_lux", "cie2008_v10_lux",
-    "cie1931_x", "cie1931_y","cie1964_x", "cie1964_y", "CCT"
+    "cie1931_x", "cie1931_y", "cie1964_x", "cie1964_y", "CCT"
   )
 
   # Select quantities

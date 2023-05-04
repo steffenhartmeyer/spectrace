@@ -22,7 +22,6 @@ spectrace_aopic <- function(lightData,
                             resolution = c("5nm", "1nm"),
                             interp_method = c("pchip", "linear", "none"),
                             keep_spectral_data = TRUE) {
-
   # Match arguments
   resolution <- match.arg(resolution)
   interp_method <- match.arg(interp_method)

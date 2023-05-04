@@ -9,6 +9,12 @@
 #'
 #' @examples
 spectrace_to_vector <- function(lightData) {
+  # Ungroup data
+  if (dplyr::is_grouped_df(lightData)) {
+    warning("Data frame is grouped and will be ungrouped.")
+    lightData <- lightData %>% dplyr::ungroup()
+  }
+
   # Get spectra
   irrData <- lightData %>%
     dplyr::select(dplyr::matches("\\d{3}nm"))

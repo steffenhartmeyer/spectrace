@@ -5,6 +5,7 @@
 #'
 #' @param lightData Data frame containing the calibrated light data
 #'    for the channels from 410nm to 730nm. Additional variables are allowed.
+#'    Data needs to be in wide format (see \code{\link{spectrace_to_wide}}).
 #' @param resolution String specifying the resolution of the output
 #'    spectrum. Can be "5nm" (default) or "1nm".
 #' @param interp_method The interpolation method. Can be either "pchip" (default)
@@ -22,6 +23,12 @@ spectrace_interpolate_spectra <- function(lightData,
   # Match arguments
   resolution <- match.arg(resolution)
   interp_method <- match.arg(interp_method)
+
+  # Ungroup data
+  if (dplyr::is_grouped_df(lightData)) {
+    warning("Data frame is grouped and will be ungrouped.")
+    lightData <- lightData %>% dplyr::ungroup()
+  }
 
   # Irradiance data
   irr_data <- lightData %>%
@@ -45,6 +52,9 @@ spectrace_interpolate_spectra <- function(lightData,
   N <- nrow(irr_data)
 
   irr_data <- irr_data[, wl.in > 380 & wl.in < 780]
+  if (N == 1) {
+    irr_data <- matrix(irr_data, nrow = 1)
+  }
 
   wl <- c(380, wl.in[wl.in > 380 & wl.in < 780], 780)
   r <- seq(0, (400 + reso.num) * (N - 1), (400 + reso.num))
@@ -52,14 +62,18 @@ spectrace_interpolate_spectra <- function(lightData,
   # Reshape irradiance data to single vector
   zeros <- rep(0, N)
   y <- as.numeric(t(cbind(zeros, irr_data, zeros)))
-  x.in <- (matrix(rep(wl, N), nrow = N, byrow = TRUE) + r) %>% t() %>% as.numeric()
-  x.out <- (matrix(rep(wl.out, N), nrow = N, byrow = TRUE) + r) %>% t() %>% as.numeric()
+  x.in <- (matrix(rep(wl, N), nrow = N, byrow = TRUE) + r) %>%
+    t() %>%
+    as.numeric()
+  x.out <- (matrix(rep(wl.out, N), nrow = N, byrow = TRUE) + r) %>%
+    t() %>%
+    as.numeric()
 
   # Interpolate
   irr_interp <- switch(interp_method,
-                       "pchip" = signal::pchip(x.in, y, x.out),
-                       "linear" = approx(x.in, y, x.out, method = "linear", rule = 2)[[2]],
-                       stop("Wrong interpolation method!")
+    "pchip" = signal::pchip(x.in, y, x.out),
+    "linear" = approx(x.in, y, x.out, method = "linear", rule = 2)[[2]],
+    stop("Wrong interpolation method!")
   )
 
   # Reshape vector to matrix

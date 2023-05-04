@@ -10,7 +10,6 @@
 #'
 #' @examples
 spectrace_from_vector <- function(lightData) {
-
   # Get wavelengths
   wavelength <- lightData$wavelength[[1]]
   col_names <- paste0(wavelength, "nm")

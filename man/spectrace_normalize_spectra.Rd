@@ -12,7 +12,8 @@ spectrace_normalize_spectra(
 )
 }
 \arguments{
-\item{lightData}{Data frame containing the (calibrated) light data.}
+\item{lightData}{Data frame containing the (calibrated) light data. Data needs
+to be in wide format (see \code{\link{spectrace_to_wide}}).}
 
 \item{method}{String specifying the normalization method. If method is "peak"
 (default), data is normalized such that the peak (max value) is equal to 1.
