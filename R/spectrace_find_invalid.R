@@ -37,9 +37,8 @@
 #'    then contain interruptions of up to the specified length. Must be specified
 #'    in the format "[numeric] [unit]", with possible units ("seconds","minutes",
 #'    "hours","days"). Units can be abbreviated.
-#' @param covered_smooth_window String. Size of smoothing window for detecting low
-#'    illuminance periods. Must be specified in the format "[numeric] [unit]", with
-#'    possible units ("seconds","minutes","hours","days"). Units can be abbreviated.
+#' @param covered_threshold Numeric. Threshold illuminance to consider sensor as
+#'    covered. Defaults to 1 lux.
 #'
 #' @return Original data frame with additional columns indicating whether a sample
 #'    is covered or nonwear and if `flag_only = FALSE` indicating the cluster indices,
@@ -54,7 +53,7 @@ spectrace_find_invalid <- function(lightData,
                                    nonwear_smooth_window = "10 mins",
                                    covered_min_length = "10 mins",
                                    covered_max_interrupt = "2 mins",
-                                   covered_smooth_window = "10 mins") {
+                                   covered_threshold = 1) {
   groups <- lightData %>% dplyr::group_vars()
   lightData <- lightData %>%
     dplyr::ungroup() %>%
@@ -69,7 +68,7 @@ spectrace_find_invalid <- function(lightData,
           nonwear_smooth_window,
           covered_min_length,
           covered_max_interrupt,
-          covered_smooth_window
+          covered_threshold
         )
       )
     ) %>%
@@ -86,7 +85,7 @@ find_invalid <- function(data,
                          nonwear_smooth_window = "10 mins",
                          covered_min_length = "10 mins",
                          covered_max_interrupt = "2 mins",
-                         covered_smooth_window = "10 mins") {
+                         covered_threshold = 1) {
   # Detect epoch
   epoch <- diff(as.numeric(data$datetime))
   if (length(unique(epoch)) > 1) {
@@ -101,12 +100,11 @@ find_invalid <- function(data,
   nonwear_smooth_window <- parse_timeunit_tosecs(nonwear_smooth_window)$secs
   covered_min_length <- parse_timeunit_tosecs(covered_min_length)$secs
   covered_max_interrupt <- parse_timeunit_tosecs(covered_max_interrupt)$secs
-  covered_smooth_window <- parse_timeunit_tosecs(covered_smooth_window)$secs
 
   # Check whether parameters are longer than epoch
   if (any(c(
     nonwear_min_length, nonwear_max_interrupt, nonwear_smooth_window * 2,
-    covered_min_length, covered_max_interrupt, covered_smooth_window * 2
+    covered_min_length, covered_max_interrupt
   ) < epoch)) {
     stop("Time parameters must be equal to or longer than the epoch.")
   }
@@ -117,7 +115,6 @@ find_invalid <- function(data,
   nonwear_smooth_window <- round(nonwear_smooth_window / epoch)
   covered_min_length <- round(covered_min_length / epoch)
   covered_max_interrupt <- round(covered_max_interrupt / epoch)
-  covered_smooth_window <- round(covered_smooth_window / epoch)
 
   # Add index column to data
   data <- data %>% dplyr::mutate(idx = 1:nrow(.))
@@ -145,7 +142,7 @@ find_invalid <- function(data,
     dplyr::mutate(is_nonwear = tidyr::replace_na(is_nonwear, FALSE))
 
   # Find periods where sensor was covered
-  low_light <- data$lux < -1 & !data$is_nonwear
+  low_light <- data$lux < covered_threshold & !data$is_nonwear
   covered <- find_clusters(
     low_light, covered_min_length,
     covered_max_interrupt, "covered"
