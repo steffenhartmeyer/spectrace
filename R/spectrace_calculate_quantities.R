@@ -10,8 +10,8 @@
 #'    "melEDI", "rodEDI", "scELR", "mcELR", "lcELR", "melELR", "rodELR",
 #'    "scDER", "mcDER", "lcDER", "melDER", "rodDER", "cie1924_v2_lux",
 #'    "cie2008_v2_lux", "cie2008_v10_lux", "CCT", "cie1931_x", "cie1931_y",
-#'    "cie1964_x", "cie1964_y"). If "ALL" (the default), all quantities will be
-#'    calculated and added to the data frame.
+#'    "cie1931_z", "cie1964_x", "cie1964_y"). If "ALL" (the default), all
+#'    quantities will be calculated and added to the data frame.
 #' @param resolution String specifying the resolution of the output
 #'    spectrum. Can be "5nm" (default) or "1nm".
 #' @param interp_method Method for interpolation. Can be "pchip" (smooth
@@ -35,7 +35,8 @@ spectrace_calculate_quantities <- function(
         "scELR", "mcELR", "lcELR", "melELR", "rodELR",
         "scDER", "mcDER", "lcDER", "melDER", "rodDER",
         "cie1924_v2_lux", "cie2008_v2_lux", "cie2008_v10_lux",
-        "CCT", "cie1931_x", "cie1931_y", "cie1964_x", "cie1964_y"
+        "CCT", "cie1931_XYZ", "cie1931_x", "cie1931_y",
+        "cie1964_x", "cie1964_y"
       ),
     resolution = c("5nm", "1nm"),
     interp_method = c("pchip", "linear", "none"),
@@ -126,18 +127,19 @@ spectrace_calculate_quantities <- function(
   der <- elr / (Kav_D65)[col(elr)]
 
   # Calculate CIE XYZ using CIE1931 color matching functions
-  CIE1931_x <- (irr_interp %*% as.numeric(cie_xyz$CIE1931_x)) * reso.num
-  CIE1931_y <- (irr_interp %*% as.numeric(cie_xyz$CIE1931_y)) * reso.num
-  CIE1931_z <- (irr_interp %*% as.numeric(cie_xyz$CIE1931_z)) * reso.num
-  CIE1931_xyz <- CIE1931_x + CIE1931_y + CIE1931_z
+  CIE1931_X <- (irr_interp %*% as.numeric(cie_xyz$CIE1931_x)) * reso.num
+  CIE1931_Y <- (irr_interp %*% as.numeric(cie_xyz$CIE1931_y)) * reso.num
+  CIE1931_Z <- (irr_interp %*% as.numeric(cie_xyz$CIE1931_z)) * reso.num
+  CIE1931_xyz <- CIE1931_X + CIE1931_Y + CIE1931_Z
   cie1931_x <- CIE1931_x / CIE1931_xyz
   cie1931_y <- CIE1931_y / CIE1931_xyz
+  cie1931_XYZ <- paste(CIE1931_X, CIE1931_Y, CIE1931_Z, sep = ",")
 
   # Calculate CIE XYZ using CIE1964 color matching functions
-  CIE1964_x <- (irr_interp %*% as.numeric(cie_xyz$CIE1964_x)) * reso.num
-  CIE1964_y <- (irr_interp %*% as.numeric(cie_xyz$CIE1964_y)) * reso.num
-  CIE1964_z <- (irr_interp %*% as.numeric(cie_xyz$CIE1964_z)) * reso.num
-  CIE1964_xyz <- CIE1964_x + CIE1964_y + CIE1964_z
+  CIE1964_X <- (irr_interp %*% as.numeric(cie_xyz$CIE1964_x)) * reso.num
+  CIE1964_Y <- (irr_interp %*% as.numeric(cie_xyz$CIE1964_y)) * reso.num
+  CIE1964_Z <- (irr_interp %*% as.numeric(cie_xyz$CIE1964_z)) * reso.num
+  CIE1964_xyz <- CIE1964_X + CIE1964_Y + CIE1964_Z
   cie1964_x <- CIE1964_x / CIE1964_xyz
   cie1964_y <- CIE1964_y / CIE1964_xyz
 
@@ -149,14 +151,14 @@ spectrace_calculate_quantities <- function(
   cData <- data.frame(
     aopic, aopic_edi, elr, der,
     cie1924_v2_lux, cie2008_v2_lux, cie2008_v10_lux,
-    cie1931_x, cie1931_y, cie1964_x, cie1964_y, CCT
+    cie1931_XYZ, cie1931_x, cie1931_y, cie1964_x, cie1964_y, CCT
   )
   names(cData) <- c(
     "sc", "mc", "lc", "mel", "rod",
     "scEDI", "mcEDI", "lcEDI", "melEDI", "rodEDI",
     "scELR", "mcELR", "lcELR", "melELR", "rodELR",
     "scDER", "mcDER", "lcDER", "melDER", "rodDER",
-    "cie1924_v2_lux", "cie2008_v2_lux", "cie2008_v10_lux",
+    "cie1924_v2_lux", "cie2008_v2_lux", "cie2008_v10_lux", "cie1931_XYZ",
     "cie1931_x", "cie1931_y", "cie1964_x", "cie1964_y", "CCT"
   )
 
