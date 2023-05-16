@@ -131,8 +131,8 @@ spectrace_calculate_quantities <- function(
   CIE1931_Y <- (irr_interp %*% as.numeric(cie_xyz$CIE1931_y)) * reso.num
   CIE1931_Z <- (irr_interp %*% as.numeric(cie_xyz$CIE1931_z)) * reso.num
   CIE1931_xyz <- CIE1931_X + CIE1931_Y + CIE1931_Z
-  cie1931_x <- CIE1931_x / CIE1931_xyz
-  cie1931_y <- CIE1931_y / CIE1931_xyz
+  cie1931_x <- CIE1931_X / CIE1931_xyz
+  cie1931_y <- CIE1931_Y / CIE1931_xyz
   cie1931_XYZ <- paste(CIE1931_X, CIE1931_Y, CIE1931_Z, sep = ",")
 
   # Calculate CIE XYZ using CIE1964 color matching functions
@@ -140,8 +140,8 @@ spectrace_calculate_quantities <- function(
   CIE1964_Y <- (irr_interp %*% as.numeric(cie_xyz$CIE1964_y)) * reso.num
   CIE1964_Z <- (irr_interp %*% as.numeric(cie_xyz$CIE1964_z)) * reso.num
   CIE1964_xyz <- CIE1964_X + CIE1964_Y + CIE1964_Z
-  cie1964_x <- CIE1964_x / CIE1964_xyz
-  cie1964_y <- CIE1964_y / CIE1964_xyz
+  cie1964_x <- CIE1964_X / CIE1964_xyz
+  cie1964_y <- CIE1964_Y / CIE1964_xyz
 
   # Calculate CCT using McCamy's approximation
   n <- (cie1931_x - 0.3320) / (cie1931_y - 0.1858)
