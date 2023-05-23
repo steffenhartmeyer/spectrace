@@ -60,8 +60,10 @@ spectrace_interpolate_spectra <- function(lightData,
   r <- seq(0, (400 + reso.num) * (N - 1), (400 + reso.num))
 
   # Reshape irradiance data to single vector
-  zeros <- rep(0, N)
-  y <- as.numeric(t(cbind(zeros, irr_data, zeros)))
+  pad.380 = ifelse(380 %in% wl.in, irr_data[wl.in == 380], rep(0, N))
+  pad.780 = ifelse(780 %in% wl.in, irr_data[wl.in == 780], rep(0, N))
+
+  y <- as.numeric(t(cbind(pad.380, irr_data, pad.780)))
   x.in <- (matrix(rep(wl, N), nrow = N, byrow = TRUE) + r) %>%
     t() %>%
     as.numeric()
