@@ -51,6 +51,9 @@ spectrace_interpolate_spectra <- function(lightData,
 
   N <- nrow(irr_data)
 
+  pad.380 = ifelse(380 %in% wl.in, irr_data[, wl.in == 380], rep(0, N))
+  pad.780 = ifelse(780 %in% wl.in, irr_data[, wl.in == 780], rep(0, N))
+
   irr_data <- irr_data[, wl.in > 380 & wl.in < 780]
   if (N == 1) {
     irr_data <- matrix(irr_data, nrow = 1)
@@ -60,9 +63,6 @@ spectrace_interpolate_spectra <- function(lightData,
   r <- seq(0, (400 + reso.num) * (N - 1), (400 + reso.num))
 
   # Reshape irradiance data to single vector
-  pad.380 = ifelse(380 %in% wl.in, irr_data[wl.in == 380], rep(0, N))
-  pad.780 = ifelse(780 %in% wl.in, irr_data[wl.in == 780], rep(0, N))
-
   y <- as.numeric(t(cbind(pad.380, irr_data, pad.780)))
   x.in <- (matrix(rep(wl, N), nrow = N, byrow = TRUE) + r) %>%
     t() %>%
@@ -73,9 +73,9 @@ spectrace_interpolate_spectra <- function(lightData,
 
   # Interpolate
   irr_interp <- switch(interp_method,
-    "pchip" = signal::pchip(x.in, y, x.out),
-    "linear" = approx(x.in, y, x.out, method = "linear", rule = 2)[[2]],
-    stop("Wrong interpolation method!")
+                       "pchip" = signal::pchip(x.in, y, x.out),
+                       "linear" = approx(x.in, y, x.out, method = "linear", rule = 2)[[2]],
+                       stop("Wrong interpolation method!")
   )
 
   # Reshape vector to matrix
