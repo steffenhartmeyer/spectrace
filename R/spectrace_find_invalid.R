@@ -128,7 +128,9 @@ find_invalid <- function(data,
       .after = ceiling(nonwear_smooth_window / 2),
       complete = FALSE
     )
-  low_act <- (act_smooth / max(act_smooth)) < 0.1
+  act_norm <- ifelse(max(act_smooth, na.rm = TRUE) > 0,
+                     act_smooth / max(act_smooth, na.rm = TRUE), 0)
+  low_act <- act_norm < 0.1
   nonwear <- find_clusters(
     low_act, nonwear_min_length,
     nonwear_max_interrupt, "nonwear"
