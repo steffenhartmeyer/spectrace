@@ -129,7 +129,7 @@ find_invalid <- function(data,
       complete = FALSE
     )
   act_max <- max(act_smooth, na.rm = TRUE)
-  act_norm <- ifelse(act_max > 0, act_smooth / act_max, 0)
+  act_norm <- ifelse(act_max > 0, act_smooth / act_max, act_smooth)
   low_act <- act_norm < 0.1
   nonwear <- find_clusters(
     low_act, nonwear_min_length,
