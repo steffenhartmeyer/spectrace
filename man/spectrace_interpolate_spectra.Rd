@@ -6,7 +6,7 @@
 \usage{
 spectrace_interpolate_spectra(
   lightData,
-  resolution = c("5nm", "1nm"),
+  resolution = c("5nm", "1nm", "spectrace"),
   interp_method = c("pchip", "linear")
 )
 }
@@ -16,7 +16,8 @@ for the channels from 410nm to 730nm. Additional variables are allowed.
 Data needs to be in wide format (see \code{\link{spectrace_to_wide}}).}
 
 \item{resolution}{String specifying the resolution of the output
-spectrum. Can be "5nm" (default) or "1nm".}
+spectrum. Can be "5nm" (default), "1nm", or "spectrace". The latter will result
+in the original 14 spectrace channels.}
 
 \item{interp_method}{The interpolation method. Can be either "pchip" (default)
 or "linear". Pchip (piecewise cubic hermetic interpolation) results in a
