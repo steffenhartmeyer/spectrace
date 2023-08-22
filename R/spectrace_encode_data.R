@@ -10,7 +10,8 @@
 spectrace_encode_data = function(lightData,
                                  referenceData = NA){
   # Source python scripts
-  reticulate::source_python(system.file("python", "autoencoder_clustering.py"))
+  reticulate::source_python(system.file("python", "autoencoder_clustering.py",
+                                        package = "spectrace"))
 
   # Ungroup data
   if (dplyr::is_grouped_df(lightData)) {
