@@ -7,7 +7,8 @@
 #'    for the channels from 410nm to 730nm. Additional variables are allowed.
 #'    Data needs to be in wide format (see \code{\link{spectrace_to_wide}}).
 #' @param resolution String specifying the resolution of the output
-#'    spectrum. Can be "5nm" (default) or "1nm".
+#'    spectrum. Can be "5nm" (default), "1nm", or "spectrace". The latter will result
+#'    in the original 14 spectrace channels.
 #' @param interp_method The interpolation method. Can be either "pchip" (default)
 #'    or "linear". Pchip (piecewise cubic hermetic interpolation) results in a
 #'    smooth spectrum while preserving the source values as local minima/maxima.
@@ -18,7 +19,7 @@
 #'
 #' @examples
 spectrace_interpolate_spectra <- function(lightData,
-                                          resolution = c("5nm", "1nm"),
+                                          resolution = c("5nm", "1nm", "spectrace"),
                                           interp_method = c("pchip", "linear")) {
   # Match arguments
   resolution <- match.arg(resolution)
@@ -28,6 +29,17 @@ spectrace_interpolate_spectra <- function(lightData,
   if (dplyr::is_grouped_df(lightData)) {
     warning("Data frame is grouped and will be ungrouped.")
     lightData <- lightData %>% dplyr::ungroup()
+  }
+
+  # Return spectrace resolution
+  if (resolution == "spectrace"){
+    irr_data <- lightData %>%
+      dplyr::select("410nm","435nm","460nm","485nm","510nm","535nm",
+                    "560nm","585nm","610nm","645nm","680nm","705nm","730nm","760nm")
+    return(
+      lightData %>% dplyr::select(!dplyr::matches("\\d{3}nm")) %>%
+        tibble::add_column(irr_data)
+    )
   }
 
   # Irradiance data

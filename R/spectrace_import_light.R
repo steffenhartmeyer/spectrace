@@ -66,9 +66,14 @@ spectrace_import_light <- function(lightFile, tz, serial_number = NA) {
     )
   }
 
+  # Add index
+  lightData <- lightData %>%
+    dplyr::mutate(idx = seq(1, nrow(.))) %>%
+    dplyr::relocate(idx)
+
   # Data column names
   col_names <- c(
-    "unix", "lux", "ch0", "ch1", "uv", "410nm", "435nm", "460nm", "485nm",
+    "idx", "unix", "lux", "ch0", "ch1", "uv", "410nm", "435nm", "460nm", "485nm",
     "510nm", "535nm", "560nm", "585nm", "610nm", "645nm", "680nm", "705nm", "730nm",
     "760nm", "810nm", "860nm", "900nm", "940nm"
   )
@@ -90,7 +95,8 @@ spectrace_import_light <- function(lightFile, tz, serial_number = NA) {
 
   # Combine data
   lightData <- dplyr::bind_rows(lightData.incorrect, lightData.correct) %>%
-    dplyr::arrange(unix)
+    dplyr::arrange(idx) %>%
+    dplyr::select(!idx)
 
   # Add datetime and serial number
   lightData <-
