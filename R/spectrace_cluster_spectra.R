@@ -143,6 +143,9 @@ spectrace_cluster_spectra <- function(lightData,
   if (return.sil | return.encoded) {
     return.dat <- list(data = lightData.clustered)
   }
+  else{
+    return.dat <- lightData.clustered
+  }
   # Return encoded data
   if (return.encoded) {
     return.dat <- c(return.dat, list(data_encoded = lightData.encoded))
