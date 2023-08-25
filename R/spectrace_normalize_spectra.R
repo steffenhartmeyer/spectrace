@@ -12,7 +12,7 @@
 #' @param wavelength Numeric. Wavelength to normalize at. Must be specified if
 #'   method is "wavelength".
 #' @param keepNormCoefficient Logical. Should the normalization coefficient be
-#'    kept in the data? Defaults to TRUE.
+#'    kept in the data? Defaults to FALSE
 #'
 #' @return The original data frame with the spectral data replaced by the
 #'    normalized spectral data.
@@ -22,7 +22,7 @@
 spectrace_normalize_spectra <- function(lightData,
                                         method = c("peak", "AUC", "wavelength"),
                                         wavelength = NULL,
-                                        keepNormCoefficient = TRUE) {
+                                        keepNormCoefficient = FALSE) {
   # Match arguments
   method <- match.arg(method)
 
@@ -50,11 +50,11 @@ spectrace_normalize_spectra <- function(lightData,
 
   # Normalize
   norm.coefficient <- switch(method,
-                             "peak" = apply(spectra, 1, max),
-                             "AUC" = apply(spectra, 1, sum),
-                             "wavelength" = spectra[, wl.in == wavelength]
+    "peak" = apply(spectra, 1, max),
+    "AUC" = apply(spectra, 1, sum),
+    "wavelength" = spectra[, wl.in == wavelength]
   )
-  norm.coefficient[norm.coefficient == 0] = 1
+  norm.coefficient[norm.coefficient == 0] <- 1
   spectra.norm <- (spectra / norm.coefficient) %>% data.frame()
   names(spectra.norm) <- col_names
 

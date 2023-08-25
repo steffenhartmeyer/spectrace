@@ -32,10 +32,12 @@ spectrace_interpolate_spectra <- function(lightData,
   }
 
   # Return spectrace resolution
-  if (resolution == "spectrace"){
+  if (resolution == "spectrace") {
     irr_data <- lightData %>%
-      dplyr::select("410nm","435nm","460nm","485nm","510nm","535nm",
-                    "560nm","585nm","610nm","645nm","680nm","705nm","730nm","760nm")
+      dplyr::select(
+        "410nm", "435nm", "460nm", "485nm", "510nm", "535nm",
+        "560nm", "585nm", "610nm", "645nm", "680nm", "705nm", "730nm", "760nm"
+      )
     return(
       lightData %>% dplyr::select(!dplyr::matches("\\d{3}nm")) %>%
         tibble::add_column(irr_data)
@@ -63,8 +65,8 @@ spectrace_interpolate_spectra <- function(lightData,
 
   N <- nrow(irr_data)
 
-  pad.380 = ifelse(380 %in% wl.in, irr_data[, wl.in == 380], rep(0, N))
-  pad.780 = ifelse(780 %in% wl.in, irr_data[, wl.in == 780], rep(0, N))
+  pad.380 <- ifelse(380 %in% wl.in, irr_data[, wl.in == 380], rep(0, N))
+  pad.780 <- ifelse(780 %in% wl.in, irr_data[, wl.in == 780], rep(0, N))
 
   irr_data <- irr_data[, wl.in > 380 & wl.in < 780]
   if (N == 1) {
@@ -85,9 +87,9 @@ spectrace_interpolate_spectra <- function(lightData,
 
   # Interpolate
   irr_interp <- switch(interp_method,
-                       "pchip" = signal::pchip(x.in, y, x.out),
-                       "linear" = approx(x.in, y, x.out, method = "linear", rule = 2)[[2]],
-                       stop("Wrong interpolation method!")
+    "pchip" = signal::pchip(x.in, y, x.out),
+    "linear" = approx(x.in, y, x.out, method = "linear", rule = 2)[[2]],
+    stop("Wrong interpolation method!")
   )
 
   # Reshape vector to matrix
