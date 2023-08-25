@@ -24,6 +24,8 @@
 #'    ids should be returned. Defaults to FALSE
 #' @param return.sil Logical, indicting whether average silhouette scores per cluster
 #'    should be returned. Defaults to FALSE.
+#' @param return.encoded Logical, indicting whether the encoded data should be returned.
+#'    Defaults to FALSE.
 #' @param return.plot Logical, indicating whether the plot should be returned.
 #'    Defaults to FALSE.
 #'

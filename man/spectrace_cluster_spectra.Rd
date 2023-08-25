@@ -52,6 +52,9 @@ ids should be returned. Defaults to FALSE}
 \item{return.sil}{Logical, indicting whether average silhouette scores per cluster
 should be returned. Defaults to FALSE.}
 
+\item{return.encoded}{Logical, indicting whether the encoded data should be returned.
+Defaults to FALSE.}
+
 \item{return.plot}{Logical, indicating whether the plot should be returned.
 Defaults to FALSE.}
 }
