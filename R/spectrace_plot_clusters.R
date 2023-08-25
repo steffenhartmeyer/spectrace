@@ -25,6 +25,7 @@ spectrace_plot_clusters <- function(lightData,
   plot1 <- lightData %>%
     dplyr::mutate(index = 1:nrow(.)) %>%
     dplyr::group_by(cluster_id) %>%
+    dplyr::mutate(N = dplyr::n()) %>%
     dplyr::slice_sample(n = samplesize) %>%
     dplyr::ungroup() %>%
     spectrace_normalize_spectra(method = "peak") %>%
@@ -34,6 +35,11 @@ spectrace_plot_clusters <- function(lightData,
     ggplot2::geom_rect(
       ggplot2::aes(xmin = 380, xmax = 780, ymin = 1.15, ymax = 1.2, fill = cluster_id),
       data = function(x) dplyr::slice(dplyr::group_by(x, cluster_id), 1)
+    ) +
+    ggplot2::geom_text(
+      ggplot2::aes(x = 380, y = 1.02, label = sprintf("N = %s", N)),
+      data = function(x) dplyr::slice(dplyr::group_by(x, cluster_id), 1),
+      hjust = 0, vjust = 0, size = 2.5,
     ) +
     ggplot2::geom_line(
       ggplot2::aes(group = index),
@@ -60,7 +66,7 @@ spectrace_plot_clusters <- function(lightData,
   if (!is.null(sil.scores)) {
     plot1 <- plot1 +
       ggplot2::geom_text(
-        ggplot2::aes(x = 380, y = 1.02, label = sprintf("Sil-score = %s", round(sil_score, 4))),
+        ggplot2::aes(x = 380, y = 1.09, label = sprintf("Sil-score = %s", round(sil_score, 4))),
         data = sil.scores, hjust = 0, vjust = 0, size = 2.5
       )
   }
@@ -112,11 +118,11 @@ spectrace_plot_clusters <- function(lightData,
       }
 
     plot <- patchwork::wrap_plots(plot1, plot.pc1, plot.pc2,
-      design = c(
-        patchwork::area(1, 1, 1, 2),
-        patchwork::area(2, 1),
-        patchwork::area(2, 2)
-      )
+                                  design = c(
+                                    patchwork::area(1, 1, 1, 2),
+                                    patchwork::area(2, 1),
+                                    patchwork::area(2, 2)
+                                  )
     )
   } else {
     plot <- plot1
