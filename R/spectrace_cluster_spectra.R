@@ -24,6 +24,8 @@
 #'    ids should be returned. Defaults to FALSE
 #' @param return.sil Logical, indicting whether average silhouette scores per cluster
 #'    should be returned. Defaults to FALSE.
+#' @param return.plot Logical, indicating whether the plot should be returned.
+#'    Defaults to FALSE.
 #'
 #' @return The original `lightData` with an additional column named 'cluster_id'
 #'    indicating the cluster of each spectrum in the data. If `clusters.only=TRUE`,

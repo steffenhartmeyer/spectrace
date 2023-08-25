@@ -14,7 +14,9 @@ spectrace_cluster_spectra(
   n.samples = 100,
   samplesize = min(N, 100 * n.clusters),
   clusters.only = FALSE,
-  return.sil = FALSE
+  return.sil = FALSE,
+  return.encoded = FALSE,
+  return.plot = FALSE
 )
 }
 \arguments{
@@ -49,6 +51,9 @@ ids should be returned. Defaults to FALSE}
 
 \item{return.sil}{Logical, indicting whether average silhouette scores per cluster
 should be returned. Defaults to FALSE.}
+
+\item{return.plot}{Logical, indicating whether the plot should be returned.
+Defaults to FALSE.}
 }
 \value{
 The original `lightData` with an additional column named 'cluster_id'
