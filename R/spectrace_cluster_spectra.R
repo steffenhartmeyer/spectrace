@@ -123,14 +123,15 @@ spectrace_cluster_spectra <- function(lightData,
 
   # Plot data
   if (encoding == "none") {
-    plot <- spectrace_plot_clusters(lightData = lightData.clustered)
+    plot <- spectrace_plot_clusters(lightData = lightData.clustered, samplesize = 500)
   }
   if (encoding == "PCA") {
     plot <- spectrace_plot_clusters(
       lightData = lightData.clustered,
       lightData.PCA = lightData.encoded %>%
         tibble::add_column(cluster_id = lightData.clustered$cluster_id),
-      sil.scores = sil.scores
+      sil.scores = sil.scores,
+      samplesize = 500
     )
   }
 
