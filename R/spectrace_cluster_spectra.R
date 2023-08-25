@@ -42,7 +42,9 @@ spectrace_cluster_spectra <- function(lightData,
                                       n.samples = 100,
                                       samplesize = min(N, 100 * n.clusters),
                                       clusters.only = FALSE,
-                                      return.sil = FALSE) {
+                                      return.sil = FALSE,
+                                      return.encoded = FALSE,
+                                      return.plot = FALSE) {
   # Set random number generator
   set.seed(1)
 
@@ -72,7 +74,8 @@ spectrace_cluster_spectra <- function(lightData,
       dplyr::filter(percent >= 0.01 | cumulative <= 0.95)
     lightData.encoded <- lightData.encoded %>%
       broom::augment() %>%
-      dplyr::select(paste0(".fittedPC", PCs$PC))
+      dplyr::rename_with(~gsub(".fitted", "", .x)) %>%
+      dplyr::select(paste0("PC", PCs$PC))
   }
   if (encoding == "none") {
     lightData.encoded <- lightData %>%
@@ -85,17 +88,16 @@ spectrace_cluster_spectra <- function(lightData,
       kmeans(centers = n.clusters, nstart = n.init, algorithm = "MacQueen", iter.max = 100)
     lightData.clustered <- lightData %>% tibble::add_column(cluster_id = kmeans$cluster)
 
+    # Calculate silhouette scores
     subsample <- function(x) {
       i <- sample(1:N, samplesize, replace = TRUE)
       x <- kmeans$cluster[i]
       d <- dist(lightData.encoded[i, ])
       summary(cluster::silhouette(x, d))$clus.avg.widths
     }
-    if (return.sil) {
-      sil.scores <- sapply(1:n.samples, subsample) %>%
-        apply(1, mean) %>%
-        as.numeric()
-    }
+    sil.scores <- sapply(1:n.samples, subsample) %>%
+      apply(1, mean) %>%
+      as.numeric()
   }
   # kmedoids clustering using pam
   if (method == "kmedoids-pam") {
@@ -112,14 +114,43 @@ spectrace_cluster_spectra <- function(lightData,
     sil.scores <- clara$silinfo$clus.avg.widths
   }
 
+  # Sil scores to data frame
+  sil.scores <- tibble::tibble(cluster_id = 1:n.clusters, sil_score = sil.scores)
+
+  # Plot data
+  if (encoding == "none") {
+    plot = spectrace_plot_clusters(lightData = lightData.clustered)
+  }
+  if (encoding == "PCA"){
+    plot = spectrace_plot_clusters(
+      lightData = lightData.clustered,
+      lightData.PCA = lightData.encoded %>%
+        tibble::add_column(cluster_id = lightData.clustered$cluster_id),
+      sil.scores = sil.scores
+    )
+  }
+
+  # Return clustering vector instead of data frame
   if (clusters.only) {
     lightData.clustered <- lightData.clustered$cluster_id
   }
-
-  if (return.sil) {
-    sil.scores <- tibble::tibble(cluster_id = 1:n.clusters, sil_score = sil.scores)
-    return(list(data = lightData.clustered, sil_scores = sil.scores))
-  } else {
-    return(lightData.clustered)
+  # Return as list
+  if (return.sil | return.encoded) {
+    return.dat <- list(data = lightData.clustered)
   }
+  # Return encoded data
+  if (return.encoded) {
+    return.dat <- c(return.dat, list(data_encoded = lightData.encoded))
+  }
+  # Return silhouette scores
+  if (return.sil) {
+    return.dat <- c(return.dat, list(sil_scores = sil.scores))
+  }
+
+  # Return plot
+  if(return.plot) {
+    return.dat <- c(return.dat, list(plot = plot))
+  }
+
+  return(return.dat)
 }
