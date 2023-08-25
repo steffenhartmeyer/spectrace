@@ -90,13 +90,25 @@ spectrace_cluster_spectra <- function(lightData,
   if (method == "kmeans") {
     kmeans <- lightData.encoded %>%
       kmeans(centers = n.clusters, nstart = n.init, algorithm = "MacQueen", iter.max = 100)
-    lightData.clustered <- lightData %>% tibble::add_column(cluster_id = kmeans$cluster)
+    lightData.clustered <- lightData %>%
+      tibble::add_column(cluster_id = kmeans$cluster)
+    lightData.encoded.clustered <-lightData.encoded %>%
+      tibble::add_column(cluster_id = kmeans$cluster)
+
+    n.clust = lightData.clustered %>% dplyr::count(cluster_id)
+    if(any(n.clust$n < 2)){
+      stop("At least one cluster consists of less than 2 observations.
+           Data cannot be clustered further")
+    }
 
     # Calculate silhouette scores
     subsample <- function(x) {
-      i <- sample(1:N, samplesize, replace = TRUE)
-      x <- kmeans$cluster[i]
-      d <- dist(lightData.encoded[i, ])
+      sample <- lightData.encoded.clustered %>%
+        dplyr::group_by(cluster_id) %>%
+        dplyr::slice_sample(n = samplesize / n.clusters) %>%
+        dplyr::ungroup()
+      x <- sample$cluster_id
+      d <- sample %>% dplyr::select(!cluster_id) %>% dist()
       summary(cluster::silhouette(x, d))$clus.avg.widths
     }
     sil.scores <- sapply(1:n.samples, subsample) %>%
