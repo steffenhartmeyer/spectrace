@@ -56,7 +56,7 @@ spectrace_cluster_spectra <- function(lightData,
   method <- match.arg(method)
 
   N <- nrow(lightData)
-  if(samplesize > N){
+  if (samplesize > N) {
     samplesize <- N
   }
 
@@ -76,7 +76,7 @@ spectrace_cluster_spectra <- function(lightData,
       dplyr::filter(percent >= 0.01 | cumulative <= 0.95)
     lightData.encoded <- lightData.encoded %>%
       broom::augment() %>%
-      dplyr::rename_with(~gsub(".fitted", "", .x)) %>%
+      dplyr::rename_with(~ gsub(".fitted", "", .x)) %>%
       dplyr::select(paste0("PC", PCs$PC))
   }
   if (encoding == "none") {
@@ -121,10 +121,10 @@ spectrace_cluster_spectra <- function(lightData,
 
   # Plot data
   if (encoding == "none") {
-    plot = spectrace_plot_clusters(lightData = lightData.clustered)
+    plot <- spectrace_plot_clusters(lightData = lightData.clustered)
   }
-  if (encoding == "PCA"){
-    plot = spectrace_plot_clusters(
+  if (encoding == "PCA") {
+    plot <- spectrace_plot_clusters(
       lightData = lightData.clustered,
       lightData.PCA = lightData.encoded %>%
         tibble::add_column(cluster_id = lightData.clustered$cluster_id),
@@ -150,7 +150,7 @@ spectrace_cluster_spectra <- function(lightData,
   }
 
   # Return plot
-  if(return.plot) {
+  if (return.plot) {
     return.dat <- c(return.dat, list(plot = plot))
   }
 

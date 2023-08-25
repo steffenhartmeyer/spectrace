@@ -12,11 +12,21 @@ Depends:
     R (>= 2.10)
 Imports: 
     dplyr,
+    tidyr,
+    tibble,
     lubridate,
     magrittr,
     signal,
     reticulate,
-    cluster
+    cluster,
+    ggplot2,
+    scales,
+    broom,
+    lemon,
+    patchwork,
+    slider, 
+    stringr,
+    readr,
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
