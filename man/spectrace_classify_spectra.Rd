@@ -6,7 +6,7 @@
 \usage{
 spectrace_classify_spectra(
   lightData,
-  referenceData,
+  referenceData = NULL,
   aggregation = c("median", "mean"),
   method = c("correlation"),
   n.classes = 5
@@ -17,10 +17,11 @@ spectrace_classify_spectra(
 to be in wide format (see \code{\link{spectrace_to_wide}}). Classification
 will be performed on the aggregated data (e.g. median) per group.}
 
-\item{referenceData}{Data frame containing the reference spectra. Needs to
+\item{referenceData}{(Optional) data frame containing the reference spectra. Needs to
 contain the same wavelength columns as `lightData`. Must consist of unique
 spectra and must contain a column named `spectrum_id` identifying each
-spectrum.}
+spectrum. If not provided, the in-built reference spectra are used (see
+\code{\link{spectrace_reference_spectra}}).}
 
 \item{aggregation}{Aggregation method. Must be one of ['median', 'mean']. Defaults
 to 'median'.}

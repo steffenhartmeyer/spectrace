@@ -4,7 +4,7 @@
 \alias{spectrace_encode_data}
 \title{Title}
 \usage{
-spectrace_encode_data(lightData, referenceData = NA)
+spectrace_encode_data(lightData, referenceData = NULL)
 }
 \arguments{
 \item{referenceData}{}
