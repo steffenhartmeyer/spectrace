@@ -13,9 +13,17 @@
 spectrace_reference_spectra = function(as_spectrace = TRUE,
                                        resolution = "5nm"
                                        ){
-  reference_spectra_1nm %>%
-    spectra_to_spectrace() %>%
-    spectrace_interpolate_spectra(resolution = resolution)
+
+  if(as_spectrace){
+    reference_spectra_1nm %>%
+      spectra_to_spectrace() %>%
+      spectrace_interpolate_spectra(resolution = resolution)
+  }
+  else{
+    reference_spectra_1nm %>%
+      spectrace_interpolate_spectra(resolution = resolution)
+  }
+
 }
 
 #' Return CIE Illuminants
@@ -33,7 +41,13 @@ spectrace_reference_spectra = function(as_spectrace = TRUE,
 spectrace_cie_illuminants = function(as_spectrace = TRUE,
                                      resolution = "5nm"
                                      ){
-  cie_illuminants_1nm %>%
-    spectra_to_spectrace() %>%
-    spectrace_interpolate_spectra()
+  if(as_spectrace){
+    cie_illuminants_1nm %>%
+      spectra_to_spectrace() %>%
+      spectrace_interpolate_spectra(resolution = resolution)
+  }
+  else{
+    cie_illuminants_1nm %>%
+      spectrace_interpolate_spectra(resolution = resolution)
+  }
 }
