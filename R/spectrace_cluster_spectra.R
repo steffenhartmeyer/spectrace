@@ -147,6 +147,28 @@ spectrace_cluster_spectra <- function(lightData,
     )
   }
 
+  # Print summary
+  print.header = "SPECTRACE CLUSTERING SUMMARY"
+  print.encoding = sprintf("Encoding method: %s", encoding)
+  if (encoding == "PCA") {
+    print.pca =
+      sprintf(
+        "Number of principal components: %s\nVariance explained by PCs: %s",
+        nrow(PCs),
+        str_flatten(paste0(round(PCs$percent,2)*100, "%"), collapse = " ")
+      )
+    print.encoding = paste(print.encoding, print.pca, sep = "\n")
+  }
+  print.clustering =
+    sprintf(
+      "Clustering method: %s\nNumber of clusters: %s\nMean silhouette score: %s",
+      method,
+      n.clusters,
+      round(mean(sil.scores$sil_score), 4)
+    )
+  cat(paste(print.header, print.encoding, print.clustering, sep = "\n\n"), "\n")
+
+
   # Return clustering vector instead of data frame
   if (clusters.only) {
     lightData.clustered <- lightData.clustered$cluster_id
