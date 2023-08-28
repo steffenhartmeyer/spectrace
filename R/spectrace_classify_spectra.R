@@ -7,10 +7,11 @@
 #' @param lightData (Grouped) data frame containing the (calibrated) light data. Data needs
 #'    to be in wide format (see \code{\link{spectrace_to_wide}}). Classification
 #'    will be performed on the aggregated data (e.g. median) per group.
-#' @param referenceData Data frame containing the reference spectra. Needs to
+#' @param referenceData (Optional) data frame containing the reference spectra. Needs to
 #'    contain the same wavelength columns as `lightData`. Must consist of unique
 #'    spectra and must contain a column named `spectrum_id` identifying each
-#'    spectrum.
+#'    spectrum. If not provided, the in-built reference spectra are used (see
+#'    \code{\link{spectrace_reference_spectra}}).
 #' @param aggregation Aggregation method. Must be one of ['median', 'mean']. Defaults
 #'    to 'median'.
 #' @param method Classification method. Must be one of ['correlation']. Defaults to
@@ -24,7 +25,7 @@
 #'
 #' @examples
 spectrace_classify_spectra <- function(lightData,
-                                       referenceData,
+                                       referenceData = NULL,
                                        aggregation = c("median", "mean"),
                                        method = c("correlation"),
                                        n.classes = 5) {
@@ -47,12 +48,17 @@ spectrace_classify_spectra <- function(lightData,
     select(dplyr::matches("\\d{3}nm")) %>%
     names()
 
-  # Check reference data
-  if (!"spectrum_id" %in% names(referenceData)) {
-    stop("Reference data must contain a 'spectrum_id' column!")
+  if (is.null(referenceData)){
+    referenceData = spectrace_reference_spectra(resolution = "1nm")
   }
-  if (!all(wl.names %in% names(referenceData))) {
-    stop("Reference data must contain the same spectral columns as the light data!")
+  else{
+    # Check reference data
+    if (!"spectrum_id" %in% names(referenceData)) {
+      stop("Reference data must contain a 'spectrum_id' column!")
+    }
+    if (!all(wl.names %in% names(referenceData))) {
+      stop("Reference data must contain the same spectral columns as the light data!")
+    }
   }
 
   # Reference data as matrix

@@ -8,7 +8,7 @@
 #'
 #' @examples
 spectrace_encode_data <- function(lightData,
-                                  referenceData = NA) {
+                                  referenceData = NULL) {
   # Source python scripts
   reticulate::source_python(system.file("python", "autoencoder_clustering.py",
     package = "spectrace"
@@ -20,17 +20,32 @@ spectrace_encode_data <- function(lightData,
     lightData <- lightData %>% dplyr::ungroup()
   }
 
-  # Prepare spectrace data
-  irr_data <- lightData %>% dplyr::select(dplyr::matches("\\d{3}nm"))
+  # Spectral channels
+  wl.names <- lightData %>%
+    ungroup() %>%
+    select(dplyr::matches("\\d{3}nm")) %>%
+    names()
 
-  # Check reference data
-  if (!"type" %in% names(referenceData)) {
-    stop("Reference data must contain a 'type' column!")
+  if (is.null(referenceData)){
+    referenceData = spectrace_reference_spectra(resolution = "1nm")
   }
-  if (!all(names(irr_data) %in% names(referenceData))) {
-    stop("Reference data must contain the same spectral columns as the light data!")
+  else{
+    # Check reference data
+    if (!"type" %in% names(referenceData)) {
+      stop("Reference data must contain a 'type' column!")
+    }
+    if (!all(wl.names %in% names(referenceData))) {
+      stop("Reference data must contain the same spectral columns as the light data!")
+    }
   }
-  ref_data <- referenceData %>% dplyr::select(type, names(irr_data))
+
+  # Prepare spectrace data
+  irr_data <- lightData %>%
+    spectrace_normalize_spectra() %>%
+    dplyr::select(dplyr::matches("\\d{3}nm"))
+  ref_data <- referenceData %>%
+    spectrace_normalize_spectra() %>%
+    dplyr::select(type, all_of(wl.names))
 
   # Encode data
   data.encoded <- py_encode_data(irr_data, ref_data)
