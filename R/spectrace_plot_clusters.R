@@ -5,6 +5,10 @@
 #'    `cluster_id` column.
 #' @param lightData.PCA (Optional) data frame containing the principal components
 #'    after PCA of the lightData. Must contain a `cluster_id` column. Defaults to NULL.
+#' @param classification (Optional) data frame with classification per cluster.
+#'    Must contain a `cluster_id` column, a `spectrum_id`column with the name of the
+#'    predicted spectrum, and the spectral data of each predicted spectrum in the same
+#'    resolution as `lightData`.
 #' @param sil.scores (Optional) data frame with silhouette scores per cluster.
 #'    Must contain a `cluster_id` and `sil_score` column. Defaults to NULL.
 #' @param samplesize (Optional) Integer, indicating the size of the random sample of spectra
@@ -16,6 +20,7 @@
 #' @examples
 spectrace_plot_clusters <- function(lightData,
                                     lightData.PCA = NULL,
+                                    classification = NULL,
                                     sil.scores = NULL,
                                     samplesize = NULL) {
   if (is.null(samplesize)) {
@@ -47,7 +52,7 @@ spectrace_plot_clusters <- function(lightData,
     ) +
     ggplot2::stat_summary(
       ggplot2::aes(group = 1, color = cluster_id),
-      fun = "median", geom = "line", size = 0.6
+      fun = "median", geom = "line", linewidth = 0.6
     ) +
     lemon::facet_rep_wrap(~ sprintf("Cluster %s", cluster_id)) +
     ggplot2::scale_y_continuous(breaks = c(0, 0.25, 0.5, 0.75, 1), limits = c(0, 1.2)) +
@@ -62,6 +67,19 @@ spectrace_plot_clusters <- function(lightData,
       panel.spacing.x = ggplot2::unit(-1.5, "lines"),
       panel.spacing.y = ggplot2::unit(-1, "lines"),
     )
+
+  if(!is.null(classification)) {
+    classification = classification %>% spectrace_to_long()
+    plot1 <- plot1 +
+      ggplot2::geom_line(
+        ggplot2::aes(group = 1, color = as.character(cluster_id)),
+        data = classification, linetype = 2, linewidth = 0.6,
+      ) +
+      ggplot2::geom_text(
+        ggplot2::aes(x = 380, y = 1.15, label = spectrum_id),
+        data = classification, hjust = 0, vjust = 0, size = 2.5
+      )
+  }
 
   if (!is.null(sil.scores)) {
     plot1 <- plot1 +

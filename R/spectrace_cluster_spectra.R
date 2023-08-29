@@ -20,6 +20,11 @@
 #'    algorithm and bootstrapped silhouette score for the kmeans algorithm. Can be
 #'    between 1 and N, with N being the number of observations. Defaults to
 #'    `min(N, 100 * n.clusters)`.
+#' @param classify Logical, indicating whether the cluster medians should be classified.
+#'    See \code{\link{spectrace_classify_spectra}}. Defaults to FALSE.
+#' @param referenceData Data frame with the reference data for classification.
+#'    See \code{\link{spectrace_classify_spectra}}. If not provided (default), the
+#'    in-built reference data will be used.
 #' @param clusters.only Logical, indicating whether only a vector with the cluster
 #'    ids should be returned. Defaults to FALSE
 #' @param return.sil Logical, indicting whether average silhouette scores per cluster
@@ -45,10 +50,13 @@ spectrace_cluster_spectra <- function(lightData,
                                       n.init = 100,
                                       n.samples = 100,
                                       samplesize = min(N, 100 * n.clusters),
+                                      classify = FALSE,
+                                      referenceData = NULL,
                                       clusters.only = FALSE,
                                       return.sil = FALSE,
                                       return.encoded = FALSE,
-                                      return.plot = FALSE) {
+                                      return.plot = FALSE,
+                                      return.classification = FALSE) {
   # Set random number generator
   set.seed(1)
 
@@ -133,19 +141,38 @@ spectrace_cluster_spectra <- function(lightData,
   # Sil scores to data frame
   sil.scores <- tibble::tibble(cluster_id = 1:n.clusters, sil_score = sil.scores)
 
-  # Plot data
-  if (encoding == "none") {
-    plot <- spectrace_plot_clusters(lightData = lightData.clustered, samplesize = 500)
-  }
+  # PCA in plot
   if (encoding == "PCA") {
-    plot <- spectrace_plot_clusters(
-      lightData = lightData.clustered,
-      lightData.PCA = lightData.encoded %>%
-        tibble::add_column(cluster_id = lightData.clustered$cluster_id),
-      sil.scores = sil.scores,
-      samplesize = 500
-    )
+    lightData.PCA = lightData.encoded %>%
+      tibble::add_column(cluster_id = lightData.clustered$cluster_id)
   }
+  else{
+    lightData.PCA = NULL
+  }
+
+  # Classification
+  if (classify) {
+    if(is.null(referenceData)){
+      referenceData = spectrace_reference_spectra()
+    }
+    classification = lightData.clustered %>%
+      dplyr::group_by(cluster_id) %>%
+      spectrace_classify_spectra(referenceData, n.classes = 5) %>%
+      dplyr::rename(spectrum_id = classification) %>%
+      dplyr::left_join(referenceData, by = "spectrum_id")
+  }
+  else{
+    classification = NULL
+  }
+
+  # Plot clusters
+  plot <- spectrace_plot_clusters(
+    lightData = lightData.clustered,
+    lightData.PCA = lightData.PCA,
+    classification = dplyr::slice(classification, 1, .by = "cluster_id") ,
+    sil.scores = sil.scores,
+    samplesize = 500
+  )
 
   # Print summary
   print.header = "SPECTRACE CLUSTERING SUMMARY"
@@ -174,7 +201,7 @@ spectrace_cluster_spectra <- function(lightData,
     lightData.clustered <- lightData.clustered$cluster_id
   }
   # Return as list
-  if (return.sil | return.encoded) {
+  if (return.sil | return.encoded | return.plot | return.classification) {
     return.dat <- list(data = lightData.clustered)
   }
   else{
@@ -188,10 +215,13 @@ spectrace_cluster_spectra <- function(lightData,
   if (return.sil) {
     return.dat <- c(return.dat, list(sil_scores = sil.scores))
   }
-
   # Return plot
   if (return.plot) {
     return.dat <- c(return.dat, list(plot = plot))
+  }
+  # Return plot
+  if (return.plot) {
+    return.dat <- c(return.dat, list(classification = classification))
   }
 
   return(return.dat)

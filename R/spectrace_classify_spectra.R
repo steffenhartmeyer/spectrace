@@ -88,7 +88,8 @@ spectrace_classify_spectra <- function(lightData,
       ) %>%
       tidyr::unnest(cols = c(classification, coeff)) %>%
       dplyr::select(!data) %>%
-      dplyr::arrange(desc(coeff), .by_group = TRUE)
+      dplyr::arrange(desc(coeff), .by_group = TRUE) %>%
+      dplyr::ungroup()
   }
 
   return(classification)
