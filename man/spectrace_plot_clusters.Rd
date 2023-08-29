@@ -7,6 +7,7 @@
 spectrace_plot_clusters(
   lightData,
   lightData.PCA = NULL,
+  classification = NULL,
   sil.scores = NULL,
   samplesize = NULL
 )
@@ -18,6 +19,11 @@ to be in wide format (see \code{\link{spectrace_to_wide}}). Must contain a
 
 \item{lightData.PCA}{(Optional) data frame containing the principal components
 after PCA of the lightData. Must contain a `cluster_id` column. Defaults to NULL.}
+
+\item{classification}{(Optional) data frame with classification per cluster.
+Must contain a `cluster_id` column, a `spectrum_id`column with the name of the
+predicted spectrum, and the spectral data of each predicted spectrum in the same
+resolution as `lightData`.}
 
 \item{sil.scores}{(Optional) data frame with silhouette scores per cluster.
 Must contain a `cluster_id` and `sil_score` column. Defaults to NULL.}

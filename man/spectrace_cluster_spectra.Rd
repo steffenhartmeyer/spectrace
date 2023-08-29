@@ -13,10 +13,13 @@ spectrace_cluster_spectra(
   n.init = 100,
   n.samples = 100,
   samplesize = min(N, 100 * n.clusters),
+  classify = FALSE,
+  referenceData = NULL,
   clusters.only = FALSE,
   return.sil = FALSE,
   return.encoded = FALSE,
-  return.plot = FALSE
+  return.plot = FALSE,
+  return.classification = FALSE
 )
 }
 \arguments{
@@ -46,6 +49,13 @@ algorithm and bootstrapped silhouette score for the kmeans algorithm. Can be
 between 1 and N, with N being the number of observations. Defaults to
 `min(N, 100 * n.clusters)`.}
 
+\item{classify}{Logical, indicating whether the cluster medians should be classified.
+See \code{\link{spectrace_classify_spectra}}. Defaults to FALSE.}
+
+\item{referenceData}{Data frame with the reference data for classification.
+See \code{\link{spectrace_classify_spectra}}. If not provided (default), the
+in-built reference data will be used.}
+
 \item{clusters.only}{Logical, indicating whether only a vector with the cluster
 ids should be returned. Defaults to FALSE}
 
@@ -57,6 +67,9 @@ Defaults to FALSE.}
 
 \item{return.plot}{Logical, indicating whether the plot should be returned.
 Defaults to FALSE.}
+
+\item{return.classification}{Logical, indicating whether the classification
+should be returned. Defaults to FALSE.}
 }
 \value{
 The original `lightData` with an additional column named 'cluster_id'

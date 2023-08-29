@@ -33,6 +33,8 @@
 #'    Defaults to FALSE.
 #' @param return.plot Logical, indicating whether the plot should be returned.
 #'    Defaults to FALSE.
+#' @param return.classification Logical, indicating whether the classification
+#'    should be returned. Defaults to FALSE.
 #'
 #' @return The original `lightData` with an additional column named 'cluster_id'
 #'    indicating the cluster of each spectrum in the data. If `clusters.only=TRUE`,
