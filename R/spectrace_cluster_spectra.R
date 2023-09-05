@@ -51,7 +51,7 @@ spectrace_cluster_spectra <- function(lightData,
                                       n.clusters,
                                       n.init = 100,
                                       n.samples = 100,
-                                      samplesize = min(N, 100 * n.clusters),
+                                      samplesize = 100 * n.clusters,
                                       classify = FALSE,
                                       referenceData = NULL,
                                       clusters.only = FALSE,
@@ -115,7 +115,7 @@ spectrace_cluster_spectra <- function(lightData,
     subsample <- function(x) {
       sample <- lightData.encoded.clustered %>%
         dplyr::group_by(cluster_id) %>%
-        dplyr::slice_sample(n = samplesize / n.clusters) %>%
+        dplyr::slice_sample(n = floor(samplesize / n.clusters)) %>%
         dplyr::ungroup()
       x <- sample$cluster_id
       d <- sample %>% dplyr::select(!cluster_id) %>% dist()
