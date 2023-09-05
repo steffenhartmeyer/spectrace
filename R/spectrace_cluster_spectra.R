@@ -171,7 +171,9 @@ spectrace_cluster_spectra <- function(lightData,
   plot <- spectrace_plot_clusters(
     lightData = lightData.clustered,
     lightData.PCA = lightData.PCA,
-    classification = dplyr::slice(classification, 1, .by = "cluster_id") ,
+    classification = ifelse(!is.null(classification),
+                            dplyr::slice(classification, 1, .by = "cluster_id"),
+                            NULL),
     sil.scores = sil.scores,
     samplesize = 500
   )
