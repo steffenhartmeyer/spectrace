@@ -96,10 +96,10 @@ spectrace_plot_clusters <- function(lightData,
       # dplyr::summarise(dplyr::across(dplyr::starts_with("PC"), list(mean, )) %>%
       tidyr::pivot_longer(dplyr::starts_with("PC"), names_to = "PC", values_to = "val") %>%
       ggplot2::ggplot(ggplot2::aes(x = PC, y = val, group = cluster_id)) +
-      ggplot2::geom_hline(yintercept = 0, linetype = 2, size = 0.4, color = "grey70") +
+      ggplot2::geom_hline(yintercept = 0, linetype = 2, linewidth = 0.4, color = "grey70") +
       ggplot2::stat_summary(
         ggplot2::aes(color = cluster_id),
-        geom = "line", fun = "mean", size = 0.6
+        geom = "line", fun = "mean", linewidth = 0.6
       ) +
       ggplot2::stat_summary(
         ggplot2::aes(fill = cluster_id),
@@ -120,8 +120,8 @@ spectrace_plot_clusters <- function(lightData,
       dplyr::group_by(cluster_id) %>%
       {
         ggplot2::ggplot(data = ., ggplot2::aes(x = PC1, y = PC2, color = cluster_id, group = cluster_id)) +
-          ggplot2::geom_hline(yintercept = 0, linetype = 2, size = 0.4, color = "grey70") +
-          ggplot2::geom_vline(xintercept = 0, linetype = 2, size = 0.4, color = "grey70") +
+          ggplot2::geom_hline(yintercept = 0, linetype = 2, linewidth = 0.4, color = "grey70") +
+          ggplot2::geom_vline(xintercept = 0, linetype = 2, linewidth = 0.4, color = "grey70") +
           ggplot2::geom_point(shape = 1, size = 0.01) +
           ggplot2::stat_ellipse(type = "norm", color = "black") +
           ggplot2::scale_x_continuous(limits = c(-max(abs(c(.$PC1, .$PC2))), max(abs(c(.$PC1, .$PC2))))) +
