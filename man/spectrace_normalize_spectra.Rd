@@ -8,7 +8,7 @@ spectrace_normalize_spectra(
   lightData,
   method = c("peak", "AUC", "wavelength"),
   wavelength = NULL,
-  keepNormCoefficient = FALSE
+  keepNormCoefficient = TRUE
 )
 }
 \arguments{
@@ -25,7 +25,7 @@ wavelength.}
 method is "wavelength".}
 
 \item{keepNormCoefficient}{Logical. Should the normalization coefficient be
-kept in the data? Defaults to FALSE}
+kept in the data? Defaults to TRUE.}
 }
 \value{
 The original data frame with the spectral data replaced by the

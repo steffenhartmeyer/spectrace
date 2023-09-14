@@ -224,8 +224,8 @@ spectrace_cluster_spectra <- function(lightData,
   if (return.plot) {
     return.dat <- c(return.dat, list(plot = plot))
   }
-  # Return plot
-  if (return.plot) {
+  # Return classification
+  if (return.classification) {
     return.dat <- c(return.dat, list(classification = classification))
   }
 
