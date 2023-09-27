@@ -77,6 +77,33 @@ find_clusters <- function(x, min_length, max_interrupt = 0, cluster_name = "clus
   return(intervals)
 }
 
+find_cluster_timings = function(x, datetime){
+  x1 = x
+  x2 = c(Inf, x[1:length(x)-1])
+  start_indices = which(x1 != x2)
+
+  x1 = c(x[2:length(x)], Inf)
+  x2 = x
+  end_indices = which(x1 != x2)
+
+  ranges <- as.numeric(matrix(rbind(start_indices, end_indices), nrow = 2))
+
+  intervals <-
+    matrix(ranges, ncol = 2, byrow = TRUE) %>%
+    as.data.frame() %>%
+    magrittr::set_names(c("cluster_start", "cluster_end")) %>%
+    dplyr::mutate(cluster_idx = 1:length(cluster_start)) %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(idx = list(seq(cluster_start, cluster_end))) %>%
+    tidyr::unnest(cols = c(idx)) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(cluster_start = datetime[cluster_start],
+                  cluster_end = datetime[cluster_end]+60) %>%
+    dplyr::select(cluster_idx, cluster_start, cluster_end)
+
+  return(intervals)
+}
+
 # flag_clusters3 = function(x, min_length, max_interrupt = min_length*0.25, max_prop=0.25){
 #   x = replace_na(x, FALSE)
 #   targets = c(0, x, 0)

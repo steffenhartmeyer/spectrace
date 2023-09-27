@@ -12,7 +12,7 @@ spectrace_find_invalid(
   nonwear_smooth_window = "10 mins",
   covered_min_length = "10 mins",
   covered_max_interrupt = "2 mins",
-  covered_smooth_window = "10 mins"
+  covered_threshold = 1
 )
 }
 \arguments{
@@ -52,9 +52,8 @@ then contain interruptions of up to the specified length. Must be specified
 in the format "[numeric] [unit]", with possible units ("seconds","minutes",
 "hours","days"). Units can be abbreviated.}
 
-\item{covered_smooth_window}{String. Size of smoothing window for detecting low
-illuminance periods. Must be specified in the format "[numeric] [unit]", with
-possible units ("seconds","minutes","hours","days"). Units can be abbreviated.}
+\item{covered_threshold}{Numeric. Threshold illuminance to consider sensor as
+covered. Defaults to 1 lux.}
 }
 \value{
 Original data frame with additional columns indicating whether a sample

@@ -50,11 +50,11 @@ spectrace_normalize_spectra <- function(lightData,
 
   # Normalize
   norm.coefficient <- switch(method,
-                             "peak" = apply(spectra, 1, max),
-                             "AUC" = apply(spectra, 1, sum),
-                             "wavelength" = spectra[, wl.in == wavelength]
+    "peak" = apply(spectra, 1, max),
+    "AUC" = apply(spectra, 1, sum),
+    "wavelength" = spectra[, wl.in == wavelength]
   )
-  norm.coefficient[norm.coefficient == 0] = 1
+  norm.coefficient[norm.coefficient == 0] <- 1
   spectra.norm <- (spectra / norm.coefficient) %>% data.frame()
   names(spectra.norm) <- col_names
 

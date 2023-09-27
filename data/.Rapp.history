@@ -5,3 +5,4 @@ load("/Users/steffenhartmeyer/Library/CloudStorage/OneDrive-epfl.ch/R/Packages/s
 write.csv(cie_xyz_1nm, file = "cie_xyz_1nm.csv")
 load("/Users/steffenhartmeyer/Library/CloudStorage/OneDrive-epfl.ch/R/Packages/spectrace/data/v_lambda_1nm.rda")
 write.csv(v_lambda_1nm, file = "v_lambda_1nm.csv")
+load("/Users/steffenhartmeyer/Library/CloudStorage/OneDrive-epfl.ch/R/Packages/spectrace/data/calibration.rda")

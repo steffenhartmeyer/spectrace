@@ -28,7 +28,8 @@ spectrace_classify_spectra <- function(lightData,
                                        referenceData = NULL,
                                        aggregation = c("median", "mean"),
                                        method = c("correlation"),
-                                       n.classes = 5) {
+                                       n.classes = 5,
+                                       return.spectra = TRUE) {
   # Function to pick the n largest values
   maxn <- function(x, n) {
     partial <- length(x) - n + 1
@@ -90,6 +91,17 @@ spectrace_classify_spectra <- function(lightData,
       dplyr::select(!data) %>%
       dplyr::arrange(desc(coeff), .by_group = TRUE) %>%
       dplyr::ungroup()
+  }
+
+  if(return.spectra){
+    classification <- classification %>%
+      dplyr::left_join(
+        referenceData %>% select(
+          classification = spectrum_id,
+          dplyr::matches("\\d{3}nm")
+        ),
+        by = "classification"
+      )
   }
 
   return(classification)
