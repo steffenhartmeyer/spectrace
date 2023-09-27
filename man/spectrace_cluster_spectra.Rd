@@ -12,7 +12,7 @@ spectrace_cluster_spectra(
   n.clusters,
   n.init = 100,
   n.samples = 100,
-  samplesize = min(N, 100 * n.clusters),
+  samplesize = 100 * n.clusters,
   classify = FALSE,
   referenceData = NULL,
   clusters.only = FALSE,

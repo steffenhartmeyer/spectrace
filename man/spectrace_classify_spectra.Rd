@@ -9,7 +9,8 @@ spectrace_classify_spectra(
   referenceData = NULL,
   aggregation = c("median", "mean"),
   method = c("correlation"),
-  n.classes = 5
+  n.classes = 5,
+  return.spectra = TRUE
 )
 }
 \arguments{
