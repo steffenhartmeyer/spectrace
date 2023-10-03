@@ -57,7 +57,7 @@ spectra_to_spectrace <- function(spectralData,
   # Choose spectrace responses in matching resolution
   spectrace_responses <- switch(resolution,
     "1nm" = spectrace_responses_1nm,
-    "5nm" = spectrace_responses_5nm
+    "5nm" = spectrace_responses_1nm[seq(1,401,5),]
   )
 
   # Concolve with Spectrace responses

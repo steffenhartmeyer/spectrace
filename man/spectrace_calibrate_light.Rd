@@ -4,7 +4,7 @@
 \alias{spectrace_calibrate_light}
 \title{Calibrate raw spectrace data}
 \usage{
-spectrace_calibrate_light(lightData, cal_data = NULL, gain_correction = TRUE)
+spectrace_calibrate_light(lightData, cal_data = NULL)
 }
 \arguments{
 \item{lightData}{Data frame with light data.}
@@ -12,14 +12,11 @@ spectrace_calibrate_light(lightData, cal_data = NULL, gain_correction = TRUE)
 \item{cal_data}{Data frame with calibration factors. Must consist of the
 following columns: "serial", "lux", "410nm", "435nm", "460nm", "485nm",
 "510nm", "535nm","560nm", "585nm", "610nm", "645nm", "680nm", "705nm",
-"730nm", "760nm".}
-
-\item{gain_correction}{Logical. Should calibration factors be corrected for
-high gain when UV > 9? Defaults to TRUE.}
+"730nm", "760nm", "gain".}
 }
 \value{
 Data frame with calibrated spectral irradiance data in W/m2 (Watts
-   per square-meter). Columns >730nm are removed.
+   per square-meter). Columns >760nm are removed.
 }
 \description{
 This function calibrates the raw light data of the spectrace sensors based

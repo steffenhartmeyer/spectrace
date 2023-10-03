@@ -7,16 +7,18 @@
 #' @param cal_data Data frame with calibration factors. Must consist of the
 #'    following columns: "serial", "lux", "410nm", "435nm", "460nm", "485nm",
 #'    "510nm", "535nm","560nm", "585nm", "610nm", "645nm", "680nm", "705nm",
-#'    "730nm", "760nm", "gain".
+#'    "730nm", "760nm".
+#' @param gain_correction Logical. Should calibration factors be corrected for
+#'    high gain when UV > 9? Defaults to TRUE.
 #'
 #' @return Data frame with calibrated spectral irradiance data in W/m2 (Watts
-#'    per square-meter). Columns >760nm are removed.
+#'    per square-meter). Columns >730nm are removed.
 #' @export
 #'
 #' @examples
-spectrace_calibrate_light2 <- function(lightData,
-                                       cal_data = NULL
-) {
+spectrace_calibrate_light_old <- function(lightData,
+                                      cal_data = NULL,
+                                      gain_correction = TRUE) {
   # Ungroup data
   if (dplyr::is_grouped_df(lightData)) {
     warning("Data frame is grouped and will be ungrouped.")
@@ -25,7 +27,7 @@ spectrace_calibrate_light2 <- function(lightData,
 
   # Check whether custom calibration data provided
   if (is.null(cal_data)) {
-    cal_data <- calibration
+    cal_data <- calibration.old
   }
 
   # Stop if column names of calibration data do not match
@@ -33,7 +35,7 @@ spectrace_calibrate_light2 <- function(lightData,
     "serial", "lux", "410nm", "435nm",
     "460nm", "485nm", "510nm", "535nm",
     "560nm", "585nm", "610nm", "645nm",
-    "680nm", "705nm", "730nm", "760nm", "gain"
+    "680nm", "705nm", "730nm", "760nm"
   )
   if (!all(col_names == names(cal_data))) {
     stop("Calibration file columns are not correct!")
@@ -50,20 +52,22 @@ spectrace_calibrate_light2 <- function(lightData,
 
   # Get calibration factors
   cal_factors <- cal_data %>%
-    # dplyr::add_row(calibration_avg) %>%
     dplyr::rename(cal_serial = serial) %>%
-    dplyr::rename_at(dplyr::vars(lux, "410nm":"760nm", gain), ~paste0("c", .x, "_factor"))
+    dplyr::select(!"760nm") %>%
+    dplyr::rename_at(
+      dplyr::vars(lux, "410nm":"730nm"),
+      ~ paste0("c", .x, "_factor")
+    )
 
   # Calibrate light data
   lightData <- lightData %>%
-    spectrace_to_long() %>%
-    dplyr::filter(dplyr::between(wl, 410, 760)) %>%
-    spectrace_to_wide() %>%
+    spectrace_interpolate_spectra("spectrace") %>%
     # Set negatives to zero
     dplyr::mutate(across(c(lux, dplyr::matches("\\d{3}nm")), ~ ifelse(.x < 0, 0, .x))) %>%
     # Divide by calibration factors
     dplyr::mutate(cal_serial = ifelse(serial %in% no_serial, "Unknown", serial)) %>%
-    dplyr::rename_at(dplyr::vars("410nm":"760nm"), ~ paste0("c", .x)) %>%
+    dplyr::select(!c("760nm")) %>%
+    dplyr::rename_at(dplyr::vars("410nm":"730nm"), ~ paste0("c", .x)) %>%
     dplyr::left_join(cal_factors, by = c("cal_serial")) %>%
     dplyr::mutate(
       lux = lux / clux_factor,
@@ -79,14 +83,23 @@ spectrace_calibrate_light2 <- function(lightData,
       "645nm" = c645nm / c645nm_factor,
       "680nm" = c680nm / c680nm_factor,
       "705nm" = c705nm / c705nm_factor,
-      "730nm" = c730nm / c730nm_factor,
-      "760nm" = c760nm / c760nm_factor
+      "730nm" = c730nm / c730nm_factor
     ) %>%
-    dplyr::mutate(dplyr::across(c("410nm":"760nm"), ~ ifelse(uv > 9, .x * cgain_factor, .x))) %>%
+    dplyr::mutate(device_cal = ifelse(cal_serial == "Unknown", 0, 1)) %>%
     dplyr::select(!c(
-      c410nm:c760nm, c410nm_factor:c760nm_factor, clux_factor,
-      cal_serial, cgain_factor
+      c410nm:c730nm, c410nm_factor:c730nm_factor, clux_factor,
+      cal_serial
     ))
+
+  # UV gain correction
+  uv_factor <- 3.5
+  if (gain_correction) {
+    lightData <- lightData %>%
+      dplyr::mutate_at(
+        dplyr::vars("410nm":"730nm"),
+        ~ ifelse(uv > 9, .x * uv_factor, .x)
+      )
+  }
 
   return(lightData)
 }
