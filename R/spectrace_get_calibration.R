@@ -1,4 +1,4 @@
-#' Return defualt calibration data
+#' Return default calibration data
 #'
 #' @return
 #' @export
