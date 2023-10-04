@@ -37,10 +37,6 @@ spectrace_plot_clusters <- function(lightData,
     spectrace_to_long() %>%
     dplyr::mutate(cluster_id = as.character(cluster_id)) %>%
     ggplot2::ggplot(ggplot2::aes(x = wl, y = val)) +
-    ggplot2::geom_rect(
-      ggplot2::aes(xmin = 380, xmax = 780, ymin = 1.15, ymax = 1.2, fill = cluster_id),
-      data = function(x) dplyr::slice(dplyr::group_by(x, cluster_id), 1)
-    ) +
     ggplot2::geom_text(
       ggplot2::aes(x = 380, y = 1.02, label = sprintf("N = %s", N)),
       data = function(x) dplyr::slice(dplyr::group_by(x, cluster_id), 1),
@@ -55,7 +51,6 @@ spectrace_plot_clusters <- function(lightData,
       fun = "median", geom = "line", linewidth = 0.6
     ) +
     lemon::facet_rep_wrap(~ sprintf("Cluster %s", cluster_id)) +
-    ggplot2::scale_y_continuous(breaks = c(0, 0.25, 0.5, 0.75, 1), limits = c(0, 1.2)) +
     ggplot2::scale_x_continuous(breaks = c(450, 550, 650, 750)) +
     ggplot2::labs(x = "Wavelength (nm)", y = "Relative Power (-)") +
     ggplot2::theme_classic() +
@@ -68,26 +63,30 @@ spectrace_plot_clusters <- function(lightData,
       panel.spacing.y = ggplot2::unit(-1, "lines"),
     )
 
-  if(!is.null(classification)) {
-    classification = classification %>% spectrace_to_long()
-    plot1 <- plot1 +
-      ggplot2::geom_line(
-        ggplot2::aes(group = 1, color = as.character(cluster_id)),
-        data = classification, linetype = 2, linewidth = 0.6,
-      ) +
-      ggplot2::geom_text(
-        ggplot2::aes(x = 380, y = 1.15, label = spectrum_id),
-        data = classification, hjust = 0, vjust = 0, size = 2.5
-      )
-  }
-
   if (!is.null(sil.scores)) {
     plot1 <- plot1 +
       ggplot2::geom_text(
-        ggplot2::aes(x = 380, y = 1.09, label = sprintf("Sil-score = %s", round(sil_score, 4))),
+        ggplot2::aes(x = 380, y = 1.12, label = sprintf("Sil-score = %s", round(sil_score, 4))),
         data = sil.scores, hjust = 0, vjust = 0, size = 2.5
       )
   }
+
+  if(!is.null(classification)) {
+    classification.spectra = classification %>% spectrace_to_long()
+    plot1 <- plot1 +
+      ggplot2::geom_line(
+        ggplot2::aes(group = 1, color = as.character(cluster_id)),
+        data = classification.spectra, linetype = 2, linewidth = 0.6,
+      ) +
+      ggplot2::geom_text(
+        ggplot2::aes(x = 380, y = 1.22, label = spectrum_id),
+        data = classification, hjust = 0, vjust = 0, size = 2.5,
+        fontface='bold'
+      )
+  }
+
+  plot1 <- plot1 +
+    ggplot2::scale_y_continuous(breaks = c(0, 0.25, 0.5, 0.75, 1), limits = c(0, 1.32))
 
   if (!is.null(lightData.PCA)) {
     plot.pc1 <- lightData.PCA %>%
@@ -137,9 +136,9 @@ spectrace_plot_clusters <- function(lightData,
 
     plot <- patchwork::wrap_plots(plot1, plot.pc1, plot.pc2,
                                   design = c(
-                                    patchwork::area(1, 1, 1, 2),
-                                    patchwork::area(2, 1),
-                                    patchwork::area(2, 2)
+                                    patchwork::area(1, 1, 2, 2),
+                                    patchwork::area(3, 1),
+                                    patchwork::area(3, 2)
                                   )
     )
   } else {

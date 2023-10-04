@@ -13,7 +13,7 @@ spectrace_process_clusters = function(lightData,
   groups <- lightData %>% dplyr::group_vars()
   if(regularise){
     lightData <- lightData %>%
-      spectrace_regularise_data(timeVar)
+      spectrace_regularise_data({{datetimeVar}})
   }
 
   lightData <- lightData %>%

@@ -80,11 +80,11 @@ find_clusters <- function(x, min_length, max_interrupt = 0, cluster_name = "clus
 find_cluster_timings = function(x, datetime){
   x1 = x
   x2 = c(Inf, x[1:length(x)-1])
-  start_indices = which(x1 != x2)
+  start_indices = which(x1 != x2 | xor(is.na(x1), is.na(x2)))
 
   x1 = c(x[2:length(x)], Inf)
   x2 = x
-  end_indices = which(x1 != x2)
+  end_indices = which(x1 != x2 | xor(is.na(x1), is.na(x2)))
 
   ranges <- as.numeric(matrix(rbind(start_indices, end_indices), nrow = 2))
 
