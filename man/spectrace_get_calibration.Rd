@@ -2,10 +2,10 @@
 % Please edit documentation in R/spectrace_get_calibration.R
 \name{spectrace_get_calibration}
 \alias{spectrace_get_calibration}
-\title{Return defualt calibration data}
+\title{Return default calibration data}
 \usage{
 spectrace_get_calibration()
 }
 \description{
-Return defualt calibration data
+Return default calibration data
 }

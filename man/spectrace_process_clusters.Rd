@@ -4,7 +4,11 @@
 \alias{spectrace_process_clusters}
 \title{Process spectral clusters}
 \usage{
-spectrace_process_clusters(lightData, datetimeVar = datetime)
+spectrace_process_clusters(
+  lightData,
+  datetimeVar = datetime,
+  regularise = TRUE
+)
 }
 \arguments{
 \item{lightData}{The light data}

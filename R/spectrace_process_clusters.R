@@ -8,8 +8,14 @@
 #'
 #' @examples
 spectrace_process_clusters = function(lightData,
-                                      datetimeVar = datetime){
+                                      datetimeVar = datetime,
+                                      regularise = TRUE){
   groups <- lightData %>% dplyr::group_vars()
+  if(regularise){
+    lightData <- lightData %>%
+      spectrace_regularise_data(timeVar)
+  }
+
   lightData <- lightData %>%
     dplyr::ungroup() %>%
     dplyr::nest_by(dplyr::pick(dplyr::all_of(groups))) %>%
