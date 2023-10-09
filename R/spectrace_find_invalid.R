@@ -87,7 +87,7 @@ find_invalid <- function(data,
                          covered_max_interrupt = "2 mins",
                          covered_threshold = 1) {
   # Detect epoch
-  epoch <- diff(as.numeric(data$datetime))
+  epoch <- abs(diff(as.numeric(data$datetime)))
   if (length(unique(epoch)) > 1) {
     warning("Data not regularly spaced. Selecting shortest epoch.")
     epoch <- sort(epoch)
