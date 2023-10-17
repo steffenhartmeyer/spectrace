@@ -69,13 +69,11 @@ spectrace_calculate_quantities <- function(
     if (interp_method != "none") {
       warning("Data seems already interpolated. Proceeding without interpolation.")
     }
-    irr_interp <- irr_data %>%
-      as.matrix()
+    irr_interp <- irr_data
   } else {
     if (setequal(wl.in, wl.1nm)) {
       warning("Resolution lower than that of data. Proceeding with original resolution")
-      irr_interp <- irr_data %>%
-        as.matrix()
+      irr_interp <- irr_data
       reso.num <- 1
       wl.out <- wl.1nm
     } else {
@@ -86,8 +84,7 @@ spectrace_calculate_quantities <- function(
         spectrace_interpolate_spectra(
           resolution = resolution,
           interp_method = interp_method
-        ) %>%
-        as.matrix()
+        )
     }
   }
 
@@ -97,6 +94,15 @@ spectrace_calculate_quantities <- function(
     warning("Data containes negative values. Replaced negative values by zero.")
     irr_interp[negatives] <- 0
   }
+
+  # Normalize data
+  irr_interp_norm <- irr_interp %>%
+    spectrace_normalize_spectra() %>%
+    as.matrix()
+
+  # As matrix
+  irr_interp <- irr_interp %>%
+    as.matrix()
 
   # Match response functions to resolution
   v_lambda <- v_lambda_1nm %>% dplyr::filter(wl %in% wl.out)
@@ -127,18 +133,18 @@ spectrace_calculate_quantities <- function(
   der <- elr / (Kav_D65)[col(elr)]
 
   # Calculate CIE XYZ using CIE1931 color matching functions
-  CIE1931_X <- (irr_interp %*% as.numeric(cie_xyz$CIE1931_x)) * reso.num
-  CIE1931_Y <- (irr_interp %*% as.numeric(cie_xyz$CIE1931_y)) * reso.num
-  CIE1931_Z <- (irr_interp %*% as.numeric(cie_xyz$CIE1931_z)) * reso.num
+  CIE1931_X <- (irr_interp_norm %*% as.numeric(cie_xyz$CIE1931_x)) * reso.num
+  CIE1931_Y <- (irr_interp_norm %*% as.numeric(cie_xyz$CIE1931_y)) * reso.num
+  CIE1931_Z <- (irr_interp_norm %*% as.numeric(cie_xyz$CIE1931_z)) * reso.num
   CIE1931_xyz <- CIE1931_X + CIE1931_Y + CIE1931_Z
   cie1931_x <- CIE1931_X / CIE1931_xyz
   cie1931_y <- CIE1931_Y / CIE1931_xyz
   cie1931_XYZ <- paste(CIE1931_X, CIE1931_Y, CIE1931_Z, sep = ",")
 
   # Calculate CIE XYZ using CIE1964 color matching functions
-  CIE1964_X <- (irr_interp %*% as.numeric(cie_xyz$CIE1964_x)) * reso.num
-  CIE1964_Y <- (irr_interp %*% as.numeric(cie_xyz$CIE1964_y)) * reso.num
-  CIE1964_Z <- (irr_interp %*% as.numeric(cie_xyz$CIE1964_z)) * reso.num
+  CIE1964_X <- (irr_interp_norm %*% as.numeric(cie_xyz$CIE1964_x)) * reso.num
+  CIE1964_Y <- (irr_interp_norm %*% as.numeric(cie_xyz$CIE1964_y)) * reso.num
+  CIE1964_Z <- (irr_interp_norm %*% as.numeric(cie_xyz$CIE1964_z)) * reso.num
   CIE1964_xyz <- CIE1964_X + CIE1964_Y + CIE1964_Z
   cie1964_x <- CIE1964_X / CIE1964_xyz
   cie1964_y <- CIE1964_Y / CIE1964_xyz
