@@ -160,7 +160,8 @@ spectrace_cluster_spectra <- function(lightData,
     classification = lightData.clustered %>%
       dplyr::group_by(cluster_id) %>%
       spectrace_classify_spectra(referenceData, n.classes = 5) %>%
-      dplyr::rename(spectrum_id = classification)
+      dplyr::rename(spectrum_id = classification) %>%
+      dplyr::left_join(referenceData, by = "spectrum_id")
 
     classification.best = dplyr::slice(classification, 1, .by = "cluster_id")
   }
