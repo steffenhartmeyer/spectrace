@@ -10,7 +10,7 @@
 #'    "melEDI", "rodEDI", "scELR", "mcELR", "lcELR", "melELR", "rodELR",
 #'    "scDER", "mcDER", "lcDER", "melDER", "rodDER", "cie1924_v2_lux",
 #'    "cie2008_v2_lux", "cie2008_v10_lux", "CCT", "cie1931_x", "cie1931_y",
-#'    "cie1931_z", "cie1964_x", "cie1964_y"). If "ALL" (the default), all
+#'    "cie1931_XYZ", "cie1964_x", "cie1964_y"). If "ALL" (the default), all
 #'    quantities will be calculated and added to the data frame.
 #' @param resolution String specifying the resolution of the output
 #'    spectrum. Can be "5nm" (default) or "1nm".

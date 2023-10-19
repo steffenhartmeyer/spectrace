@@ -99,31 +99,9 @@ spectrace_cluster_spectra <- function(lightData,
   # kmeans clustering
   if (method == "kmeans") {
     kmeans <- lightData.encoded %>%
-      kmeans(centers = n.clusters, nstart = n.init, algorithm = "MacQueen", iter.max = 100)
-    lightData.clustered <- lightData %>%
-      tibble::add_column(cluster_id = kmeans$cluster)
-    lightData.encoded.clustered <-lightData.encoded %>%
-      tibble::add_column(cluster_id = kmeans$cluster)
-
-    n.clust = lightData.clustered %>% dplyr::count(cluster_id)
-    if(any(n.clust$n < 2)){
-      stop("At least one cluster consists of less than 2 observations.
-           Data cannot be clustered further")
-    }
-
-    # Calculate silhouette scores
-    subsample <- function(x) {
-      sample <- lightData.encoded.clustered %>%
-        dplyr::group_by(cluster_id) %>%
-        dplyr::slice_sample(n = floor(samplesize / n.clusters)) %>%
-        dplyr::ungroup()
-      x <- sample$cluster_id
-      d <- sample %>% dplyr::select(!cluster_id) %>% dist()
-      summary(cluster::silhouette(x, d))$clus.avg.widths
-    }
-    sil.scores <- sapply(1:n.samples, subsample) %>%
-      apply(1, mean) %>%
-      as.numeric()
+      kmeans_sil(k, n.init, 100, n.samples, samplesize)
+    lightData.clustered <- lightData %>% tibble::add_column(cluster_id = kmeans$clustering)
+    sil.scores <- kmeans$clus.avg.widths
   }
   # kmedoids clustering using pam
   if (method == "kmedoids-pam") {
@@ -131,7 +109,6 @@ spectrace_cluster_spectra <- function(lightData,
     lightData.clustered <- lightData %>% tibble::add_column(cluster_id = pam$clustering)
     sil.scores <- pam$silinfo$clus.avg.widths
   }
-
   # kmedoids clustering using clara
   if (method == "kmedoids-clara") {
     clara <- lightData.encoded %>%
@@ -160,8 +137,7 @@ spectrace_cluster_spectra <- function(lightData,
     classification = lightData.clustered %>%
       dplyr::group_by(cluster_id) %>%
       spectrace_classify_spectra(referenceData, n.classes = 5) %>%
-      dplyr::rename(spectrum_id = classification) %>%
-      dplyr::left_join(referenceData, by = "spectrum_id")
+      dplyr::rename(spectrum_id = classification)
 
     classification.best = dplyr::slice(classification, 1, .by = "cluster_id")
   }
