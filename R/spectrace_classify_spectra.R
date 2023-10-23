@@ -1,8 +1,9 @@
-#' Classify aggregated spectra
+#' Classify spectra
 #'
-#' This function classifies (groups) of spectra by first aggregating the data and
-#' then correlating the aggregated spectra to reference spectra, identifying the best
-#' matching reference spectra.
+#' This function classifies each spectrum (i.e. row) by encoding the spectra using PCA
+#' on the reference data and calculating the pairwise distance between the reference
+#' and measured spectra. The reference spectrum with the minimum distance to the
+#' measured spectrum is taken as the classification.
 #'
 #' @param lightData (Grouped) data frame containing the (calibrated) light data. Data needs
 #'    to be in wide format (see \code{\link{spectrace_to_wide}}). Classification
@@ -12,36 +13,21 @@
 #'    spectra and must contain a column named `spectrum_id` identifying each
 #'    spectrum. If not provided, the in-built reference spectra are used (see
 #'    \code{\link{spectrace_reference_spectra}}).
-#' @param aggregation Aggregation method. Must be one of ['median', 'mean']. Defaults
-#'    to 'median'.
-#' @param method Classification method. Must be one of ['correlation']. Defaults to
-#'    'correlation'.
-#' @param n.classes Integer indicating the number of predicted classes per group
-#'    to include in the output. Defaults to 5.
+#' @param distance Distance metric to use. Options are: "euclidian" (default).
+#' @param return.encoded Logical. Add encoded principal components to data frame.
+#'    Defaults to FALSE.
 #'
-#' @return A data frame with the best 'n.classes' classifications (i.e. the
-#'    'spectrum_id') and corresponding coefficients per group.
+#' @return The original data with a new column for the classification. If `return.encoded`
+#'    is TRUE then columns with the principal component loadings are added.
 #' @export
 #'
 #' @examples
 spectrace_classify_spectra <- function(lightData,
                                        referenceData = NULL,
-                                       aggregation = c("median", "mean"),
-                                       method = c("correlation"),
-                                       n.classes = 5,
-                                       return.spectra = TRUE) {
-  # Function to pick the n largest values
-  maxn <- function(x, n) {
-    partial <- length(x) - n + 1
-    x[x >= sort(x, partial = partial)[partial]]
-  }
+                                       distance = c("euclidian"),
+                                       return.encoded = FALSE) {
 
-  # Match arguments
-  aggregation <- match.arg(aggregation)
-  method <- match.arg(method)
-
-  # Grouping vars
-  group_vars <- group_vars(lightData)
+  distance = match.arg(distance)
 
   # Spectral channels
   wl.names <- lightData %>%
@@ -62,47 +48,43 @@ spectrace_classify_spectra <- function(lightData,
     }
   }
 
-  # Reference data as matrix
-  referenceData.mat <- referenceData %>%
+  # PCA on reference data
+  refData.pca <- referenceData %>%
     spectrace_normalize_spectra(method = "AUC") %>%
-    dplyr::select(spectrum_id, all_of(wl.names)) %>%
-    spectrace_to_long() %>%
-    tidyr::pivot_wider(names_from = spectrum_id, values_from = val) %>%
-    dplyr::select(!wl)
+    dplyr::select(dplyr::matches("\\d{3}nm")) %>%
+    stats::prcomp(center = T)
+  PCs <- refData.pca %>%
+    broom::tidy(matrix = "eigenvalues") %>%
+    dplyr::filter(percent >= 0.01 | cumulative <= 0.95)
+  refData.encoded <- refData.pca %>%
+    broom::augment() %>%
+    dplyr::rename_with(~ gsub(".fitted", "", .x)) %>%
+    dplyr::select(paste0("PC", PCs$PC)) %>%
+    as.matrix()
 
-  # Aggregate light data
-  lightData.aggregated <- lightData %>%
-    dplyr::summarise_at(dplyr::vars(dplyr::matches("\\d{3}nm")), aggregation) %>%
-    dplyr::ungroup()
+  # Encode light data
+  lightData.encoded <- lightData %>%
+    spectrace_normalize_spectra(method = "AUC") %>%
+    dplyr::select(dplyr::matches("\\d{3}nm")) %>%
+    stats::predict(refData.pca, newdata=.) %>%
+    tibble::as_tibble() %>%
+    dplyr::select(paste0("PC", PCs$PC)) %>%
+    as.matrix()
 
-  # Classify light data
-  if (method == "correlation") {
-    classification <- lightData.aggregated %>%
-      spectrace_normalize_spectra(method = "AUC") %>%
-      dplyr::nest_by(across(all_of(group_vars))) %>%
-      dplyr::mutate(cor(as.numeric(data), referenceData.mat) %>% tibble::as_tibble()) %>%
-      dplyr::select(!data) %>%
-      dplyr::nest_by(across(all_of(group_vars))) %>%
-      dplyr::mutate(
-        classification = list(names(data)[which(as.numeric(data) %in% maxn(as.numeric(data), n.classes))]),
-        coeff = list(round(maxn(as.numeric(data), n.classes), 4))
-      ) %>%
-      tidyr::unnest(cols = c(classification, coeff)) %>%
-      dplyr::select(!data) %>%
-      dplyr::arrange(desc(coeff), .by_group = TRUE) %>%
-      dplyr::ungroup()
+  # Calculate distance matrix
+  if(distance == "euclidian"){
+    distmat <- dist.euclidian(lightData.encoded, refData.encoded) %>% t()
   }
 
-  if(return.spectra){
-    classification <- classification %>%
-      dplyr::left_join(
-        referenceData %>% select(
-          classification = spectrum_id,
-          dplyr::matches("\\d{3}nm")
-        ),
-        by = "classification"
-      )
+  # Classify by closest distance
+  indices.closest <- apply(distmat, 1, FUN = which.min)
+  lightData <- lightData %>%
+    tibble::add_column(classification = referenceData$spectrum_id[indices.closest])
+
+  if(return.encoded){
+    lightData <- lightData %>%
+      tibble::add_column(lightData.encoded)
   }
 
-  return(classification)
+  return(lightData)
 }

@@ -77,7 +77,7 @@ find_clusters <- function(x, min_length, max_interrupt = 0, cluster_name = "clus
   return(intervals)
 }
 
-find_cluster_timings = function(x, datetime){
+find_cluster_timings = function(x, datetime, sampling_int = 60){
   x1 = x
   x2 = c(Inf, x[1:length(x)-1])
   start_indices = which(x1 != x2 | xor(is.na(x1), is.na(x2)))
@@ -98,7 +98,7 @@ find_cluster_timings = function(x, datetime){
     tidyr::unnest(cols = c(idx)) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(cluster_start = datetime[cluster_start],
-                  cluster_end = datetime[cluster_end]+60) %>%
+                  cluster_end = datetime[cluster_end]+sampling_int) %>%
     dplyr::select(cluster_idx, cluster_start, cluster_end)
 
   return(intervals)
@@ -173,6 +173,9 @@ find_clusters2 <- function(x,
   return(intervals)
 }
 
+
+# Kmeans with silhouette score
+
 kmeans_sil = function(data, k, n.start, iter.max, n.samples, samplesize){
   kmeans = data %>%
     stats::kmeans(centers = k, nstart = n.start, iter.max = iter.max, algorithm = "MacQueen")
@@ -198,4 +201,8 @@ kmeans_sil = function(data, k, n.start, iter.max, n.samples, samplesize){
   sil.scores <- sapply(1:n.samples, subsample) %>% apply(1, mean) %>% as.numeric()
 
   list(clustering = kmeans$cluster, clus.avg.widths = sil.scores)
+}
+# Distance function helper
+dist.euclidian = function(S, R){
+  sqrt(outer(rowSums(R^2), rowSums(S^2), "+") - 2 * tcrossprod(R, S))
 }
