@@ -24,7 +24,7 @@
 #' @export
 #'
 #' @examples
-spectrace_classify_spectra <- function(lightData,
+spectrace_classify_clusters <- function(lightData,
                                        referenceData = NULL,
                                        aggregation = c("median", "mean"),
                                        method = c("correlation"),
