@@ -44,8 +44,16 @@ spectrace_interpolate_spectra <- function(lightData,
     )
   }
 
+  # Add row index
+  lightData <- lightData %>%
+    dplyr::mutate(row_id = 1:nrow(.))
+
+  # Make data without missing values
+  lightData_noNA <- lightData %>%
+    tidyr::drop_na(dplyr::matches("\\d{3}nm"))
+
   # Irradiance data
-  irr_data <- lightData %>%
+  irr_data <- lightData_noNA %>%
     dplyr::select(dplyr::matches("\\d{3}nm")) %>%
     as.matrix()
 
@@ -87,19 +95,34 @@ spectrace_interpolate_spectra <- function(lightData,
 
   # Interpolate
   irr_interp <- switch(interp_method,
-    "pchip" = signal::pchip(x.in, y, x.out),
-    "linear" = approx(x.in, y, x.out, method = "linear", rule = 2)[[2]],
-    stop("Wrong interpolation method!")
+                       "pchip" = signal::pchip(x.in, y, x.out),
+                       "linear" = approx(x.in, y, x.out, method = "linear", rule = 2)[[2]],
+                       stop("Wrong interpolation method!")
   )
 
   # Reshape vector to matrix
   irr_interp <- t(matrix(irr_interp, ncol = N))
   irr_interp[irr_interp < 0] <- 0
 
+  # Interpolated data frame
   irr_interp <- data.frame(irr_interp)
   names(irr_interp) <- paste0(wl.out, "nm")
-
-  lightData %>%
+  lightData_noNA <- lightData_noNA %>%
     dplyr::select(!dplyr::matches("\\d{3}nm")) %>%
     tibble::add_column(irr_interp)
+
+  # Empty data frame
+  na.frame <-
+    matrix(NA, nrow = nrow(lightData)-nrow(lightData_noNA), ncol = ncol(irr_interp)) %>%
+    data.frame()
+  names(na.frame) <- names(irr_interp)
+
+  # Add back to original data frame
+  lightData %>%
+    dplyr::filter(dplyr::if_any(dplyr::matches("\\d{3}nm"), is.na)) %>%
+    dplyr::select(!dplyr::matches("\\d{3}nm")) %>%
+    tibble::add_column(na.frame) %>%
+    rbind(lightData_noNA) %>%
+    dplyr::arrange(row_id) %>%
+    dplyr::select(!row_id)
 }

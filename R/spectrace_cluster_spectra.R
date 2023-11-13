@@ -99,7 +99,7 @@ spectrace_cluster_spectra <- function(lightData,
   # kmeans clustering
   if (method == "kmeans") {
     kmeans <- lightData.encoded %>%
-      kmeans_sil(k, n.init, 100, n.samples, samplesize)
+      kmeans_sil(k = n.clusters, n.init, 100, n.samples, samplesize)
     lightData.clustered <- lightData %>% tibble::add_column(cluster_id = kmeans$clustering)
     sil.scores <- kmeans$clus.avg.widths
   }
