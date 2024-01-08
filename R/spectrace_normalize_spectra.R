@@ -11,6 +11,8 @@
 #'    wavelength.
 #' @param wavelength Numeric. Wavelength to normalize at. Must be specified if
 #'   method is "wavelength".
+#' @param response String specifying which response function should be used to
+#'    normalise to. Can be one of ("vl", "sc", "mc", "lc", "rod", "mel").
 #' @param keepNormCoefficient Logical. Should the normalization coefficient be
 #'    kept in the data? Defaults to FALSE
 #'
@@ -20,8 +22,9 @@
 #'
 #' @examples
 spectrace_normalize_spectra <- function(lightData,
-                                        method = c("peak", "AUC", "wavelength"),
+                                        method = c("peak", "AUC", "wavelength", "response"),
                                         wavelength = NULL,
+                                        response = c("vl", "sc", "mc", "lc", "rod", "mel"),
                                         keepNormCoefficient = FALSE) {
   # Match arguments
   method <- match.arg(method)
@@ -48,12 +51,22 @@ spectrace_normalize_spectra <- function(lightData,
     }
   }
 
+  if (method == "response") {
+    response <- match.arg(response)
+    response <- ifelse(response == "vl", "cie1924_v2_lux", response)
+  }
+
   # Normalize
-  norm.coefficient <- switch(method,
-    "peak" = apply(spectra, 1, max),
-    "AUC" = apply(spectra, 1, sum),
-    "wavelength" = spectra[, wl.in == wavelength]
-  )
+  norm.coefficient <-
+    switch(
+      method,
+      "peak" = apply(spectra, 1, max),
+      "AUC" = apply(spectra, 1, sum),
+      "wavelength" = spectra[, wl.in == wavelength],
+      "response" = lightData %>%
+        spectrace_calculate_quantities(response) %>%
+        dplyr::pull(response),
+    )
   norm.coefficient[norm.coefficient == 0] <- 1
   spectra.norm <- (spectra / norm.coefficient) %>% data.frame()
   names(spectra.norm) <- col_names
