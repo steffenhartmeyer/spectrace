@@ -10,7 +10,7 @@
 #'    "melEDI", "rodEDI", "scELR", "mcELR", "lcELR", "melELR", "rodELR",
 #'    "scDER", "mcDER", "lcDER", "melDER", "rodDER", "cie1924_v2_lux",
 #'    "cie2008_v2_lux", "cie2008_v10_lux", "CCT", "cie1931_x", "cie1931_y",
-#'    "cie1931_XYZ", "cie1964_x", "cie1964_y"). If "ALL" (the default), all
+#'    "cie1931_XYZ", "cie1964_x", "cie1964_y", "CLA", "CS"). If "ALL" (the default), all
 #'    quantities will be calculated and added to the data frame.
 #' @param resolution String specifying the resolution of the output
 #'    spectrum. Can be "5nm" (default) or "1nm".
@@ -36,7 +36,7 @@ spectrace_calculate_quantities <- function(
         "scDER", "mcDER", "lcDER", "melDER", "rodDER",
         "cie1924_v2_lux", "cie2008_v2_lux", "cie2008_v10_lux",
         "CCT", "cie1931_XYZ", "cie1931_x", "cie1931_y",
-        "cie1964_x", "cie1964_y"
+        "cie1964_x", "cie1964_y", "CLA", "CS"
       ),
     resolution = c("5nm", "1nm"),
     interp_method = c("pchip", "linear", "none"),
@@ -105,9 +105,9 @@ spectrace_calculate_quantities <- function(
     as.matrix()
 
   # Match response functions to resolution
-  v_lambda <- v_lambda_1nm %>% dplyr::filter(wl %in% wl.out)
-  cie_s26e <- cie_s26e_1nm %>% dplyr::filter(wl %in% wl.out)
-  cie_xyz <- cie_xyz_1nm %>% dplyr::filter(wl %in% wl.out)
+  v_lambda <- spectrace:::v_lambda_1nm %>% dplyr::filter(wl %in% wl.out)
+  cie_s26e <- spectrace:::cie_s26e_1nm %>% dplyr::filter(wl %in% wl.out)
+  cie_xyz <- spectrace:::cie_xyz_1nm %>% dplyr::filter(wl %in% wl.out)
 
   # Calculate photopic illuminances
   K_m <- 683.0015478
@@ -153,11 +153,15 @@ spectrace_calculate_quantities <- function(
   n <- (cie1931_x - 0.3320) / (cie1931_y - 0.1858)
   CCT <- -449 * n^3 + 3525 * n^2 - 6823.3 * n + 5520.33
 
+  # Calculate CLA and CS
+  CLA = CLA(irr_interp, v_lambda, cie_s26e, reso.num)
+  CS = round(0.7*(1-(1/(1+(CLA/355.7)^1.1026))), 2)
+
   # Combine into data frame
   cData <- data.frame(
     aopic, aopic_edi, elr, der,
     cie1924_v2_lux, cie2008_v2_lux, cie2008_v10_lux,
-    cie1931_XYZ, cie1931_x, cie1931_y, cie1964_x, cie1964_y, CCT
+    cie1931_XYZ, cie1931_x, cie1931_y, cie1964_x, cie1964_y, CCT, CLA, CS
   )
   names(cData) <- c(
     "sc", "mc", "lc", "mel", "rod",
@@ -165,7 +169,7 @@ spectrace_calculate_quantities <- function(
     "scELR", "mcELR", "lcELR", "melELR", "rodELR",
     "scDER", "mcDER", "lcDER", "melDER", "rodDER",
     "cie1924_v2_lux", "cie2008_v2_lux", "cie2008_v10_lux", "cie1931_XYZ",
-    "cie1931_x", "cie1931_y", "cie1964_x", "cie1964_y", "CCT"
+    "cie1931_x", "cie1931_y", "cie1964_x", "cie1964_y", "CCT", "CLA", "CS"
   )
 
   # Select quantities
