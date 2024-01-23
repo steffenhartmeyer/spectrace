@@ -6,8 +6,9 @@
 \usage{
 spectrace_normalize_spectra(
   lightData,
-  method = c("peak", "AUC", "wavelength"),
+  method = c("peak", "AUC", "wavelength", "response"),
   wavelength = NULL,
+  response = c("vl", "sc", "mc", "lc", "rod", "mel"),
   keepNormCoefficient = FALSE
 )
 }

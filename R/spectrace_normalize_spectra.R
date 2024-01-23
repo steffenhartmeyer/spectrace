@@ -11,8 +11,6 @@
 #'    wavelength.
 #' @param wavelength Numeric. Wavelength to normalize at. Must be specified if
 #'   method is "wavelength".
-#' @param response String specifying which response function should be used to
-#'    normalise to. Can be one of ("vl", "sc", "mc", "lc", "rod", "mel").
 #' @param keepNormCoefficient Logical. Should the normalization coefficient be
 #'    kept in the data? Defaults to FALSE
 #'
