@@ -124,7 +124,7 @@ spectrace_calculate_quantities <- function(
   lcone <- as.numeric((irr_interp %*% as.numeric(cie_s26e$lcone)) * reso.num)
   rod <- as.numeric((irr_interp %*% as.numeric(cie_s26e$rod)) * reso.num)
   mel <- as.numeric((irr_interp %*% as.numeric(cie_s26e$mel)) * reso.num)
-  aopic <- cbind(scone, mcone, lcone, mel, rod)
+  aopic <- cbind(scone, mcone, lcone, rod, mel)
   elr <- aopic / cie1924_v2_lux
 
   # Calculate alpha-opic EDI and DER
@@ -133,18 +133,18 @@ spectrace_calculate_quantities <- function(
   der <- elr / (Kav_D65)[col(elr)]
 
   # Calculate CIE XYZ using CIE1931 color matching functions
-  CIE1931_X <- (irr_interp_norm %*% as.numeric(cie_xyz$CIE1931_x)) * reso.num
-  CIE1931_Y <- (irr_interp_norm %*% as.numeric(cie_xyz$CIE1931_y)) * reso.num
-  CIE1931_Z <- (irr_interp_norm %*% as.numeric(cie_xyz$CIE1931_z)) * reso.num
+  CIE1931_X <- as.numeric((irr_interp_norm %*% as.numeric(cie_xyz$CIE1931_x)) * reso.num)
+  CIE1931_Y <- as.numeric((irr_interp_norm %*% as.numeric(cie_xyz$CIE1931_y)) * reso.num)
+  CIE1931_Z <- as.numeric((irr_interp_norm %*% as.numeric(cie_xyz$CIE1931_z)) * reso.num)
   CIE1931_xyz <- CIE1931_X + CIE1931_Y + CIE1931_Z
   cie1931_x <- CIE1931_X / CIE1931_xyz
   cie1931_y <- CIE1931_Y / CIE1931_xyz
   cie1931_XYZ <- paste(CIE1931_X, CIE1931_Y, CIE1931_Z, sep = ",")
 
   # Calculate CIE XYZ using CIE1964 color matching functions
-  CIE1964_X <- (irr_interp_norm %*% as.numeric(cie_xyz$CIE1964_x)) * reso.num
-  CIE1964_Y <- (irr_interp_norm %*% as.numeric(cie_xyz$CIE1964_y)) * reso.num
-  CIE1964_Z <- (irr_interp_norm %*% as.numeric(cie_xyz$CIE1964_z)) * reso.num
+  CIE1964_X <- as.numeric((irr_interp_norm %*% as.numeric(cie_xyz$CIE1964_x)) * reso.num)
+  CIE1964_Y <- as.numeric((irr_interp_norm %*% as.numeric(cie_xyz$CIE1964_y)) * reso.num)
+  CIE1964_Z <- as.numeric((irr_interp_norm %*% as.numeric(cie_xyz$CIE1964_z)) * reso.num)
   CIE1964_xyz <- CIE1964_X + CIE1964_Y + CIE1964_Z
   cie1964_x <- CIE1964_X / CIE1964_xyz
   cie1964_y <- CIE1964_Y / CIE1964_xyz
@@ -165,9 +165,9 @@ spectrace_calculate_quantities <- function(
   )
   names(cData) <- c(
     "sc", "mc", "lc", "mel", "rod",
-    "scEDI", "mcEDI", "lcEDI", "melEDI", "rodEDI",
-    "scELR", "mcELR", "lcELR", "melELR", "rodELR",
-    "scDER", "mcDER", "lcDER", "melDER", "rodDER",
+    "scEDI", "mcEDI", "lcEDI", "rodEDI", "melEDI",
+    "scELR", "mcELR", "lcELR", "rodELR", "melELR",
+    "scDER", "mcDER", "lcDER", "rodDER", "melDER",
     "cie1924_v2_lux", "cie2008_v2_lux", "cie2008_v10_lux", "cie1931_XYZ",
     "cie1931_x", "cie1931_y", "cie1964_x", "cie1964_y", "CCT", "CLA", "CS"
   )
