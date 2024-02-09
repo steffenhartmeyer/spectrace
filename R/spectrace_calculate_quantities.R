@@ -108,6 +108,7 @@ spectrace_calculate_quantities <- function(
   v_lambda <- spectrace:::v_lambda_1nm %>% dplyr::filter(wl %in% wl.out)
   cie_s26e <- spectrace:::cie_s26e_1nm %>% dplyr::filter(wl %in% wl.out)
   cie_xyz <- spectrace:::cie_xyz_1nm %>% dplyr::filter(wl %in% wl.out)
+  cla <- spectrace:::cla_1nm %>% dplyr::filter(wl %in% wl.out)
 
   # Calculate photopic illuminances
   K_m <- 683.0015478
@@ -154,7 +155,7 @@ spectrace_calculate_quantities <- function(
   CCT <- -449 * n^3 + 3525 * n^2 - 6823.3 * n + 5520.33
 
   # Calculate CLA and CS
-  CLA = CLA(irr_interp, v_lambda, cie_s26e, reso.num)
+  CLA = CLA(irr_interp, cla, reso.num)
   CS = round(0.7*(1-(1/(1+(CLA/355.7)^1.1026))), 2)
 
   # Combine into data frame
