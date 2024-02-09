@@ -7,6 +7,7 @@
 spectrace_process_clusters(
   lightData,
   datetimeVar = datetime,
+  clusterVar = cluster_id,
   regularise = TRUE
 )
 }
@@ -14,6 +15,10 @@ spectrace_process_clusters(
 \item{lightData}{The light data}
 
 \item{datetimeVar}{The name of the datetime variable. Defaults to "datetime".}
+
+\item{clusterVar}{The name of the variable that defines the cluster to process.}
+
+\item{regularise}{Logical. Regularise the data?}
 }
 \description{
 Process spectral clusters

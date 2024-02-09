@@ -2,7 +2,9 @@
 #'
 #' @param lightData The light data
 #' @param datetimeVar The name of the datetime variable. Defaults to "datetime".
-#'
+#' @param clusterVar The name of the variable that defines the cluster to process.
+#' @param regularise Logical. Regularise the data?
+ #'
 #' @return
 #' @export
 #'
@@ -22,7 +24,7 @@ spectrace_process_clusters = function(lightData,
     dplyr::nest_by(dplyr::pick(dplyr::all_of(groups))) %>%
     dplyr::mutate(
       data = list(
-        mutate(data, find_cluster_timings({{cluster_id}}, {{datetimeVar}}))
+        mutate(data, find_cluster_timings({{clusterVar}}, {{datetimeVar}}))
       )
     ) %>%
     tidyr::unnest(cols = data) %>%
