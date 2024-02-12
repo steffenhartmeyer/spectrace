@@ -215,7 +215,7 @@ CLA = function(irr_interp, cla, reso.num){
   g1 = 1.00
   g2 = 0.16
   k =  0.2616
-  rodSat =  6.5
+  rodSat =  6.5215
   f = 1548
 
   vl_response <-as.numeric((irr_interp %*% as.numeric(cla$vlambda)) * reso.num)
@@ -223,11 +223,11 @@ CLA = function(irr_interp, cla, reso.num){
   rod_response <- as.numeric((irr_interp %*% as.numeric(cla$vprime)) * reso.num)
   mel_response <- as.numeric((irr_interp %*% as.numeric(cla$melanopsin)) * reso.num)
 
-  rod_mel = (rod_response/(vl_response + g1*scone_response))
-  rod_BminusY = (rod_response/(vl_response + g2*scone_response))
+  rod_mel = rod_response / (vl_response + g1 * scone_response)
+  rod_BminusY = rod_response / (vl_response + g2 * scone_response)
 
   # Main calculation for CLA
-  BminusY = scone_response-k*vl_response
+  BminusY = scone_response - k * vl_response
 
   CS = double(length(BminusY))
 
@@ -235,20 +235,20 @@ CLA = function(irr_interp, cla, reso.num){
   CS1 = mel_response[BminusY > 0]
   CS1[CS1 < 0] = 0
 
-  CS2 = a_bminusY*(BminusY[BminusY > 0])
+  CS2 = a_bminusY * BminusY[BminusY > 0]
   CS2[CS2 < 0] = 0
 
-  Rod = arod2*(rod_BminusY[BminusY > 0]*((1-exp(-rod_response[BminusY > 0]/rodSat))))
-  Rodmel = arod1*(rod_mel[BminusY > 0]*((1-exp(-rod_response[BminusY > 0]/rodSat))))
+  Rod = arod2 * rod_BminusY[BminusY > 0] * (1 - exp(-rod_response[BminusY > 0] / rodSat))
+  Rodmel = arod1 * rod_mel[BminusY > 0] * (1 - exp(-rod_response[BminusY > 0] / rodSat))
   CS[BminusY > 0] = (CS1 - Rodmel) + (CS2 - Rod)
 
   # BminusY <= 0 (warm light)
   CS1 = mel_response[BminusY <= 0]
-  Rodmel = arod1*(rod_mel[BminusY <= 0]*((1-exp(-rod_response[BminusY <= 0]/rodSat))))
+  Rodmel = arod1 * rod_mel[BminusY <= 0] * (1 - exp(-rod_response[BminusY <= 0] / rodSat))
   CS[BminusY <= 0] = CS1 - Rodmel
 
   CS[CS < 0] = 0
-  CLA = CS*f
+  CLA = CS * f
   return(CLA)
 }
 

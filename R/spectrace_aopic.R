@@ -66,10 +66,10 @@ spectrace_aopic <- function(lightData,
   }
 
   # Check for negative values
-  negatives <- irr_interp < 0
-  if (any(negatives)) {
+  negatives <- sum(irr_interp < 0, na.rm = TRUE)
+  if (negatives > 0) {
     warning("Data containes negative values. Replaced negative values by zero.")
-    irr_interp[negatives] <- 0
+    irr_interp[irr_interp < 0] <- 0
   }
 
   # Match response functions to resolution
