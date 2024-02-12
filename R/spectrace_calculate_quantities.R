@@ -52,8 +52,16 @@ spectrace_calculate_quantities <- function(
   interp_method <- match.arg(interp_method)
   quants <- match.arg(quantities, several.ok = TRUE)
 
+  # Add row index
+  lightData <- lightData %>%
+    dplyr::mutate(row_id = 1:nrow(.))
+
+  # Make data without missing values
+  lightData_noNA <- lightData %>%
+    tidyr::drop_na(dplyr::matches("\\d{3}nm"))
+
   # Irradiance data
-  irr_data <- lightData %>%
+  irr_data <- lightData_noNA %>%
     dplyr::select(dplyr::matches("\\d{3}nm"))
 
   # Input wavelengths
@@ -179,9 +187,24 @@ spectrace_calculate_quantities <- function(
       dplyr::select(quants)
   }
 
+
   # Add to data
-  lightData <- lightData %>%
+  lightData_noNA <- lightData_noNA %>%
     tibble::add_column(cData)
+
+  # Empty data frame
+  na.frame <-
+    matrix(NA, nrow = nrow(lightData)-nrow(lightData_noNA), ncol = ncol(cData)) %>%
+    data.frame()
+  names(na.frame) <- names(cData)
+
+  # Add back to original data frame
+  lightData %>%
+    dplyr::filter(dplyr::if_any(dplyr::matches("\\d{3}nm"), is.na)) %>%
+    tibble::add_column(na.frame) %>%
+    rbind(lightData_noNA) %>%
+    dplyr::arrange(row_id) %>%
+    dplyr::select(!row_id)
 
   # Return data frame
   if (keep_spectral_data) {
@@ -190,3 +213,5 @@ spectrace_calculate_quantities <- function(
     return(dplyr::select(lightData, !dplyr::matches("\\d{3}nm")))
   }
 }
+
+
