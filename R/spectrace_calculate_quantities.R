@@ -199,7 +199,7 @@ spectrace_calculate_quantities <- function(
   names(na.frame) <- names(cData)
 
   # Add back to original data frame
-  lightData %>%
+  lightData = lightData %>%
     dplyr::filter(dplyr::if_any(dplyr::matches("\\d{3}nm"), is.na)) %>%
     tibble::add_column(na.frame) %>%
     rbind(lightData_noNA) %>%
