@@ -12,14 +12,15 @@ Depends:
     R (>= 2.10)
 Imports: 
     dplyr,
+    stats,
     tidyr,
     tibble,
     lubridate,
     magrittr,
     signal,
-    reticulate,
     cluster,
     ggplot2,
+    glue,
     scales,
     broom,
     lemon,

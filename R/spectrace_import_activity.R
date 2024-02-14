@@ -35,32 +35,32 @@ spectrace_import_activity <- function(actFile, tz, serial_number = NA) {
   # Check type of file (including header or not)
   if (header$X1[1] == "SERIAL") {
     serial_number <- header$X2[1]
-    actData <- read.delim(
+    actData <- utils::read.delim(
       actFile,
       skip = 5,
       header = FALSE,
       sep = sep
-    ) %>% select(c(1, 2))
+    ) %>% dplyr::select(c(1, 2))
   }
   # Version 3 file
   else if (header$X1[1] == "Raw Spectrace Data") {
     serial_number <- header$X2[3]
-    actData <- read.delim(
+    actData <- utils::read.delim(
       actFile,
       skip = 6,
       header = FALSE,
       sep = sep
-    ) %>% select(c(1, 2))
+    ) %>% dplyr::select(c(1, 2))
   } else {
     # Check whether serial number available
     if (is.na(serial_number)) {
       warning("No serial number specified!")
     }
-    actData <- read.delim(
+    actData <- utils::read.delim(
       actFile,
       header = FALSE,
       sep = sep
-    ) %>% select(c(1, 2))
+    ) %>% dplyr::select(c(1, 2))
   }
 
   col_names <- c("unix", "activity")

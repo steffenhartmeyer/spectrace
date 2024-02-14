@@ -35,7 +35,7 @@ spectrace_import_light <- function(lightFile, tz, serial_number = NA) {
   # Version 2 file
   if (header$X1[1] == "SERIAL") {
     serial_number <- header$X2[1]
-    lightData <- read.delim(
+    lightData <- utils::read.delim(
       lightFile,
       skip = 5,
       header = FALSE,
@@ -46,7 +46,7 @@ spectrace_import_light <- function(lightFile, tz, serial_number = NA) {
   # Version 3 file
   else if (header$X1[1] == "Raw Spectrace Data") {
     serial_number <- header$X2[3]
-    lightData <- read.delim(
+    lightData <- utils::read.delim(
       lightFile,
       skip = 6,
       header = FALSE,
@@ -58,7 +58,7 @@ spectrace_import_light <- function(lightFile, tz, serial_number = NA) {
     if (is.na(serial_number)) {
       warning("No serial number specified!")
     }
-    lightData <- read.delim(
+    lightData <- utils::read.delim(
       lightFile,
       header = FALSE,
       col.names = paste0("X", 1:24),

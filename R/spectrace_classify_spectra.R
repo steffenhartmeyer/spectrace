@@ -31,8 +31,8 @@ spectrace_classify_spectra <- function(lightData,
 
   # Spectral channels
   wl.names <- lightData %>%
-    ungroup() %>%
-    select(dplyr::matches("\\d{3}nm")) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(dplyr::matches("\\d{3}nm")) %>%
     names()
 
   if (is.null(referenceData)){

@@ -96,7 +96,7 @@ spectrace_interpolate_spectra <- function(lightData,
   # Interpolate
   irr_interp <- switch(interp_method,
                        "pchip" = signal::pchip(x.in, y, x.out),
-                       "linear" = approx(x.in, y, x.out, method = "linear", rule = 2)[[2]],
+                       "linear" = stats::approx(x.in, y, x.out, method = "linear", rule = 2)[[2]],
                        stop("Wrong interpolation method!")
   )
 

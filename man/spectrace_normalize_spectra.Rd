@@ -20,10 +20,15 @@ to be in wide format (see \code{\link{spectrace_to_wide}}).}
 (default), data is normalized such that the peak (max value) is equal to 1.
 If method is "AUC", data is normalized such that the area under the curve
 is equal to 1. If method is "wavelength", data is normalized to 1 at specified
-wavelength.}
+wavelength. If method is "response", data is normalized such that the response
+is one (e.g., if response is "vl", the data is normalized such that the data is
+normalized to vlambda).}
 
 \item{wavelength}{Numeric. Wavelength to normalize at. Must be specified if
-method is "wavelength".}
+method is "wavelength". Defaults to NULL.}
+
+\item{response}{String. Spectral response function to normalize at. Must be one of
+["vl","sc", "mc, "lc", "rod", "mel"]. Defaults to "vl".}
 
 \item{keepNormCoefficient}{Logical. Should the normalization coefficient be
 kept in the data? Defaults to FALSE}

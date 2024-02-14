@@ -1,12 +1,22 @@
-#' Title
+#' Find sleep episodes in the data
 #'
-#' @param lightData
-#' @param actigraphyVar
-#' @param flag_only
-#' @param min_length
-#' @param max_interrupt
-#' @param smooth_window
-#' @param light_threshold
+#' This functions finds sleep episodes in the data by checking light and actigraphy
+#' data for continuous periods of inactivity and low lux levels.
+#'
+#' @param lightData Data frame with light data. Must contain a column named `datetime`
+#'    holding the timestamps and a column called `lux` holding the illuminance data.
+#' @param actigraphyVar Variable containing the actgrigraphy data.
+#' @param flag_only Logical. Return only vector of length equal to the rows in the data
+#'    indicating whether the data is considered sleep or not, instead of a data frame with
+#'    the logical vector appended. Defaults to FALSE.
+#' @param min_length Minimum length of a sleep episode. Must be a valid `lubridate::duration`
+#'    string. Defaults to "2 hours".
+#' @param max_interrupt Maximum length of interruptions. Must be a valid `lubridate::duration`
+#'    string. Defaults to "60 mins".
+#' @param smooth_window Length of smoothing window applied to actigraohy data.
+#'    Must be a valid `lubridate::duration` string. Defaults to "10 mins".
+#' @param light_threshold Numeric. Threshold which is considered to be low lux levels
+#'    indicative of potential sleep. Defaults to 10.
 #'
 #' @return
 #' @export
@@ -79,7 +89,7 @@ find_sleep <- function(data,
   # Find low actigraphy
   actigraphy_smooth <-
     slider::slide_vec(
-      log10(pull(data, {{actigraphyVar}}) + 1),
+      log10(dplyr::pull(data, {{actigraphyVar}}) + 1),
       median,
       .before = floor(smooth_window / 2),
       .after = ceiling(smooth_window / 2),

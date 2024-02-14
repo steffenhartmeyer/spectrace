@@ -80,7 +80,7 @@ spectrace_cluster_spectra <- function(lightData,
   if (encoding == "PCA") {
     lightData.encoded <- lightData %>%
       dplyr::select(dplyr::matches("\\d{3}nm")) %>%
-      prcomp(center = T)
+      stats::prcomp(center = T)
 
     # Select PCs to retain
     PCs <- lightData.encoded %>%
@@ -163,7 +163,7 @@ spectrace_cluster_spectra <- function(lightData,
       sprintf(
         "Number of principal components: %s\nVariance explained by PCs: %s",
         nrow(PCs),
-        str_flatten(paste0(round(PCs$percent,2)*100, "%"), collapse = " ")
+        stringr::str_flatten(paste0(round(PCs$percent,2)*100, "%"), collapse = " ")
       )
     print.encoding = paste(print.encoding, print.pca, sep = "\n")
   }
