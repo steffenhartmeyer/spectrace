@@ -4,7 +4,7 @@
 \alias{spectrace_import_activity}
 \title{Import raw spectrace activity data}
 \usage{
-spectrace_import_activity(actFile, tz, serial_number = NULL)
+spectrace_import_activity(actFile, tz, serial_number = NA)
 }
 \arguments{
 \item{actFile}{Path to the file containing the activity data.}

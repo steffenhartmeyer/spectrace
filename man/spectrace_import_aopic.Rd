@@ -7,7 +7,7 @@
 spectrace_import_aopic(
   lightFile,
   tz,
-  serial_number = NULL,
+  serial_number = NA,
   cal_data = NULL,
   interp_method = c("pchip", "linear")
 )

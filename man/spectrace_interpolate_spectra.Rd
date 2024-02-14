@@ -6,24 +6,28 @@
 \usage{
 spectrace_interpolate_spectra(
   lightData,
-  resolution = c("5nm", "1nm"),
+  resolution = c("5nm", "1nm", "spectrace"),
   interp_method = c("pchip", "linear")
 )
 }
 \arguments{
 \item{lightData}{Data frame containing the calibrated light data
-for the channels from 410nm to 730nm.}
+for the channels from 410nm to 730nm. Additional variables are allowed.
+Data needs to be in wide format (see \code{\link{spectrace_to_wide}}).}
 
-\item{resolution}{Integer. Resolution of the}
+\item{resolution}{String specifying the resolution of the output
+spectrum. Can be "5nm" (default), "1nm", or "spectrace". The latter will result
+in the original 14 spectrace channels.}
 
-\item{interp_method}{Method for interpolation. Can be "pchip" (default) or
-"linear".}
+\item{interp_method}{The interpolation method. Can be either "pchip" (default)
+or "linear". Pchip (piecewise cubic hermetic interpolation) results in a
+smooth spectrum while preserving the source values as local minima/maxima.}
 }
 \value{
-Data frame with illuminance, alpha-opic irradiances, alpha-opic EDI,
-alpha-opic ELR, alpha-opic DER, and CCT.
+The original data frame with the spectral data replaced by the
+   interpolated spectral data.
 }
 \description{
-This function interpolates Spectrace's spectral irradiance output to 5nm
-resolution.
+This function interpolates Spectrace's spectral irradiance output to visible
+range (380-780nm) with 1nm or 5nm resolution.
 }

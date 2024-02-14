@@ -2,19 +2,20 @@
 % Please edit documentation in R/spectrace_aopic.R
 \name{spectrace_aopic}
 \alias{spectrace_aopic}
-\title{Calculate alpha-opic quantities from raw spectrace data}
+\title{Calculate alpha-opic quantities from calibrated spectrace data}
 \usage{
 spectrace_aopic(
   lightData,
-  interp_method = c("pchip", "linear"),
+  resolution = c("5nm", "1nm"),
+  interp_method = c("pchip", "linear", "none"),
   keep_spectral_data = TRUE
 )
 }
 \arguments{
-\item{lightData}{Data frame containing the calibrated light data.}
+\item{lightData}{Data frame containing the calibrated light data.x = data.}
 
 \item{interp_method}{Method for interpolation. Can be "pchip" (smooth
-piecewise hermetic interpolation) or "linear". Defaults to "pchip".}
+piecewise hermetic interpolation), "linear", or "none". Defaults to "pchip".}
 
 \item{keep_spectral_data}{Logical. Should the spectral irradiance columns be kept?
 Defaults to TRUE.}

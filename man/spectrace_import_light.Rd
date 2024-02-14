@@ -4,7 +4,7 @@
 \alias{spectrace_import_light}
 \title{Import raw spectrace light data}
 \usage{
-spectrace_import_light(lightFile, tz, serial_number = NULL)
+spectrace_import_light(lightFile, tz, serial_number = NA)
 }
 \arguments{
 \item{lightFile}{Path to the file containing the light data.}
@@ -19,5 +19,5 @@ Data frame.
 }
 \description{
 This function imports the raw light data of the spectrace sensors. It assumes
-that the data is stored in CSV format.
+that the data is stored in CSV or TSV format.
 }

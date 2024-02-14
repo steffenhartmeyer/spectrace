@@ -2,7 +2,7 @@ Type: Package
 Package: spectrace
 Title: Functions for importing and processing raw Spectrace output
 Version: 0.3.0
-Author: Steffen Hartmeyer, Forrest Webler
+Author: Steffen Hartmeyer
 Maintainer: Steffen Hartmeyer <steffen.hartmeyer@epfl.ch>
 Description: This package provides functions for importing the raw CSV
     output files from Spectrace into R and for processing this data to
@@ -12,9 +12,21 @@ Depends:
     R (>= 2.10)
 Imports: 
     dplyr,
+    tidyr,
+    tibble,
     lubridate,
     magrittr,
-    signal
+    signal,
+    reticulate,
+    cluster,
+    ggplot2,
+    scales,
+    broom,
+    lemon,
+    patchwork,
+    slider, 
+    stringr,
+    readr,
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3

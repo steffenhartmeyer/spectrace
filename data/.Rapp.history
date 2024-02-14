@@ -1,0 +1,8 @@
+load("/Users/steffenhartmeyer/Library/CloudStorage/OneDrive-epfl.ch/R/Packages/spectrace/data/spectrace_responses_1nm.rda")
+load("/Users/steffenhartmeyer/Library/CloudStorage/OneDrive-epfl.ch/R/Packages/spectrace/data/cie_s26e_1nm.rda")
+write.csv(cie_s26e_1nm, file = "cie_s26e_1nm.csv")
+load("/Users/steffenhartmeyer/Library/CloudStorage/OneDrive-epfl.ch/R/Packages/spectrace/data/cie_xyz_1nm.rda")
+write.csv(cie_xyz_1nm, file = "cie_xyz_1nm.csv")
+load("/Users/steffenhartmeyer/Library/CloudStorage/OneDrive-epfl.ch/R/Packages/spectrace/data/v_lambda_1nm.rda")
+write.csv(v_lambda_1nm, file = "v_lambda_1nm.csv")
+load("/Users/steffenhartmeyer/Library/CloudStorage/OneDrive-epfl.ch/R/Packages/spectrace/data/calibration.rda")
