@@ -8,13 +8,9 @@
 #'    (default), data is normalized such that the peak (max value) is equal to 1.
 #'    If method is "AUC", data is normalized such that the area under the curve
 #'    is equal to 1. If method is "wavelength", data is normalized to 1 at specified
-#'    wavelength. If method is "response", data is normalized such that the response
-#'    is one (e.g., if response is "vl", the data is normalized such that the data is
-#'    normalized to vlambda).
+#'    wavelength.
 #' @param wavelength Numeric. Wavelength to normalize at. Must be specified if
-#'    method is "wavelength". Defaults to NULL.
-#' @param response String. Spectral response function to normalize at. Must be one of
-#'    ["vl","sc", "mc, "lc", "rod", "mel"]. Defaults to "vl".
+#'   method is "wavelength".
 #' @param keepNormCoefficient Logical. Should the normalization coefficient be
 #'    kept in the data? Defaults to FALSE
 #'
@@ -39,7 +35,7 @@ spectrace_normalize_spectra <- function(lightData,
 
   # Get spectra
   spectra <- lightData %>%
-    dplyr::select(dplyr::matches("\\d{3}nm"))
+    dplyr::select(dplyr::matches("^\\d{3}nm$"))
   col_names <- names(spectra)
   wl.in <- sub("nm", "", col_names) %>% as.numeric()
   spectra <- as.matrix(spectra)
@@ -75,7 +71,7 @@ spectrace_normalize_spectra <- function(lightData,
 
   # Add to light data
   lightData <- lightData %>%
-    dplyr::select(!dplyr::matches("\\d{3}nm")) %>%
+    dplyr::select(!dplyr::matches("^\\d{3}nm$")) %>%
     tibble::add_column(spectra.norm)
 
   if (keepNormCoefficient) {

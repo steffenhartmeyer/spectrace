@@ -31,8 +31,8 @@ spectrace_classify_spectra <- function(lightData,
 
   # Spectral channels
   wl.names <- lightData %>%
-    dplyr::ungroup() %>%
-    dplyr::select(dplyr::matches("\\d{3}nm")) %>%
+    ungroup() %>%
+    select(dplyr::matches("^\\d{3}nm$")) %>%
     names()
 
   if (is.null(referenceData)){
@@ -51,7 +51,7 @@ spectrace_classify_spectra <- function(lightData,
   # PCA on reference data
   refData.pca <- referenceData %>%
     spectrace_normalize_spectra(method = "AUC") %>%
-    dplyr::select(dplyr::matches("\\d{3}nm")) %>%
+    dplyr::select(dplyr::matches("^\\d{3}nm$")) %>%
     stats::prcomp(center = T)
   PCs <- refData.pca %>%
     broom::tidy(matrix = "eigenvalues") %>%
@@ -65,7 +65,7 @@ spectrace_classify_spectra <- function(lightData,
   # Encode light data
   lightData.encoded <- lightData %>%
     spectrace_normalize_spectra(method = "AUC") %>%
-    dplyr::select(dplyr::matches("\\d{3}nm")) %>%
+    dplyr::select(dplyr::matches("^\\d{3}nm$")) %>%
     stats::predict(refData.pca, newdata=.) %>%
     tibble::as_tibble() %>%
     dplyr::select(paste0("PC", PCs$PC)) %>%

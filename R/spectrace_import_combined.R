@@ -1,17 +1,12 @@
-#' Import combined spectrace data
+#' Title
 #'
-#' This function imports the light, activity, and battery spectrace data from
-#' separate files and combines it into one file by matching up the timestamps of
-#' the activity and battery data with the light data.
+#' @param lightFile
+#' @param activityFile
+#' @param batteryFile
+#' @param tz
+#' @param serial_number
 #'
-#' @param lightFile Path to the file containing the light data.
-#' @param activityFile Path to the file containing the activity data.
-#' @param batteryFile Path to the file containing the battery data.
-#' @param tz Time zone to be used for datetime conversion. See supported time zones
-#'    by calling \code{\link[base]{OlsonNames}}.
-#' @param serial_number Serial number of spectrace device. Defaults to NULL.
-#'
-#' @return A data frame.
+#' @return
 #' @export
 #'
 #' @examples

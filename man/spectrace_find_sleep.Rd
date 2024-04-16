@@ -2,7 +2,7 @@
 % Please edit documentation in R/spectrace_find_sleep.R
 \name{spectrace_find_sleep}
 \alias{spectrace_find_sleep}
-\title{Find sleep episodes in the data}
+\title{Title}
 \usage{
 spectrace_find_sleep(
   lightData,
@@ -15,28 +15,8 @@ spectrace_find_sleep(
 )
 }
 \arguments{
-\item{lightData}{Data frame with light data. Must contain a column named `datetime`
-holding the timestamps and a column called `lux` holding the illuminance data.}
-
-\item{actigraphyVar}{Variable containing the actgrigraphy data.}
-
-\item{flag_only}{Logical. Return only vector of length equal to the rows in the data
-indicating whether the data is considered sleep or not, instead of a data frame with
-the logical vector appended. Defaults to FALSE.}
-
-\item{min_length}{Minimum length of a sleep episode. Must be a valid `lubridate::duration`
-string. Defaults to "2 hours".}
-
-\item{max_interrupt}{Maximum length of interruptions. Must be a valid `lubridate::duration`
-string. Defaults to "60 mins".}
-
-\item{smooth_window}{Length of smoothing window applied to actigraohy data.
-Must be a valid `lubridate::duration` string. Defaults to "10 mins".}
-
-\item{light_threshold}{Numeric. Threshold which is considered to be low lux levels
-indicative of potential sleep. Defaults to 10.}
+\item{light_threshold}{}
 }
 \description{
-This functions finds sleep episodes in the data by checking light and actigraphy
-data for continuous periods of inactivity and low lux levels.
+Title
 }

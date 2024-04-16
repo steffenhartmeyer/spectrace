@@ -57,7 +57,7 @@ spectrace_calibrate_light <- function(lightData,
   lightData <- lightData %>%
     spectrace_interpolate_spectra("spectrace") %>%
     # Set negatives to zero
-    dplyr::mutate(dplyr::across(c(lux, dplyr::matches("\\d{3}nm")), ~ ifelse(.x < 0, 0, .x))) %>%
+    dplyr::mutate(dplyr::across(c(lux, dplyr::matches("^\\d{3}nm$")), ~ ifelse(.x < 0, 0, .x))) %>%
     # Divide by calibration factors
     dplyr::mutate(cal_serial = ifelse(serial %in% no_serial, "Unknown", serial)) %>%
     dplyr::rename_at(dplyr::vars("410nm":"760nm"), ~ paste0("c", .x)) %>%

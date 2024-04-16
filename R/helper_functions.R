@@ -3,7 +3,7 @@ sam <- function(s, r) {
 }
 
 scm <- function(s, r) {
-  1 - ((1 + stats::cor(s, r)) / 2)
+  1 - ((1 + cor(s, r)) / 2)
 }
 
 ecs <- function(s, r) {
@@ -19,17 +19,6 @@ parse_timeunit_tosecs <- function(input) {
     secs = to.secs(as.numeric(parsed[1]), parsed[2]),
     time = parsed[1],
     unit = parsed[2]
-  )
-}
-
-to.secs <- function(t, unit) {
-  unit <- substr(unit, 1, 1)
-  switch(unit,
-         "s" = t,
-         "m" = t * 60,
-         "h" = t * 3600,
-         "d" = t * 86400,
-         stop("Invalid unit. Possible values are ['s', 'm', 'h', 'd']!")
   )
 }
 
@@ -206,7 +195,7 @@ kmeans_sil = function(data, k, n.start, iter.max, n.samples, samplesize){
       dplyr::slice_sample(n = floor(samplesize / k)) %>%
       dplyr::ungroup()
     x <- sample$cluster_id
-    d <- sample %>% dplyr::select(!cluster_id) %>% stats::dist()
+    d <- sample %>% dplyr::select(!cluster_id) %>% dist()
     summary(cluster::silhouette(x, d))$clus.avg.widths
   }
   sil.scores <- sapply(1:n.samples, subsample) %>% apply(1, mean) %>% as.numeric()

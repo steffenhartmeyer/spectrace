@@ -24,7 +24,7 @@ spectrace_process_clusters = function(lightData,
     dplyr::nest_by(dplyr::pick(dplyr::all_of(groups))) %>%
     dplyr::mutate(
       data = list(
-        dplyr::mutate(data, find_cluster_timings({{clusterVar}}, {{datetimeVar}}))
+        mutate(data, find_cluster_timings({{clusterVar}}, {{datetimeVar}}))
       )
     ) %>%
     tidyr::unnest(cols = data) %>%

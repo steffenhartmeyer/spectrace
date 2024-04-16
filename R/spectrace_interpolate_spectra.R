@@ -39,7 +39,7 @@ spectrace_interpolate_spectra <- function(lightData,
         "560nm", "585nm", "610nm", "645nm", "680nm", "705nm", "730nm", "760nm"
       )
     return(
-      lightData %>% dplyr::select(!dplyr::matches("\\d{3}nm")) %>%
+      lightData %>% dplyr::select(!dplyr::matches("^\\d{3}nm$")) %>%
         tibble::add_column(irr_data)
     )
   }
@@ -50,11 +50,11 @@ spectrace_interpolate_spectra <- function(lightData,
 
   # Make data without missing values
   lightData_noNA <- lightData %>%
-    tidyr::drop_na(dplyr::matches("\\d{3}nm"))
+    tidyr::drop_na(dplyr::matches("^\\d{3}nm$"))
 
   # Irradiance data
   irr_data <- lightData_noNA %>%
-    dplyr::select(dplyr::matches("\\d{3}nm")) %>%
+    dplyr::select(dplyr::matches("^\\d{3}nm$")) %>%
     as.matrix()
 
   # Input wavelengths
@@ -108,7 +108,7 @@ spectrace_interpolate_spectra <- function(lightData,
   irr_interp <- data.frame(irr_interp)
   names(irr_interp) <- paste0(wl.out, "nm")
   lightData_noNA <- lightData_noNA %>%
-    dplyr::select(!dplyr::matches("\\d{3}nm")) %>%
+    dplyr::select(!dplyr::matches("^\\d{3}nm$")) %>%
     tibble::add_column(irr_interp)
 
   # Empty data frame
@@ -119,8 +119,8 @@ spectrace_interpolate_spectra <- function(lightData,
 
   # Add back to original data frame
   lightData %>%
-    dplyr::filter(dplyr::if_any(dplyr::matches("\\d{3}nm"), is.na)) %>%
-    dplyr::select(!dplyr::matches("\\d{3}nm")) %>%
+    dplyr::filter(dplyr::if_any(dplyr::matches("^\\d{3}nm$"), is.na)) %>%
+    dplyr::select(!dplyr::matches("^\\d{3}nm$")) %>%
     tibble::add_column(na.frame) %>%
     rbind(lightData_noNA) %>%
     dplyr::arrange(row_id) %>%

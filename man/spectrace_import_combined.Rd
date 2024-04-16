@@ -2,7 +2,7 @@
 % Please edit documentation in R/spectrace_import_combined.R
 \name{spectrace_import_combined}
 \alias{spectrace_import_combined}
-\title{Import combined spectrace data}
+\title{Title}
 \usage{
 spectrace_import_combined(
   lightFile,
@@ -13,22 +13,8 @@ spectrace_import_combined(
 )
 }
 \arguments{
-\item{lightFile}{Path to the file containing the light data.}
-
-\item{activityFile}{Path to the file containing the activity data.}
-
-\item{batteryFile}{Path to the file containing the battery data.}
-
-\item{tz}{Time zone to be used for datetime conversion. See supported time zones
-by calling \code{\link[base]{OlsonNames}}.}
-
-\item{serial_number}{Serial number of spectrace device. Defaults to NULL.}
-}
-\value{
-A data frame.
+\item{serial_number}{}
 }
 \description{
-This function imports the light, activity, and battery spectrace data from
-separate files and combines it into one file by matching up the timestamps of
-the activity and battery data with the light data.
+Title
 }

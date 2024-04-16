@@ -18,7 +18,6 @@
 #'    'correlation'.
 #' @param n.classes Integer indicating the number of predicted classes per group
 #'    to include in the output. Defaults to 5.
-#' @param return.spectra Logical. Should the spectral data be returned? Defaults to TRUE.
 #'
 #' @return A data frame with the best 'n.classes' classifications (i.e. the
 #'    'spectrum_id') and corresponding coefficients per group.
@@ -42,12 +41,12 @@ spectrace_classify_clusters <- function(lightData,
   method <- match.arg(method)
 
   # Grouping vars
-  group_vars <- dplyr::group_vars(lightData)
+  group_vars <- group_vars(lightData)
 
   # Spectral channels
   wl.names <- lightData %>%
-    dplyr::ungroup() %>%
-    dplyr::select(dplyr::matches("\\d{3}nm")) %>%
+    ungroup() %>%
+    select(dplyr::matches("^\\d{3}nm$")) %>%
     names()
 
   if (is.null(referenceData)){
@@ -66,40 +65,40 @@ spectrace_classify_clusters <- function(lightData,
   # Reference data as matrix
   referenceData.mat <- referenceData %>%
     spectrace_normalize_spectra(method = "AUC") %>%
-    dplyr::select(spectrum_id, dplyr::all_of(wl.names)) %>%
+    dplyr::select(spectrum_id, all_of(wl.names)) %>%
     spectrace_to_long() %>%
     tidyr::pivot_wider(names_from = spectrum_id, values_from = val) %>%
     dplyr::select(!wl)
 
   # Aggregate light data
   lightData.aggregated <- lightData %>%
-    dplyr::summarise_at(dplyr::vars(dplyr::matches("\\d{3}nm")), aggregation) %>%
+    dplyr::summarise_at(dplyr::vars(dplyr::matches("^\\d{3}nm$")), aggregation) %>%
     dplyr::ungroup()
 
   # Classify light data
   if (method == "correlation") {
     classification <- lightData.aggregated %>%
       spectrace_normalize_spectra(method = "AUC") %>%
-      dplyr::nest_by(dplyr::across(dplyr::all_of(group_vars))) %>%
-      dplyr::mutate(stats::cor(as.numeric(data), referenceData.mat) %>% tibble::as_tibble()) %>%
+      dplyr::nest_by(across(all_of(group_vars))) %>%
+      dplyr::mutate(cor(as.numeric(data), referenceData.mat) %>% tibble::as_tibble()) %>%
       dplyr::select(!data) %>%
-      dplyr::nest_by(dplyr::across(dplyr::all_of(group_vars))) %>%
+      dplyr::nest_by(across(all_of(group_vars))) %>%
       dplyr::mutate(
         classification = list(names(data)[which(as.numeric(data) %in% maxn(as.numeric(data), n.classes))]),
         coeff = list(round(maxn(as.numeric(data), n.classes), 4))
       ) %>%
       tidyr::unnest(cols = c(classification, coeff)) %>%
       dplyr::select(!data) %>%
-      dplyr::arrange(dplyr::desc(coeff), .by_group = TRUE) %>%
+      dplyr::arrange(desc(coeff), .by_group = TRUE) %>%
       dplyr::ungroup()
   }
 
   if(return.spectra){
     classification <- classification %>%
       dplyr::left_join(
-        referenceData %>% dplyr::select(
+        referenceData %>% select(
           classification = spectrum_id,
-          dplyr::matches("\\d{3}nm")
+          dplyr::matches("^\\d{3}nm$")
         ),
         by = "classification"
       )

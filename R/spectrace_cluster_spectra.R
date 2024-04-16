@@ -79,8 +79,8 @@ spectrace_cluster_spectra <- function(lightData,
   # PCA
   if (encoding == "PCA") {
     lightData.encoded <- lightData %>%
-      dplyr::select(dplyr::matches("\\d{3}nm")) %>%
-      stats::prcomp(center = T)
+      dplyr::select(dplyr::matches("^\\d{3}nm$")) %>%
+      prcomp(center = T)
 
     # Select PCs to retain
     PCs <- lightData.encoded %>%
@@ -93,7 +93,7 @@ spectrace_cluster_spectra <- function(lightData,
   }
   if (encoding == "none") {
     lightData.encoded <- lightData %>%
-      dplyr::select(dplyr::matches("\\d{3}nm"))
+      dplyr::select(dplyr::matches("^\\d{3}nm$"))
   }
 
   # kmeans clustering
@@ -163,7 +163,7 @@ spectrace_cluster_spectra <- function(lightData,
       sprintf(
         "Number of principal components: %s\nVariance explained by PCs: %s",
         nrow(PCs),
-        stringr::str_flatten(paste0(round(PCs$percent,2)*100, "%"), collapse = " ")
+        str_flatten(paste0(round(PCs$percent,2)*100, "%"), collapse = " ")
       )
     print.encoding = paste(print.encoding, print.pca, sep = "\n")
   }

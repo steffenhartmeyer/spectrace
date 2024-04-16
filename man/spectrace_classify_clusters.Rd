@@ -32,8 +32,6 @@ to 'median'.}
 
 \item{n.classes}{Integer indicating the number of predicted classes per group
 to include in the output. Defaults to 5.}
-
-\item{return.spectra}{Logical. Should the spectral data be returned? Defaults to TRUE.}
 }
 \value{
 A data frame with the best 'n.classes' classifications (i.e. the
