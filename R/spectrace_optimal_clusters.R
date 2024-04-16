@@ -71,7 +71,7 @@ spectrace_optimal_clusters <- function(lightData,
   # PCA
   if (encoding == "PCA") {
     lightData.encoded <- lightData %>%
-      dplyr::select(dplyr::matches("\\d{3}nm")) %>%
+      dplyr::select(dplyr::matches("^\\d{3}nm$")) %>%
       prcomp(center = T)
 
     # Select PCs to retain
@@ -85,7 +85,7 @@ spectrace_optimal_clusters <- function(lightData,
   }
   if (encoding == "none") {
     lightData.encoded <- lightData %>%
-      dplyr::select(dplyr::matches("\\d{3}nm"))
+      dplyr::select(dplyr::matches("^\\d{3}nm$"))
   }
 
   scores = list()

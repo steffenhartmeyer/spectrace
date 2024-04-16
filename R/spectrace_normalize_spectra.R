@@ -35,7 +35,7 @@ spectrace_normalize_spectra <- function(lightData,
 
   # Get spectra
   spectra <- lightData %>%
-    dplyr::select(dplyr::matches("\\d{3}nm"))
+    dplyr::select(dplyr::matches("^\\d{3}nm$"))
   col_names <- names(spectra)
   wl.in <- sub("nm", "", col_names) %>% as.numeric()
   spectra <- as.matrix(spectra)
@@ -71,7 +71,7 @@ spectrace_normalize_spectra <- function(lightData,
 
   # Add to light data
   lightData <- lightData %>%
-    dplyr::select(!dplyr::matches("\\d{3}nm")) %>%
+    dplyr::select(!dplyr::matches("^\\d{3}nm$")) %>%
     tibble::add_column(spectra.norm)
 
   if (keepNormCoefficient) {

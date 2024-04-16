@@ -46,7 +46,7 @@ spectrace_classify_clusters <- function(lightData,
   # Spectral channels
   wl.names <- lightData %>%
     ungroup() %>%
-    select(dplyr::matches("\\d{3}nm")) %>%
+    select(dplyr::matches("^\\d{3}nm$")) %>%
     names()
 
   if (is.null(referenceData)){
@@ -72,7 +72,7 @@ spectrace_classify_clusters <- function(lightData,
 
   # Aggregate light data
   lightData.aggregated <- lightData %>%
-    dplyr::summarise_at(dplyr::vars(dplyr::matches("\\d{3}nm")), aggregation) %>%
+    dplyr::summarise_at(dplyr::vars(dplyr::matches("^\\d{3}nm$")), aggregation) %>%
     dplyr::ungroup()
 
   # Classify light data
@@ -98,7 +98,7 @@ spectrace_classify_clusters <- function(lightData,
       dplyr::left_join(
         referenceData %>% select(
           classification = spectrum_id,
-          dplyr::matches("\\d{3}nm")
+          dplyr::matches("^\\d{3}nm$")
         ),
         by = "classification"
       )

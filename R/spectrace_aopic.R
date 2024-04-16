@@ -28,7 +28,7 @@ spectrace_aopic <- function(lightData,
 
   # Irradiance data
   irr_data <- lightData %>%
-    dplyr::select(dplyr::matches("\\d{3}nm"))
+    dplyr::select(dplyr::matches("^\\d{3}nm$"))
 
   # Input wavelengths
   wl.in <- sub("nm", "", names(irr_data)) %>%
@@ -139,6 +139,6 @@ spectrace_aopic <- function(lightData,
   if (keep_spectral_data) {
     return(lightData)
   } else {
-    return(dplyr::select(lightData, !dplyr::matches("\\d{3}nm")))
+    return(dplyr::select(lightData, !dplyr::matches("^\\d{3}nm$")))
   }
 }

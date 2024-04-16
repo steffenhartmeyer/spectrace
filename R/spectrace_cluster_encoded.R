@@ -31,7 +31,7 @@ spectrace_cluster_encoded <- function(lightData,
   }
 
   # Prepare spectrace data
-  irr_data <- lightData %>% dplyr::select(dplyr::matches("\\d{3}nm"))
+  irr_data <- lightData %>% dplyr::select(dplyr::matches("^\\d{3}nm$"))
 
   # Check reference data
   if (!"type" %in% names(referenceData)) {
@@ -53,7 +53,7 @@ spectrace_cluster_encoded <- function(lightData,
       as.integer(n.predict)
     )
   data <- lightData %>%
-    dplyr::select(!dplyr::matches("\\d{3}nm")) %>%
+    dplyr::select(!dplyr::matches("^\\d{3}nm$")) %>%
     tibble::add_column(data.clustered[[1]])
   classification <- data.clustered[[2]] %>%
     dplyr::mutate_if(is_list, unlist)

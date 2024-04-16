@@ -79,7 +79,7 @@ spectrace_cluster_spectra <- function(lightData,
   # PCA
   if (encoding == "PCA") {
     lightData.encoded <- lightData %>%
-      dplyr::select(dplyr::matches("\\d{3}nm")) %>%
+      dplyr::select(dplyr::matches("^\\d{3}nm$")) %>%
       prcomp(center = T)
 
     # Select PCs to retain
@@ -93,7 +93,7 @@ spectrace_cluster_spectra <- function(lightData,
   }
   if (encoding == "none") {
     lightData.encoded <- lightData %>%
-      dplyr::select(dplyr::matches("\\d{3}nm"))
+      dplyr::select(dplyr::matches("^\\d{3}nm$"))
   }
 
   # kmeans clustering

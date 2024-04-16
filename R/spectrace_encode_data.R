@@ -23,7 +23,7 @@ spectrace_encode_data <- function(lightData,
   # Spectral channels
   wl.names <- lightData %>%
     ungroup() %>%
-    select(dplyr::matches("\\d{3}nm")) %>%
+    select(dplyr::matches("^\\d{3}nm$")) %>%
     names()
 
   if (is.null(referenceData)){
@@ -42,7 +42,7 @@ spectrace_encode_data <- function(lightData,
   # Prepare spectrace data
   irr_data <- lightData %>%
     spectrace_normalize_spectra() %>%
-    dplyr::select(dplyr::matches("\\d{3}nm"))
+    dplyr::select(dplyr::matches("^\\d{3}nm$"))
   ref_data <- referenceData %>%
     spectrace_normalize_spectra() %>%
     dplyr::select(type, all_of(wl.names))
