@@ -73,12 +73,12 @@ spectrace_cluster_spectra <- function(lightData,
   }
 
   # Normalisation
-  lightData <- lightData %>%
+  lightData.norm <- lightData %>%
     spectrace_normalize_spectra(method = normalization)
 
   # PCA
   if (encoding == "PCA") {
-    lightData.encoded <- lightData %>%
+    lightData.encoded <- lightData.norm %>%
       dplyr::select(dplyr::matches("^\\d{3}nm$")) %>%
       prcomp(center = T)
 
@@ -92,7 +92,7 @@ spectrace_cluster_spectra <- function(lightData,
       dplyr::select(paste0("PC", PCs$PC))
   }
   if (encoding == "none") {
-    lightData.encoded <- lightData %>%
+    lightData.encoded <- lightData.norm %>%
       dplyr::select(dplyr::matches("^\\d{3}nm$"))
   }
 
