@@ -37,17 +37,14 @@ data.cal = spectrace_calibrate_light(data.raw)
 data.cal2 = spectrace_calibrate_light(data.raw, cal_data = custom_calibration)
 ## End(**Not run**)
 
-# Calculate alpha-opic quantities 
-data.aopic = spectrace_aopic(data.cal)
+# Calculate all quantities 
+data.quantities = spectrace_calculate_quantities(data.cal)
 
-# Calculate alpha-opic quantities with faster linear interpolation
-data.aopic2 = spectrace_aopic(data.cal, 
-                              interp_method = "linear")
+# Calculate only specific quantities
+data.quantities.2 = spectrace_calculate_quantities(data.cal, c("melEDI", "CCT"))
 
-# Import raw data, calibrate, and calculate alpha-opic quantities with linear interpolation
-data.aopic3 = spectrace_import_aopic(light_data, 
-                                     tz = "Europe/Berlin", 
-                                     serial_number = "208731924656", 
-                                     interp_method = "linear")
+# Interpolate spectra to 5nm resolution
+data.spectra = spectrace_interpolate_spectra(data.cal)
+
 ```
 
