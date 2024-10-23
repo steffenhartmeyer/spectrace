@@ -35,32 +35,32 @@ spectrace_import_battery <- function(batteryFile, tz, serial_number = NA) {
   # Check type of file (including header or not)
   if (header$X1[1] == "SERIAL") {
     serial_number <- header$X2[1]
-    batData <- read.delim(
+    batData <- utils::read.delim(
       batteryFile,
       skip = 5,
       header = FALSE,
       sep = sep
-    ) %>% select(c(1:4))
+    ) %>% dplyr::select(c(1:4))
   }
   # Version 3 file
   else if (header$X1[1] == "Raw Spectrace Data") {
     serial_number <- header$X2[3]
-    batData <- read.delim(
+    batData <- utils::read.delim(
       batteryFile,
       skip = 6,
       header = FALSE,
       sep = sep
-    ) %>% select(c(1:4))
+    ) %>% dplyr::select(c(1:4))
   } else {
     # Check whether serial number available
     if (is.na(serial_number)) {
       warning("No serial number specified!")
     }
-    batData <- read.delim(
+    batData <- utils::read.delim(
       batteryFile,
       header = FALSE,
       sep = sep
-    ) %>% select(c(1:4))
+    ) %>% dplyr::select(c(1:4))
   }
 
   col_names <- c("unix", "battery_voltage", "battery_percent", "battery_isCharging")

@@ -40,6 +40,12 @@ spectra_to_spectrace <- function(spectralData,
   # Get number of rows
   N <- nrow(spectralData)
 
+  # Ungroup data
+  if (dplyr::is_grouped_df(spectralData)) {
+    warning("Data frame is grouped and will be ungrouped.")
+    spectralData <- spectralData %>% dplyr::ungroup()
+  }
+
   # Subset spectral data
   spectra <- spectralData %>%
     dplyr::select("380nm":"780nm") %>%
@@ -53,6 +59,7 @@ spectra_to_spectrace <- function(spectralData,
   if (!(resolution %in% c("1nm", "5nm"))) {
     stop("Spectral data has wrong resolution. Must be either 1nm or 5nm!")
   }
+  reso.num <- as.numeric(substr(resolution, 1, 1))
 
   # Choose spectrace responses in matching resolution
   spectrace_responses <- switch(resolution,
@@ -62,7 +69,7 @@ spectra_to_spectrace <- function(spectralData,
 
   # Concolve with Spectrace responses
   responses.spectra <- spectrace_responses %>%
-    apply(2, function(x) spectra %*% as.numeric(x))
+    apply(2, function(x) spectra %*% as.numeric(x) * reso.num)
 
   # As data frame
   if (N == 1) {
