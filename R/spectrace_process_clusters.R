@@ -13,6 +13,11 @@ spectrace_process_clusters = function(lightData,
                                       datetimeVar = datetime,
                                       clusterVar = cluster_id,
                                       regularise = TRUE){
+
+  stopifnot(
+    "`clusterVar` cannot be a factor!" = !is.factor({{clusterVar}})
+  )
+
   groups <- lightData %>% dplyr::group_vars()
   if(regularise){
     lightData <- lightData %>%
